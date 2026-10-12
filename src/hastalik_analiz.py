@@ -94,7 +94,8 @@ def analiz():
                 risk=risk, sinif=sinif,
                 sicaklik_uyum=round(s, 2), nem_uyum=round(n, 2),
                 kritik_ay_sicakligi=round(sum(ay_sicakligi(sicaklik, bolge, a)
-                                              for a in h["kritik_aylar"]) / len(h["kritik_aylar"]), 1),
+                                              for a in h["kritik_aylar"])
+                                          / len(h["kritik_aylar"]), 1),
                 ekim_yogunlugu=round(yogunluk, 2),
                 kritik_aylar=h["kritik_aylar"],
                 ilaclama_penceresi=" – ".join(AY_ADI[a] for a in

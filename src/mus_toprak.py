@@ -22,9 +22,17 @@ from pathlib import Path
 
 import mus_iklim
 import mus_profil as mp
-from toprak_analiz import (AGIRLIK, bunye_puan, derinlik_puan, drenaj_puan,
-                           kirec_puan, ph_puan, tuz_puan)
-from toprak_profil import DRENAJ_PUAN, URUN_ISTEK as ORTAK_ISTEK, bunye_sinifi
+from toprak_analiz import (
+    AGIRLIK,
+    bunye_puan,
+    derinlik_puan,
+    drenaj_puan,
+    kirec_puan,
+    ph_puan,
+    tuz_puan,
+)
+from toprak_profil import DRENAJ_PUAN, bunye_sinifi
+from toprak_profil import URUN_ISTEK as ORTAK_ISTEK
 
 CIKTI = Path(__file__).resolve().parent.parent / "outputs"
 
@@ -200,7 +208,9 @@ def analiz():
     # Ürün bazında ilçe karşılaştırması: aynı ürün nerede daha rahat yetişir
     urun_karsilastirma = []
     for urun in URUN_ISTEK:
-        def al(r, anahtar):
+        # urun varsayılan argümanla bağlanıyor: yoksa kapanış döngü
+        # değişkenini yakalar ve döngü ilerleyince yanlış ürüne bakar.
+        def al(r, anahtar, urun=urun):
             return next(u[anahtar] for u in r["urunler"] if u["urun"] == urun)
         satir = [dict(ilce=r["ilce"], puan=al(r, "birlesik"),
                       toprak=al(r, "puan"), iklim=al(r, "iklim")["puan"],
@@ -251,7 +261,7 @@ if __name__ == "__main__":
               f"{r['ekili_ortalama']:>11}  {r['saglik']['zayif_halka']:<12} "
               f"{', '.join(r['sorunlu_ekimler']) or '-'}")
 
-    print(f"\nBİRLEŞİK UYUM (toprak x iklim)")
+    print("\nBİRLEŞİK UYUM (toprak x iklim)")
     print(f"{'ÜRÜN':<16}" + "".join(f"{i[:6]:>9}" for i in mp.ILCE))
     for u in s["urun_karsilastirma"]:
         sira = {d["ilce"]: d["puan"] for d in u["ilceler"]}

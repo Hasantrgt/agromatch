@@ -19,7 +19,6 @@ Kullanım:
 """
 
 import json
-import shutil
 from pathlib import Path
 
 KOK = Path(__file__).resolve().parent.parent
@@ -120,7 +119,7 @@ toplanmasını bekleme.
 
 | Dosya | Ne işe yarar |
 |---|---|
-| `hastalik_katalog.json` | 24 hastalık: ürün, patojen, belirti, mücadele, kritik aylar, görüntüden tespit edilebilir mi |
+| `hastalik_katalog.json` | 24 hastalık: patojen, belirti, mücadele, kritik aylar |
 | `siddet_olcegi.json` | Enfekte alan yüzdesinden şiddet seviyesi ve çiftçiye verilecek karar |
 | `veri_semasi.json` | Uygulamanın tutacağı ve sunucuya göndereceği kayıt şekilleri |
 | `ALGORITMA.md` | Tespit hattının adım adım tarifi — Dart'a port etmek için |

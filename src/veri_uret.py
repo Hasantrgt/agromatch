@@ -14,9 +14,10 @@ CSV'ler aynı sütun isimleriyle gerçek veriyle değiştirilir.
 Kaynaklar için bkz. README.md
 """
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 RASTGELE_TOHUM = 42
 YILLAR = list(range(2015, 2026))

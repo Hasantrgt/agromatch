@@ -22,7 +22,6 @@ Kullanım:
 import argparse
 import io
 import re
-import sys
 from pathlib import Path
 
 import pandas as pd
@@ -111,7 +110,8 @@ def main():
                 print(f"       sütun eşleşmedi -> {list(df.columns)[:8]}")
                 continue
             df[s_fiyat] = pd.to_numeric(
-                df[s_fiyat].astype(str).str.replace(",", ".").str.replace(r"[^\d.]", "", regex=True),
+                df[s_fiyat].astype(str).str.replace(",", ".")
+                           .str.replace(r"[^\d.]", "", regex=True),
                 errors="coerce")
             g = df.groupby(s_urun)[s_fiyat].agg(["mean", "count"]).reset_index()
             for _, r in g.iterrows():

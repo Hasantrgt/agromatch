@@ -13,7 +13,8 @@ data/ klasörüne temiz CSV yazar.
 
   2) DÖNÜŞTÜR — sütunları eşle ve yaz
      python src/veri_al.py donustur data/ham/tuik_uretim.xlsx --tip uretim \\
-         --esle "yil=Yıl,kapsam=İl Adı,urun=Ürün Adı,ekim_alani_dekar=Ekilen Alan(dekar),uretim_ton=Üretim(ton)"
+         --esle "yil=Yıl,kapsam=İl Adı,urun=Ürün Adı,
+                 ekim_alani_dekar=Ekilen Alan(dekar),uretim_ton=Üretim(ton)"
 
   3) DOĞRULA — veri seti tutarlı mı?
      python src/veri_al.py dogrula

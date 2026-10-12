@@ -20,8 +20,14 @@ import json
 from pathlib import Path
 
 from bolge_profil import DESEN, ILLER
-from toprak_profil import (DRENAJ_PUAN, IL_NOTU, KIREC_ESIK, TOPRAK, URUN_ISTEK,
-                           bunye_sinifi, il_toprak)
+from toprak_profil import (
+    DRENAJ_PUAN,
+    IL_NOTU,
+    KIREC_ESIK,
+    URUN_ISTEK,
+    bunye_sinifi,
+    il_toprak,
+)
 
 CIKTI = Path(__file__).resolve().parent.parent / "outputs"
 

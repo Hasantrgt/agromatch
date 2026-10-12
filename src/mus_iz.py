@@ -31,7 +31,7 @@ import numpy as np
 
 import iz
 import mus_profil as mp
-from iz import Calisma, bol, carp, fark, olcum, topla, turet, varsayim
+from iz import Calisma, bol, carp, fark, olcum, topla, varsayim
 
 CIKTI = Path(__file__).resolve().parent.parent / "outputs"
 ORNEK = 40000

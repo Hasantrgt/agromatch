@@ -61,7 +61,8 @@ URETIM = {
 # Ekim alanı = üretim / verim olarak TÜRETİLİR. Verim değişirse alan değişir.
 VERIM = {                       # ton / dekar
     "Şeker pancarı":  6.00,     # Muş ovası sulu koşul
-    "Buğday":         0.32,     # 368.297 t / 0,32 = 115.093 ha -> belgedeki "115 bin ha" ile tutarlı
+    # 368.297 t / 0,32 = 115.093 ha -> belgedeki "115 bin ha" ifadesiyle tutarlı
+    "Buğday":         0.32,
     "Arpa":           0.26,
     "Yonca":          3.80,     # yeşil ot, çok biçimli
     "Korunga":        1.50,     # yeşil ot
@@ -372,7 +373,7 @@ if __name__ == "__main__":
     for ad, (deger, birim, kaynak) in OLCUM.items():
         print(f"  {ad:<18}{sy(deger):>12} {birim:<7} {kaynak}")
 
-    print(f"\nTÜRETİLEN EKİM ALANI (üretim ÷ varsayılan verim)")
+    print("\nTÜRETİLEN EKİM ALANI (üretim ÷ varsayılan verim)")
     print(f"  {'Ürün':<16}{'Üretim (ton)':>14}{'Verim':>8}{'Alan (da)':>12}  Kaynak")
     toplam = 0
     for u in URUN:
@@ -384,7 +385,7 @@ if __name__ == "__main__":
     print(f"  Toplam tarım alanının %{toplam / OLCUM['toplam_tarim_da'][0] * 100:.0f}'i "
           f"(kalan: nadas, meyve, sebze, modellenmeyen ürünler)")
 
-    print(f"\nİLÇE DAĞITIMI (tahmin)")
+    print("\nİLÇE DAĞITIMI (tahmin)")
     print(f"  {'İlçe':<11}{'Rakım':>7}{'Nüfus':>10}{'Büyükbaş':>11}"
           f"{'Küçükbaş':>11}{'Mera (da)':>12}")
     for i, v in ILCE.items():

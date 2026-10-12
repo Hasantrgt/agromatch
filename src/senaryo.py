@@ -17,9 +17,8 @@ Simülatör panelinin ihtiyaç duyduğu her şeyi tek dosyada toplar:
 import json
 from pathlib import Path
 
-from bolge_profil import (ANIZ_VERIM, DESEN, ILLER, MERA, MERA_VERIM, TIP_KABA_YEM,
-                          URUN_TIPI)
 from bolge_analiz import TR_DURUM, il_ihtiyaci
+from bolge_profil import ANIZ_VERIM, DESEN, ILLER, MERA, MERA_VERIM, TIP_KABA_YEM, URUN_TIPI
 from ekonomi_profil import DUYARLILIK, EKONOMI, KUNYE
 from il_karne import AGIRLIK, HEDEF_URUN_CESIDI
 from kaynak_profil import KAYNAK, YAGIS

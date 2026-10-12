@@ -22,10 +22,24 @@ Yorumlama kuralı (ÖNEMLİ):
 import json
 from pathlib import Path
 
-from bolge_profil import (ANIZ_VERIM, DESEN, ILLER, MERA, MERA_VERIM, KABA_YEM_BUYUKBAS, KABA_YEM_KUCUKBAS,
-                          KESIF_YEM_BUYUKBAS, KESIF_YEM_KUCUKBAS, KISI_BASI_KG,
-                          TIP_GIDA, TIP_KABA_YEM, TIP_KESIF_YEM, TIP_PAZAR,
-                          TIP_SANAYI, URUN_TIPI)
+from bolge_profil import (
+    ANIZ_VERIM,
+    DESEN,
+    ILLER,
+    KABA_YEM_BUYUKBAS,
+    KABA_YEM_KUCUKBAS,
+    KESIF_YEM_BUYUKBAS,
+    KESIF_YEM_KUCUKBAS,
+    KISI_BASI_KG,
+    MERA,
+    MERA_VERIM,
+    TIP_GIDA,
+    TIP_KABA_YEM,
+    TIP_KESIF_YEM,
+    TIP_PAZAR,
+    TIP_SANAYI,
+    URUN_TIPI,
+)
 
 CIKTI = Path(__file__).resolve().parent.parent / "outputs"
 

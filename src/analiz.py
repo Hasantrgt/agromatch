@@ -266,7 +266,8 @@ def main():
     print("\n=== 5) ÇİFTÇİ DAĞITIMI ===")
     for d in dagitim:
         print(f" {d['ciftci']:<10} {d['ilce']:<9} {d['talep_ettigi_urun']:<10} "
-              f"-> {d['onay']:<14} {d['atanan_urun']:<10} {d['atanan_dekar']:>4} da | {d['gerekce']}")
+              f"-> {d['onay']:<14} {d['atanan_urun']:<10} "
+              f"{d['atanan_dekar']:>4} da | {d['gerekce']}")
 
 
 if __name__ == "__main__":

@@ -11,13 +11,11 @@ Kullanım:
 """
 
 import base64
-import io
 import json
 import sys
 from pathlib import Path
 
 import cv2
-import numpy as np
 
 sys.path.append(str(Path(__file__).resolve().parent))
 import cercospora as C
@@ -84,7 +82,8 @@ def main():
              gorsel=_b64(gorseller["maske"], png=True)),
         dict(no=5, ad="Bileşen analizi ve karar",
              aciklama="Her bileşenin alanı, eşdeğer çapı ve daireselliği ölçülür. Dairesellik "
-                      "filtresi damar gölgesi gibi çizgisel izleri eler; kalanlar Cercospora lekesidir.",
+                      "filtresi damar gölgesi gibi çizgisel izleri eler; "
+                      "kalanlar Cercospora lekesidir.",
              gorsel=_b64(gorseller["kaplama"])),
     ]
 

@@ -18,11 +18,20 @@ sulamasız üretilirken, kurak bir ilde yüz metrelerce derinlikten çekilen suy
 import json
 from pathlib import Path
 
-from bolge_profil import DESEN, ILLER, KISI_BASI_KG, TIP_GIDA, URUN_TIPI
 from bolge_analiz import TR_DURUM, il_ihtiyaci
-from kaynak_profil import (CAZIBE_ILLERI, ETKIN_YAGIS_KISLIK, ETKIN_YAGIS_YAZLIK,
-                           KARBON_ELEKTRIK, KARBON_GUBRE, KARBON_MAZOT, KAYNAK,
-                           POMPA_CAZIBE, POMPA_VARSAYILAN, YAGIS)
+from bolge_profil import DESEN, ILLER, URUN_TIPI
+from kaynak_profil import (
+    CAZIBE_ILLERI,
+    ETKIN_YAGIS_KISLIK,
+    ETKIN_YAGIS_YAZLIK,
+    KARBON_ELEKTRIK,
+    KARBON_GUBRE,
+    KARBON_MAZOT,
+    KAYNAK,
+    POMPA_CAZIBE,
+    POMPA_VARSAYILAN,
+    YAGIS,
+)
 
 CIKTI = Path(__file__).resolve().parent.parent / "outputs"
 

@@ -252,7 +252,7 @@ if __name__ == "__main__":
               f"{o['riskli_alan']:>13,}  {'evet' if o['goruntuden'] else 'hayır'}"
               .replace(",", "."))
 
-    print(f"\nİLAÇLAMA TAKVİMİ")
+    print("\nİLAÇLAMA TAKVİMİ")
     for t in s["takvim"]:
         if t["hastaliklar"]:
             adlar = ", ".join(f"{h['ad']} ({h['risk']})" for h in t["hastaliklar"][:3])

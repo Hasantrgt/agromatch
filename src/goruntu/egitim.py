@@ -178,7 +178,8 @@ def main():
     ap.add_argument("--ogrenme-hizi", type=float, default=None,
                     help="boş bırakılırsa eniyileyiciye göre seçilir")
     ap.add_argument("--eniyileyici", default="sgd", choices=["sgd", "adamw"],
-                    help="sıfırdan eğitimde sgd, önceden eğitilmiş ağırlıkta adamw daha iyi sonuç verir")
+                    help="sıfırdan eğitimde sgd, önceden eğitilmiş ağırlıkta "
+                         "adamw daha iyi sonuç verir")
     ap.add_argument("--onegitimli", type=int, default=1)
     a = ap.parse_args()
 
@@ -269,7 +270,7 @@ def main():
         m = metrik["sinif_metrikleri"][s]
         print(f"  {s:<8} kesinlik {m['kesinlik']:.2f}  duyarlılık {m['duyarlilik']:.2f}  "
               f"F1 {m['f1']:.2f}  ({m['adet']} görüntü)")
-    print(f"\nÇıktılar: outputs/model_metrik.json · model_karmasiklik.png · gradcam/")
+    print("\nÇıktılar: outputs/model_metrik.json · model_karmasiklik.png · gradcam/")
 
 
 if __name__ == "__main__":

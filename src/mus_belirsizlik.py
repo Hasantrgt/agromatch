@@ -633,7 +633,7 @@ if __name__ == "__main__":
         aralik = f"{o['medyan']:.2f}  ({o['alt90']:.2f} – {o['ust90']:.2f})"
         print(f"{q['baslik']:<22}{q['olcek']:<18}{aralik:>24}{q['karar']:>11}")
 
-    print(f"\nBASKIN BİLİNMEYEN")
+    print("\nBASKIN BİLİNMEYEN")
     for q in s["sorular"]:
         b = q["baskin"]
         if b:
@@ -642,7 +642,7 @@ if __name__ == "__main__":
     print(f"\nKARARI BELİRSİZ OLANLAR: "
           f"{', '.join(s['belirsiz_karar']) if s['belirsiz_karar'] else 'yok'}")
 
-    print(f"\nEYLEM TABLOSU (denge x ölçek x göreli uygunluk)")
+    print("\nEYLEM TABLOSU (denge x ölçek x göreli uygunluk)")
     print(f"  {'Ürün':<16}{'Eylem':<16}{'Ölçek':<18}{'Oran':>6}"
           f"{'En uygun':>11}{'Sıra':>5}{'Makas':>7}")
     for f in s["karar"]:
@@ -663,7 +663,7 @@ if __name__ == "__main__":
             print(f"  {x['ad']:<42}{x['kazanc']:>14,}{x['acik_payi']:>7.1f}%"
                   f"{x['arazi']:>12,}".replace(",", "."))
 
-    print(f"\nGENEL ÖLÇÜM ÖNCELİĞİ")
+    print("\nGENEL ÖLÇÜM ÖNCELİĞİ")
     print(f"  Masa başı işlerin toplam kazancı: {s['masa_basi_kazanc']} yüzde puan")
     print(f"  Saha / laboratuvar kazancı:       {s['saha_kazanc']} yüzde puan")
     print(f"\n  {'Ölçüm':<42}{'Tür':<12}{'Soru':>5}{'Kazanç':>9}{'Emek':>6}")

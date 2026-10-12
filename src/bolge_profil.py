@@ -54,7 +54,7 @@ TIP_KESIF_YEM = "kesif yem"  # hayvan varlığı x yıllık kesif yem ihtiyacı
 TIP_SANAYI = "sanayi"        # fabrika kotası / sözleşmeli alım
 TIP_PAZAR = "pazar"          # yurt içi pazar payı + ihracat talebi
 
-URUN_TIPI = {"Yem bitkileri": (60000, 0.55, 0), "Yem bitkileri": (320000, 0.7, 0), "Yem bitkileri": (45000, 0.58, 0), "Yem bitkileri": (120000, 0.6, 0), "Yem bitkileri": (18000, 0.55, 0), "Yem bitkileri": (95000, 0.58, 0), "Yem bitkileri": (210000, 0.65, 0), "Yem bitkileri": (55000, 0.6, 0), "Yem bitkileri": (85000, 0.62, 0), 
+URUN_TIPI = {
     "Buğday": TIP_GIDA, "Mercimek": TIP_GIDA, "Patates": TIP_GIDA,
     "Arpa": TIP_KESIF_YEM, "Mısır (dane)": TIP_KESIF_YEM,
     "Yem bitkileri": TIP_KABA_YEM,
