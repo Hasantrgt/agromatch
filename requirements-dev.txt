@@ -1,0 +1,6 @@
+# Geliştirme ve test araçları
+-r requirements.txt
+pytest>=8,<9
+pytest-cov>=5
+mypy>=1.9
+ruff>=0.4

@@ -1,0 +1,11 @@
+# AGROMATCH — analiz çekirdeği
+#
+# Paneli üretmek için gereken tek bağımlılık budur:
+#     pip install -r requirements.txt
+#     python src/mus_panel_uret.py --hepsi
+#
+# Görüntü işleme, veri çekme, model eğitimi ve geliştirme araçları için
+# ayrı dosyalar var (requirements-*.txt). Tanımların kaynağı pyproject.toml'dur;
+# bu dosyalar sadece hızlı kurulum içindir.
+
+numpy>=1.26,<3

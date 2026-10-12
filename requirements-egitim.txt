@@ -1,0 +1,6 @@
+# CNN eğitimi — en ağır küme (~2 GB). Yalnızca model eğitilecekse gerekir.
+-r requirements-goruntu.txt
+torch>=2.2
+torchvision>=0.17
+scikit-learn>=1.4,<2
+matplotlib>=3.8,<4

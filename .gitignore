@@ -1,0 +1,71 @@
+# ---------------------------------------------------------------------------
+# AGROMATCH — sürüm kontrolüne girmeyecekler
+#
+# Kural: ÜRETİLEN hiçbir şey depoda durmaz. Depoda yalnızca kaynak bulunur;
+# geri kalan her şey tek komutla yeniden üretilir:
+#
+#     python src/mus_panel_uret.py --hepsi
+#
+# Üretilen dosyaları depoya koymak iki soruna yol açar: her çalıştırmada
+# devasa fark (diff) çıkar, ve bir gün kaynakla çıktı birbirini tutmaz —
+# hangisinin doğru olduğu bilinmez.
+# ---------------------------------------------------------------------------
+
+# --- Üretilen analiz çıktıları
+outputs/
+
+# --- Üretilen paneller ve belgeler (kök dizindeki HTML/PDF'ler)
+/*.html
+/*.pdf
+
+# --- Üretilen sentetik görüntüler ve veri setleri
+data/sentetik/
+data/goruntu_sentetik/
+data/goruntu_bolunmus/
+data/saha/
+
+# --- Üretilen paketler ve föyler
+mobil_paket/
+foy/
+*.zip
+
+# --- Model ağırlıkları (büyük ikili dosyalar git'te tutulmaz)
+*.pt
+*.pth
+*.tflite
+*.onnx
+*.h5
+
+# --- Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.Python
+build/
+dist/
+
+# --- Test ve araç önbellekleri
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Node (panel doğrulama betikleri için)
+node_modules/
+package-lock.json
+
+# --- Düzenleyici ve işletim sistemi
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Gizli bilgi (API anahtarı vb. asla depoya girmez)
+.env
+*.key
+gizli/

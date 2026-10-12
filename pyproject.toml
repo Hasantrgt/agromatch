@@ -1,0 +1,92 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agromatch"
+version = "0.2.0"
+description = "Muş için talep odaklı ekim planlama motoru: denge, toprak-iklim uygunluğu, hastalık riski ve izlenebilir belirsizlik analizi"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Hasan Turgut" }]
+keywords = ["tarım", "planlama", "belirsizlik", "monte-carlo", "duyarlılık-analizi"]
+
+# Analiz çekirdeği yalnızca numpy'a bağlıdır. Paneli üretmek için bu yeterlidir.
+# Görüntü işleme ve model eğitimi ağır bağımlılıklar getirir; onlar isteğe bağlı
+# ek (extra) olarak tanımlandı. Böylece projeyi sadece incelemek isteyen biri
+# 2 GB'lık torch indirmek zorunda kalmaz.
+dependencies = [
+    "numpy>=1.26,<3",
+]
+
+[project.optional-dependencies]
+# Cercospora görüntü işleme hattı
+goruntu = [
+    "opencv-python-headless>=4.9,<5",
+    "pillow>=10,<13",
+]
+# Dış veri kaynaklarından çekme araçları
+veri = [
+    "pandas>=2.0,<4",
+    "requests>=2.31,<3",
+]
+# CNN eğitimi — en ağır küme, yalnızca model eğitilecekse gerekir
+egitim = [
+    "torch>=2.2",
+    "torchvision>=0.17",
+    "scikit-learn>=1.4,<2",
+    "matplotlib>=3.8,<4",
+]
+# Geliştirme araçları
+dev = [
+    "pytest>=8,<9",
+    "pytest-cov>=5",
+    "mypy>=1.9",
+    "ruff>=0.4",
+]
+# Hepsi birden
+hepsi = [
+    "agromatch[goruntu,veri,egitim,dev]",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q --strict-markers"
+markers = [
+    "yavas: çalışması uzun süren testler (Monte Carlo, panel üretimi)",
+]
+
+# ------------------------------------------------------------------ ruff
+[tool.ruff]
+line-length = 92
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = [
+    "E741",  # tek harfli değişken adı (matematik formüllerinde okunaklı)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
+
+# ------------------------------------------------------------------ mypy
+[tool.mypy]
+python_version = "3.10"
+files = ["src"]
+ignore_missing_imports = true
+# Tip ipuçları henüz tamamlanmadı; kademeli olarak sıkılaştırılacak.
+# Önce iz.py ve mus_profil.py tipleniyor, sonra diğerleri.
+disallow_untyped_defs = false
+warn_unused_ignores = true
+warn_redundant_casts = true
