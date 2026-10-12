@@ -1,0 +1,407 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AGROMATCH İl Karnesi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f5f5f1; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+    --muted: #898781; --grid: #e1e0d9; --axis: #c3c2b7; --hair: rgba(11,11,11,0.10);
+    --brand: #1f4733; --brand-soft: #e8efe9;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+    --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+    --warn-ink: #9a6b00; --hl: rgba(237,161,0,0.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+      --muted: #898781; --grid: #2c2c2a; --axis: #383835; --hair: rgba(255,255,255,0.10);
+      --brand: #9ec9ac; --brand-soft: #1e2a22;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+      --warn-ink: #fab219; --hl: rgba(201,133,0,0.18);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --axis: #383835; --hair: rgba(255,255,255,0.10);
+    --brand: #9ec9ac; --brand-soft: #1e2a22;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --warn-ink: #fab219; --hl: rgba(201,133,0,0.18);
+  }
+
+  body { margin: 0; background: var(--page); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.55; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 16px; padding-block: 32px 56px; }
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(26px, 4.2vw, 36px); font-weight: 600; letter-spacing: -0.02em; }
+  h2 { font-size: 19px; font-weight: 600; }
+  h3 { font-size: 15px; font-weight: 600; }
+  p { margin: 0; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  header { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; border-bottom: 2px solid var(--brand); }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--brand); font-weight: 600; }
+  .lede { color: var(--ink-2); max-width: 68ch; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .tag { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; padding: 3px 9px; border-radius: 4px;
+    background: var(--brand-soft); color: var(--brand); border: 1px solid var(--hair); }
+  .tag.warn { background: transparent; color: var(--ink-2); border-style: dashed; }
+
+  .secici { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--page);
+    padding-block: 12px; margin-top: 22px; border-bottom: 1px solid var(--grid); }
+  .secici .baslik { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); margin: 0 0 6px; font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .chips:last-child { margin-bottom: 0; }
+  .chips button { font: inherit; font-size: 13px; padding: 5px 11px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--hair); background: var(--surface); color: var(--ink-2); }
+  .chips button[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); font-weight: 600; }
+  :root[data-theme="dark"] .chips button[aria-pressed="true"] { color: #0d0d0d; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .chips button[aria-pressed="true"] { color: #0d0d0d; } }
+  button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+  section { margin-top: 34px; display: flex; flex-direction: column; gap: 14px; }
+  .sec-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .sec-num { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+  .note { color: var(--ink-2); font-size: 13.5px; max-width: 74ch; }
+
+  /* karne başlığı */
+  .karne { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center;
+    background: var(--surface); border: 1px solid var(--hair); border-radius: 10px; padding: 20px; }
+  .not { display: grid; place-items: center; width: 108px; height: 108px; border-radius: 12px;
+    font-family: "IBM Plex Mono", monospace; font-size: 54px; font-weight: 600; color: #fff; line-height: 1; }
+  .not small { display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.05em; margin-top: 4px; }
+  .karne-bilgi { display: flex; flex-direction: column; gap: 6px; }
+  .karne-bilgi .il { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
+  .karne-bilgi .alt { color: var(--ink-2); font-size: 13.5px; }
+  .karne-bilgi .sira { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-2); }
+
+  /* gösterge barları */
+  .gostergeler { display: grid; gap: 12px; }
+  .gosterge { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 13px 16px;
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 14px; align-items: center; }
+  .gosterge .ad { font-weight: 600; font-size: 14px; }
+  .gosterge .puan { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 18px; }
+  .gosterge .bar { grid-column: 1 / -1; height: 8px; border-radius: 4px; background: var(--grid); overflow: hidden; }
+  .gosterge .bar i { display: block; height: 100%; border-radius: 4px; }
+  .gosterge .acik { grid-column: 1 / -1; font-size: 12.5px; color: var(--ink-2); }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 13px 15px;
+    display: flex; flex-direction: column; gap: 3px; }
+  .tile .k { font-size: 11.5px; color: var(--muted); }
+  .tile .v { font-family: "IBM Plex Mono", monospace; font-size: 23px; font-weight: 600; line-height: 1.15; }
+  .tile .u { font-size: 12px; color: var(--ink-2); font-weight: 400; font-family: "IBM Plex Sans", sans-serif; }
+  .tile .d { font-size: 12.5px; color: var(--ink-2); }
+
+  .card { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 16px; }
+  .chart-wrap { position: relative; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .tip { position: absolute; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: var(--surface); border: 1px solid var(--hair); border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.14); padding: 8px 10px; font-size: 12.5px; min-width: 160px; z-index: 3; }
+  .tip .ty { font-family: "IBM Plex Mono", monospace; font-weight: 600; margin-bottom: 4px; }
+  .tip .tr { display: flex; justify-content: space-between; gap: 14px; color: var(--ink-2); }
+  .tip .tr b { font-family: "IBM Plex Mono", monospace; font-weight: 600; color: var(--ink); }
+
+  .tbl-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: right; padding: 8px 11px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  tbody td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px; border: 1px solid var(--hair); white-space: nowrap; }
+  .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+  .chip.ok { color: var(--good); } .chip.warn { color: var(--warn-ink); }
+  .chip.bad { color: var(--critical); } .chip.neu { color: var(--ink-2); }
+
+  .callout { border-left: 3px solid var(--s4); background: var(--surface); border-radius: 0 8px 8px 0;
+    padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .callout.yontem { border-left-color: var(--brand); }
+  .callout ol, .callout ul { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 13.5px; }
+  .callout li { margin-bottom: 3px; }
+  .imza { color: var(--ink-2); font-weight: 600; }
+  footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--grid);
+    color: var(--muted); font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  @media (max-width: 520px) {
+    .karne { grid-template-columns: 1fr; }
+    .not { width: 84px; height: 84px; font-size: 42px; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">AGROMATCH · İl Karnesi</span>
+    <h1>İlin tarım karnesi</h1>
+    <p class="lede">Bir ilin ekim deseni ne kadar bilinçli? Dört gösterge bunu ölçüyor:
+      hayvanının yemini kendi toprağından karşılıyor mu, bir ton ürün için ne kadar sulama
+      suyu harcıyor, üretimi tek ürüne mi bağlı, ve ürettiği şey ihtiyaca uyuyor mu.</p>
+    <div class="meta-row">
+      <span class="tag" id="il-sayisi"></span>
+      <span class="tag">4 gösterge · ağırlıklı not</span>
+      <span class="tag warn">Sayılar ön tahmin — TÜİK, DSİ ve saha verisiyle doğrulanacak</span>
+    </div>
+  </header>
+
+  <div class="secici">
+    <p class="baslik">Doğu Anadolu</p>
+    <div class="chips" id="chips-dogu"></div>
+    <p class="baslik">Güneydoğu Anadolu</p>
+    <div class="chips" id="chips-guney"></div>
+  </div>
+
+  <section>
+    <div class="karne" id="karne"></div>
+    <div class="gostergeler" id="gostergeler"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>İlin profili</h2></div>
+    <div class="tiles" id="profil"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>Kaba yem bilançosu</h2></div>
+    <p class="note">Arz = ekilen yem bitkileri + çayır-mera + anız otlatması.
+      İhtiyaç = büyükbaş × 2,6 ton + küçükbaş × 0,32 ton kuru ot eşdeğeri.</p>
+    <div class="tiles" id="yem"></div>
+    <div id="oneri-kutu"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Kaynak bilançosu</h2></div>
+    <p class="note">İlin bir yılda bütün ürünler için harcadığı su, enerji ve yakıt.
+      Mavi su, sulamayla verilen sudur: elektrik harcar ve yeraltı su seviyesini düşürür.</p>
+    <div class="tiles" id="kaynak"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Ürün ürün karne</h2></div>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>Ürün</th><th>Alan (da)</th><th>Üretim (ton)</th><th>İl ihtiyacı (ton)</th>
+          <th>Oran</th><th>Durum</th><th>Mavi su (m³/t)</th><th>Elektrik (kWh/t)</th>
+          <th>Mazot (lt/t)</th><th>CO₂ (kg/t)</th></tr></thead>
+        <tbody id="tb-urun"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>23 il sıralaması</h2></div>
+    <p class="note">Seçili il vurgulanmıştır. Sıralama bir başarı listesi değil; planlama
+      motorunun hangi ilde neye öncelik vereceğini gösteren yön levhasıdır.</p>
+    <div class="card">
+      <div class="chart-wrap"><svg id="siralama" role="img" aria-label="23 ilin karne puanı sıralaması"></svg>
+        <div class="tip" id="t-sira"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Not nasıl hesaplanıyor?</h2></div>
+    <div class="callout yontem">
+      <h3>Dört gösterge, ağırlıklı ortalama</h3>
+      <ul>
+        <li><strong>Yem yeterliliği (%30):</strong> kaba yem arzı / ihtiyacı, en fazla 100 puan.</li>
+        <li><strong>Su verimliliği (%25):</strong> her üründe ton başına mavi su tüketimi, o ürünün
+          bölge ortalamasıyla karşılaştırılır ve üretim payıyla ağırlıklandırılır. Ham m³/ton
+          karşılaştırması adil olmazdı: şeker pancarı gibi verimi yüksek bir ürün ton başına suyu
+          kendiliğinden düşürür.</li>
+        <li><strong>Ürün çeşitliliği (%20):</strong> Shannon çeşitlilik indeksinin etkin ürün sayısı
+          karşılığı; 4 etkin ürün tam puan. Tek ürüne bağımlılık fiyat ve hastalık riskini büyütür.</li>
+        <li><strong>Talep uyumu (%25):</strong> ürünlerin denge oranlarının 1'e yakınlığı
+          (logaritmik sapmanın ortalaması).</li>
+      </ul>
+      <p class="note">Harf karşılıkları: A ≥ 80, B ≥ 65, C ≥ 50, D &lt; 50. Ağırlıklar bölgenin
+        önceliğine göre değiştirilebilir; kodda tek satırdır.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>AGROMATCH · İl Karnesi</span>
+    <span>23 il · Doğu ve Güneydoğu Anadolu</span>
+    <span>Sayılar ön tahmindir; yöntem ve şema gerçek veri için hazırdır.</span>
+    <span class="imza">Bu paneli hazırlayan Hasan Turgut'tur.</span>
+  </footer>
+</div>
+
+<script>
+const VERI = __KARNE_JSON__;
+const ILLER = VERI.iller;
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
+  for (const k in a) e.setAttribute(k, a[k]); return e; };
+const tr = n => Math.round(n).toLocaleString("tr-TR");
+const fmt = (v, n = 1) => Number(v).toFixed(n).replace(".", ",");
+const kisa = n => n >= 1e9 ? fmt(n / 1e9, 1) + " mr" : n >= 1e6 ? fmt(n / 1e6, 1) + " mn"
+  : n >= 1e3 ? fmt(n / 1e3, 0) + " bin" : tr(n);
+const notRenk = h => h === "A" ? "var(--good)" : h === "B" ? "var(--s3)"
+  : h === "C" ? "var(--warning)" : "var(--critical)";
+const puanRenk = p => p >= 80 ? "var(--good)" : p >= 65 ? "var(--s3)"
+  : p >= 50 ? "var(--warning)" : "var(--critical)";
+
+let secili = "Muş";
+document.getElementById("il-sayisi").textContent = `${VERI.il_sayisi} il`;
+
+const chipHtml = b => ILLER.filter(i => i.bolge === b)
+  .sort((a, c) => a.il.localeCompare(c.il, "tr"))
+  .map(i => `<button data-il="${i.il}" aria-pressed="${i.il === secili}">${i.il}</button>`).join("");
+document.getElementById("chips-dogu").innerHTML = chipHtml("Doğu Anadolu");
+document.getElementById("chips-guney").innerHTML = chipHtml("Güneydoğu Anadolu");
+document.querySelectorAll(".chips").forEach(k => k.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  secili = b.dataset.il;
+  document.querySelectorAll(".chips button").forEach(x =>
+    x.setAttribute("aria-pressed", x.dataset.il === secili));
+  ciz();
+}));
+
+const GOSTERGE = [
+  ["yem", "Yem yeterliliği", "%30",
+    i => `Hayvanının kaba yeminin %${Math.min(100, Math.round((i.kaba_yem_orani || 0) * 100))}'ini kendi toprağından karşılıyor.`],
+  ["su", "Su verimliliği", "%25",
+    i => `Her üründe bölge ortalamasına göre performans endeksi ${fmt(i.su_endeksi, 2)}
+      (1,00 = ortalama). Ton başına ${tr(i.mavi_su_ton_basi)} m³ sulama suyu; 23 il içinde ${i.su_sirasi}. sırada.`],
+  ["cesitlilik", "Ürün çeşitliliği", "%20",
+    i => `Etkin ürün sayısı ${fmt(i.etkin_urun_sayisi, 2)}. Tek ürüne bağımlılık fiyat ve hastalık riskini büyütür.`],
+  ["uyum", "Talep uyumu", "%25",
+    i => `Ürünlerin denge oranlarının 1'e ortalama yakınlığı. Yüksek puan, üretimin ihtiyaca oturduğu anlamına gelir.`],
+];
+
+function ciz() {
+  const i = ILLER.find(x => x.il === secili);
+  const sira = i.siralar.genel_puan;
+
+  document.getElementById("karne").innerHTML = `
+    <div class="not" style="background:${notRenk(i.harf)}">${i.harf}<small>${i.genel_puan}/100</small></div>
+    <div class="karne-bilgi">
+      <span class="il">${i.il}</span>
+      <span class="alt">${i.bolge} · ${tr(i.nufus)} nüfus · ${tr(i.hayvan_birimi)} hayvan birimi
+        · ${i.urunler.length} ana ürün</span>
+      <span class="sira">Genel sıralama ${sira}/${VERI.il_sayisi} &nbsp;·&nbsp;
+        Ekim alanı sırası ${i.siralar.toplam_alan_dekar}/${VERI.il_sayisi} &nbsp;·&nbsp;
+        Su verimliliği sırası ${i.su_sirasi}/${VERI.il_sayisi}</span>
+    </div>`;
+
+  document.getElementById("gostergeler").innerHTML = GOSTERGE.map(([k, ad, ag, acik]) => {
+    const p = i.puan[k];
+    return `<div class="gosterge">
+      <span class="ad">${ad} <span class="mono" style="color:var(--muted);font-weight:400">${ag}</span></span>
+      <span class="puan" style="color:${puanRenk(p)}">${p}</span>
+      <span class="bar"><i style="width:${p}%;background:${puanRenk(p)}"></i></span>
+      <span class="acik">${acik(i)}</span></div>`;
+  }).join("");
+
+  document.getElementById("profil").innerHTML = [
+    ["Ekim alanı", kisa(i.toplam_alan_dekar), "dekar", `Çayır-mera ${kisa(i.mera_dekar)} da`],
+    ["Hayvan varlığı", kisa(i.hayvan_birimi), "hayvan birimi",
+      `${kisa(i.buyukbas)} büyükbaş · ${kisa(i.kucukbas)} küçükbaş`],
+    ["Toplam üretim", kisa(i.toplam.uretim_ton), "ton/yıl", `${i.urunler.length} üründe`],
+    ["Sulanan alan", kisa(i.toplam.sulanan_alan_dekar), "dekar",
+      `Ekim alanının %${Math.round(i.toplam.sulanan_alan_dekar / i.toplam_alan_dekar * 100)}'i`],
+  ].map(([k, v, u, d]) => `<div class="tile"><span class="k">${k}</span>
+    <span class="v">${v} <span class="u">${u}</span></span><span class="d">${d}</span></div>`).join("");
+
+  const yemDurum = i.kaba_yem_orani >= 0.95 ? "ok" : i.kaba_yem_orani >= 0.6 ? "warn" : "bad";
+  document.getElementById("yem").innerHTML = [
+    ["Kaba yem arzı", kisa(i.kaba_yem_arz_ton), "ton", "Yem bitkileri + mera + anız"],
+    ["Kaba yem ihtiyacı", kisa(i.kaba_yem_ihtiyac_ton), "ton", "Hayvan varlığına göre"],
+    ["Açık", kisa(i.kaba_yem_acigi_ton), "ton", i.kaba_yem_acigi_ton > 0
+      ? "Dışarıdan yem alımıyla kapanıyor" : "Açık yok"],
+    ["Karşılama oranı", fmt(i.kaba_yem_orani, 2), "",
+      `<span class="chip ${yemDurum}">${yemDurum === "ok" ? "Yeterli" : yemDurum === "warn" ? "Açık var" : "Kritik"}</span>`],
+  ].map(([k, v, u, d]) => `<div class="tile"><span class="k">${k}</span>
+    <span class="v">${v}${u ? ` <span class="u">${u}</span>` : ""}</span><span class="d">${d}</span></div>`).join("");
+
+  document.getElementById("oneri-kutu").innerHTML = i.oneri ? `
+    <div class="callout"><h3>Motorun önerisi</h3>
+      <p class="note">${i.oneri.metin}. Kaynak üründe ilin kendi ihtiyacının 1,5 katı güvenlik payı
+      korunur, yani ilin gıda güvenliği bozulmaz. Kazanç: dışarıdan alınan yemin yerine geçen
+      ${tr(i.oneri.kapanan_acik_ton)} ton kaba yem.</p></div>`
+    : `<div class="callout"><h3>Motorun önerisi</h3><p class="note">Bu ilde, kendi ihtiyacının
+      1,5 katından fazla üretilen ve yem bitkisine kaydırılabilecek bir tarla ürünü bulunamadı.
+      Açık, verim artışı (sulama ve yem bitkisi çeşidi) ya da mera ıslahı ile kapatılmalıdır.</p></div>`;
+
+  document.getElementById("kaynak").innerHTML = [
+    ["Toplam su", kisa(i.toplam.su_m3), "m³/yıl", `Ton başına ${tr(i.toplam.su_m3 / Math.max(i.toplam.uretim_ton, 1))} m³`],
+    ["Mavi su (sulama)", kisa(i.toplam.mavi_su_m3), "m³/yıl", `Ton başına ${tr(i.mavi_su_ton_basi)} m³`],
+    ["Sulama elektriği", kisa(i.toplam.elektrik_kwh / 1000), "MWh/yıl",
+      `Ton başına ${fmt(i.toplam.elektrik_kwh / Math.max(i.toplam.uretim_ton, 1), 1)} kWh`],
+    ["Mazot", kisa(i.toplam.mazot_lt), "litre/yıl",
+      `Ton başına ${fmt(i.toplam.mazot_lt / Math.max(i.toplam.uretim_ton, 1), 1)} lt`],
+    ["Karbon", kisa(i.toplam.karbon_kg / 1000), "ton CO₂e/yıl", `Ton başına ${tr(i.karbon_ton_basi)} kg`],
+  ].map(([k, v, u, d]) => `<div class="tile"><span class="k">${k}</span>
+    <span class="v">${v} <span class="u">${u}</span></span><span class="d">${d}</span></div>`).join("");
+
+  const durumSinif = u => u.durum === "FAZLA" ? (u.tr_durum === "ithalatçı" ? "neu" : "bad")
+    : u.durum === "AÇIK" ? "warn" : "ok";
+  document.getElementById("tb-urun").innerHTML = i.urunler.map(u => `
+    <tr><td>${u.urun}</td><td class="num">${tr(u.alan_dekar)}</td>
+      <td class="num">${tr(u.uretim_ton)}</td><td class="num">${tr(u.ihtiyac_ton)}</td>
+      <td class="num">${fmt(u.oran, 2)}</td>
+      <td><span class="chip ${durumSinif(u)}">${u.durum}</span></td>
+      <td class="num">${tr(u.mavi_su_ton_basi ?? 0)}</td>
+      <td class="num">${fmt(u.elektrik_ton_basi ?? 0, 1)}</td>
+      <td class="num">${fmt(u.mazot_ton_basi ?? 0, 1)}</td>
+      <td class="num">${tr(u.karbon_ton_basi ?? 0)}</td></tr>`).join("");
+
+  /* sıralama grafiği */
+  const svg = document.getElementById("siralama");
+  const tip = document.getElementById("t-sira");
+  svg.innerHTML = "";
+  const veri = [...ILLER].sort((a, b) => b.genel_puan - a.genel_puan);
+  const rowH = 21, M = { l: 88, r: 56, t: 24, b: 6 }, W = 760;
+  const H = M.t + M.b + veri.length * rowH, iw = W - M.l - M.r;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  [0, 50, 100].forEach(t => {
+    const gx = M.l + iw * t / 100;
+    svg.appendChild(el("line", { x1: gx, x2: gx, y1: M.t - 6, y2: H - M.b,
+      stroke: "var(--grid)", "stroke-width": 1 }));
+    const lb = el("text", { x: gx, y: M.t - 12, "text-anchor": "middle", fill: "var(--muted)",
+      "font-size": 11, "font-family": "IBM Plex Mono, monospace" });
+    lb.textContent = t; svg.appendChild(lb);
+  });
+  veri.forEach((r, k) => {
+    const y = M.t + k * rowH, g = el("g", {});
+    if (r.il === secili) g.appendChild(el("rect", { x: 4, y: y - 1, width: W - 8, height: rowH - 2,
+      fill: "var(--hl)", rx: 4 }));
+    const lb = el("text", { x: M.l - 10, y: y + rowH / 2 + 4, "text-anchor": "end",
+      fill: r.il === secili ? "var(--ink)" : "var(--ink-2)", "font-size": 12,
+      "font-weight": r.il === secili ? 600 : 400 });
+    lb.textContent = r.il; g.appendChild(lb);
+    g.appendChild(el("rect", { x: M.l, y: y + 4, width: Math.max(2, iw * r.genel_puan / 100),
+      height: rowH - 10, fill: puanRenk(r.genel_puan), rx: 3 }));
+    const vl = el("text", { x: M.l + iw * r.genel_puan / 100 + 8, y: y + rowH / 2 + 4,
+      fill: "var(--ink-2)", "font-size": 11.5, "font-family": "IBM Plex Mono, monospace" });
+    vl.textContent = `${r.genel_puan} ${r.harf}`; g.appendChild(vl);
+    const hit = el("rect", { x: 0, y: y, width: W, height: rowH, fill: "transparent",
+      style: "cursor:pointer" });
+    const göster = () => {
+      tip.innerHTML = `<div class="ty">${r.il} · ${r.harf}</div>` +
+        GOSTERGE.map(([k2, ad]) => `<div class="tr"><span>${ad}</span><b>${r.puan[k2]}</b></div>`).join("");
+      tip.style.opacity = 1;
+      const box = svg.getBoundingClientRect();
+      tip.style.left = Math.min(box.width - 190, box.width * 0.45) + "px";
+      tip.style.top = Math.max(0, (y / H) * box.height - 30) + "px";
+    };
+    hit.addEventListener("mouseenter", göster);
+    hit.addEventListener("click", () => { secili = r.il;
+      document.querySelectorAll(".chips button").forEach(x =>
+        x.setAttribute("aria-pressed", x.dataset.il === secili));
+      ciz(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    g.appendChild(hit);
+    svg.appendChild(g);
+  });
+  svg.onmouseleave = () => { tip.style.opacity = 0; };
+}
+ciz();
+</script>

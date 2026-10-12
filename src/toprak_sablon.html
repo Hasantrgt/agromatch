@@ -1,0 +1,454 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AGROMATCH Toprak Analizi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f5f5f1; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+    --muted: #898781; --grid: #e1e0d9; --axis: #c3c2b7; --hair: rgba(11,11,11,0.10);
+    --brand: #5c4423; --brand-soft: #f0e9de;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b; --warn-ink: #9a6b00;
+    --hl: rgba(237,161,0,0.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+      --muted: #898781; --grid: #2c2c2a; --axis: #383835; --hair: rgba(255,255,255,0.10);
+      --brand: #d6b98c; --brand-soft: #2a2218;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+      --warn-ink: #fab219; --hl: rgba(201,133,0,0.18);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --axis: #383835; --hair: rgba(255,255,255,0.10);
+    --brand: #d6b98c; --brand-soft: #2a2218;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --warn-ink: #fab219; --hl: rgba(201,133,0,0.18);
+  }
+
+  body { margin: 0; background: var(--page); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.55; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 16px; padding-block: 32px 56px; }
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(26px, 4.2vw, 36px); font-weight: 600; letter-spacing: -0.02em; }
+  h2 { font-size: 19px; font-weight: 600; }
+  h3 { font-size: 15px; font-weight: 600; }
+  p { margin: 0; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  header { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; border-bottom: 2px solid var(--brand); }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--brand); font-weight: 600; }
+  .lede { color: var(--ink-2); max-width: 68ch; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .tag { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; padding: 3px 9px; border-radius: 4px;
+    background: var(--brand-soft); color: var(--brand); border: 1px solid var(--hair); }
+  .tag.warn { background: transparent; color: var(--ink-2); border-style: dashed; }
+
+  .secici { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--page);
+    padding-block: 12px; margin-top: 22px; border-bottom: 1px solid var(--grid); }
+  .secici .baslik { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); margin: 0 0 6px; font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .chips:last-child { margin-bottom: 0; }
+  .chips button { font: inherit; font-size: 13px; padding: 5px 11px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--hair); background: var(--surface); color: var(--ink-2); }
+  .chips button[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); font-weight: 600; }
+  :root[data-theme="dark"] .chips button[aria-pressed="true"] { color: #0d0d0d; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .chips button[aria-pressed="true"] { color: #0d0d0d; } }
+  button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+  section { margin-top: 34px; display: flex; flex-direction: column; gap: 14px; }
+  .sec-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .sec-num { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+  .note { color: var(--ink-2); font-size: 13.5px; max-width: 74ch; }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 13px 15px;
+    display: flex; flex-direction: column; gap: 3px; }
+  .tile .k { font-size: 11.5px; color: var(--muted); }
+  .tile .v { font-family: "IBM Plex Mono", monospace; font-size: 24px; font-weight: 600; line-height: 1.15; }
+  .tile .u { font-size: 12px; color: var(--ink-2); font-weight: 400; font-family: "IBM Plex Sans", sans-serif; }
+  .tile .d { font-size: 12.5px; color: var(--ink-2); }
+
+  .card { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 16px; }
+  .chart-wrap { position: relative; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .fgroup { display: inline-flex; border: 1px solid var(--hair); border-radius: 7px; overflow: hidden;
+    background: var(--surface); flex-wrap: wrap; }
+  .fgroup button { border: 0; background: transparent; color: var(--ink-2); font: inherit; font-size: 12.5px;
+    padding: 6px 11px; cursor: pointer; border-right: 1px solid var(--hair); }
+  .fgroup button:last-child { border-right: 0; }
+  .fgroup button[aria-pressed="true"] { background: var(--brand); color: #fff; font-weight: 600; }
+  :root[data-theme="dark"] .fgroup button[aria-pressed="true"] { color: #0d0d0d; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .fgroup button[aria-pressed="true"] { color: #0d0d0d; } }
+  .tip { position: absolute; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: var(--surface); border: 1px solid var(--hair); border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.16); padding: 8px 10px; font-size: 12.5px; min-width: 170px; z-index: 4; }
+  .tip .ty { font-family: "IBM Plex Mono", monospace; font-weight: 600; margin-bottom: 4px; }
+  .tip .tr { display: flex; justify-content: space-between; gap: 14px; color: var(--ink-2); }
+  .tip .tr b { font-family: "IBM Plex Mono", monospace; font-weight: 600; color: var(--ink); }
+
+  .kunye { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 10px; }
+  .kunye div { background: var(--page); border: 1px solid var(--hair); border-radius: 7px; padding: 10px 12px;
+    display: flex; flex-direction: column; gap: 2px; }
+  .kunye .k { font-size: 11px; color: var(--muted); }
+  .kunye .v { font-family: "IBM Plex Mono", monospace; font-size: 17px; font-weight: 600; }
+
+  .karne { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
+  .not { display: grid; place-items: center; width: 84px; height: 84px; border-radius: 12px;
+    font-family: "IBM Plex Mono", monospace; font-size: 40px; font-weight: 600; color: #fff; line-height: 1; }
+  .not small { display: block; font-size: 11px; font-weight: 500; }
+  .barlar { display: grid; gap: 7px; }
+  .bar-satir { display: grid; grid-template-columns: 110px 1fr 44px; gap: 10px; align-items: center;
+    font-size: 12.5px; color: var(--ink-2); }
+  .bar { height: 7px; border-radius: 4px; background: var(--grid); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 4px; }
+  .bar-satir .p { font-family: "IBM Plex Mono", monospace; font-weight: 600; text-align: right; }
+
+  .tbl-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: right; padding: 8px 11px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  tbody td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr.ekili { background: var(--hl); }
+
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px; border: 1px solid var(--hair); white-space: nowrap; }
+  .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+  .chip.ok { color: var(--good); } .chip.warn { color: var(--warn-ink); }
+  .chip.bad { color: var(--critical); } .chip.neu { color: var(--ink-2); }
+
+  .callout { border-left: 3px solid var(--brand); background: var(--surface); border-radius: 0 8px 8px 0;
+    padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .callout ul, .callout ol { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 13.5px; }
+  .callout li { margin-bottom: 3px; }
+  footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--grid);
+    color: var(--muted); font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .imza { color: var(--ink-2); font-weight: 600; }
+  @media (max-width: 520px) { .karne { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">AGROMATCH · Toprak Analizi</span>
+    <h1>Toprak neye izin veriyor?</h1>
+    <p class="lede">Denge analizi "hangi ürüne ihtiyaç var" sorusunu cevaplıyordu. Bu panel ikinci
+      filtreyi koyuyor: o ürün bu toprakta yetişir mi? 23 ilin pH, organik madde, kireç, tuzluluk,
+      bünye, drenaj ve erozyon profili, 16 ürünün toprak isteğiyle karşılaştırılıyor.</p>
+    <div class="meta-row">
+      <span class="tag">23 il · 16 ürün</span>
+      <span class="tag">Uygunluk + gübre önerisi</span>
+      <span class="tag warn">Toprak değerleri ön tahmin — laboratuvar analiziyle doğrulanacak</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>Bölgenin toprak tablosu</h2></div>
+    <div class="tiles" id="ozet"></div>
+    <p class="note">Bölgenin iki yapısal sorunu var: <strong>organik madde düşüklüğü</strong> (özellikle
+      Güneydoğu'da) ve <strong>erozyon</strong> (Doğu'nun eğimli arazilerinde). Bunlara iki yerel sorun
+      ekleniyor: Harran Ovası'nda sulama kaynaklı tuzlanma ve Iğdır'ın tuzlu-sodyumlu toprakları.</p>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>İl seç</h2></div>
+    <div class="fgroup" id="harita-gosterge">
+      <button data-g="saglik" aria-pressed="true">Toprak sağlığı</button>
+      <button data-g="om" aria-pressed="false">Organik madde</button>
+      <button data-g="ec" aria-pressed="false">Tuzluluk</button>
+      <button data-g="erozyon" aria-pressed="false">Erozyon</button>
+      <button data-g="uygunluk" aria-pressed="false">Ekili ürün uyumu</button>
+    </div>
+    <div class="card">
+      <div class="chart-wrap"><svg id="harita" role="img" aria-label="23 ilin toprak haritası"></svg>
+        <div class="tip" id="t-harita"></div></div>
+      <p class="note" style="margin-top:10px">Altıgen kutucuk haritası; iller gerçek coğrafi konumlarına
+        göre yerleştirilmiştir. Tıklayarak seç.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2 id="il-baslik">Toprak künyesi</h2></div>
+    <div class="card" style="display:flex; flex-direction:column; gap:16px">
+      <div class="karne" id="karne"></div>
+      <div class="kunye" id="kunye"></div>
+      <div id="il-not"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Ürün–toprak uygunluğu</h2></div>
+    <p class="note">Yedi faktör ağırlıklı olarak değerlendirilir: pH, tuzluluk, kireç, bünye, drenaj,
+      organik madde ve toprak derinliği. Her faktör <strong>sürekli</strong> puanlanır: optimum aralığın
+      içinde bile ortadan uzaklaştıkça puan düşer, çünkü aralığı geniş ürünle dar ürün aynı değildir.
+      Drenaj ve derinlik <strong>ürüne göre</strong> değerlendirilir — mercimek ve patates ıslaklığa çok
+      hassastır, yonca ve antep fıstığı derin kök ister. <strong>Kısıtlayıcı faktör</strong>, puanı en
+      düşük olan bileşendir; iyileştirme oradan başlar. Sarı satırlar o ilde hâlen ekili ürünlerdir.</p>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>Ürün</th><th>Durum</th><th>Uygunluk</th><th>Sınıf</th><th>Kısıtlayıcı faktör</th>
+          <th>pH</th><th>Tuz</th><th>Kireç</th><th>Bünye</th><th>Drenaj</th><th>Organik</th><th>Derinlik</th></tr></thead>
+        <tbody id="tb-uygunluk"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Gübre ihtiyacı</h2></div>
+    <p class="note">Hedef verimin topraktan kaldırdığı besin maddesinden, toprakta hâlen bulunan miktar
+      düşülerek hesaplanır. Azotun bir kısmı organik maddenin mineralizasyonundan gelir; baklagiller
+      (mercimek, yonca, yer fıstığı) azotun çoğunu havadan bağlar.</p>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>Ürün</th><th>Hedef verim</th><th>Azot (N)</th><th>Fosfor (P₂O₅)</th>
+          <th>Potasyum (K₂O)</th><th>Organik gübre</th></tr></thead>
+        <tbody id="tb-gubre"></tbody>
+      </table>
+    </div>
+    <p class="note">Birim: kg/dekar. Bu değerler <strong>toprak analiz raporunun yerine geçmez</strong>;
+      ekim öncesi her parselden alınan numunenin laboratuvar sonucuyla güncellenmelidir.</p>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>23 il karşılaştırması</h2></div>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>İl</th><th>Bölge</th><th>Not</th><th>pH</th><th>Org. madde</th><th>Kireç</th>
+          <th>Tuzluluk</th><th>Bünye</th><th>Drenaj</th><th>Erozyon</th><th>Ekili ürün uyumu</th></tr></thead>
+        <tbody id="tb-iller"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Yöntem ve veri durumu</h2></div>
+    <div class="callout">
+      <h3>Bu sayılar nereden geliyor?</h3>
+      <p class="note">İl toprak değerleri <strong>ön tahmindir</strong>: bölgenin bilinen toprak yapısına
+        dayanır, laboratuvar ölçümü değildir. Doğru olan kısım yöntemdir — uygunluk ve gübre hesabının
+        nasıl yapıldığı.</p>
+      <ul>
+        <li><strong>İl Tarım ve Orman Müdürlüğü toprak analiz laboratuvarları</strong> — çiftçi analiz
+          kayıtları; ilçe ve hatta parsel düzeyinde gerçek değerler.</li>
+        <li><strong>Toprak, Gübre ve Su Kaynakları Merkez Araştırma Enstitüsü</strong> — bölgesel
+          toprak etütleri.</li>
+        <li><strong>ISRIC SoilGrids</strong> — 250 m çözünürlüklü küresel toprak haritası, ücretsiz API;
+          <span class="mono">src/veri_cek/toprak_cek.py</span> ile çekilir.</li>
+        <li><strong>Ürün toprak istekleri</strong> — FAO tuzluluk eşikleri ve ziraat literatürü.</li>
+      </ul>
+      <p class="note">Gerçek veri girildiğinde analiz kodunda tek satır değişmez; yalnızca
+        <span class="mono">toprak_profil.py</span> içindeki değerler güncellenir.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>AGROMATCH · Toprak Analizi</span>
+    <span>23 il · Doğu ve Güneydoğu Anadolu</span>
+    <span class="imza">Bu paneli hazırlayan Hasan Turgut'tur.</span>
+  </footer>
+</div>
+
+<script>
+const VERI = __TOPRAK_JSON__;
+const HARITA = __HARITA_JSON__;
+const ILLER = VERI.iller;
+const PILOT = "Muş";
+
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
+  for (const k in a) e.setAttribute(k, a[k]); return e; };
+const fmt = (v, n = 1) => Number(v).toFixed(n).replace(".", ",");
+const tr = n => Math.round(n).toLocaleString("tr-TR");
+const puanRenk = p => p >= 80 ? "var(--good)" : p >= 65 ? "var(--s3)"
+  : p >= 50 ? "var(--warning)" : "var(--critical)";
+
+let secili = PILOT, gosterge = "saglik";
+
+/* ---- 01 özet ---- */
+(() => {
+  const o = VERI.ozet;
+  document.getElementById("ozet").innerHTML = [
+    ["Ortalama organik madde", "%" + fmt(o.ortalama_om, 2), "", "Hedef: %2'nin üstü"],
+    ["Organik maddesi kritik", o.dusuk_organik.length + " il", "", "%1,5'in altında"],
+    ["Tuzluluk riski", o.tuzluluk_riski.length + " il", "", o.tuzluluk_riski.join(", ")],
+    ["Yüksek erozyon riski", o.yuksek_erozyon.length + " il", "", "5 üzerinden 4 ve üstü"],
+    ["Toprağa uymayan ekim", o.sorunlu_ekim_sayisi + " adet", "", "Uygunluk puanı 65'in altında"],
+  ].map(([k, v, u, d]) => `<div class="tile"><span class="k">${k}</span>
+    <span class="v">${v}${u ? ` <span class="u">${u}</span>` : ""}</span><span class="d">${d}</span></div>`).join("");
+})();
+
+/* ---- 02 harita ---- */
+function deger(i) {
+  if (gosterge === "saglik") return i.saglik.puan;
+  if (gosterge === "om") return i.toprak.om;
+  if (gosterge === "ec") return i.toprak.ec;
+  if (gosterge === "erozyon") return i.toprak.erozyon;
+  return i.ekili_ortalama;
+}
+function etiket(i) {
+  if (gosterge === "saglik") return i.saglik.harf;
+  if (gosterge === "om") return fmt(i.toprak.om, 1);
+  if (gosterge === "ec") return fmt(i.toprak.ec, 1);
+  if (gosterge === "erozyon") return i.toprak.erozyon;
+  return Math.round(i.ekili_ortalama);
+}
+function haritaCiz() {
+  const svg = document.getElementById("harita"), tip = document.getElementById("t-harita");
+  svg.innerHTML = "";
+  const R = 30, w = Math.sqrt(3) * R, h = 1.5 * R;
+  const maxQ = Math.max(...Object.values(HARITA).map(p => p.q));
+  const maxR = Math.max(...Object.values(HARITA).map(p => p.r));
+  const W = (maxQ + 2) * w, H = (maxR + 1) * h + R * 1.2;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+  const degerler = ILLER.map(deger);
+  const dMin = Math.min(...degerler), dMax = Math.max(...degerler);
+  const tersMi = (gosterge === "ec" || gosterge === "erozyon");
+  const renk = v => {
+    const t = (v - dMin) / Math.max(dMax - dMin, 0.0001);
+    const s = tersMi ? 1 - t : t;
+    return s >= 0.75 ? "var(--good)" : s >= 0.5 ? "var(--s3)"
+      : s >= 0.25 ? "var(--warning)" : "var(--critical)";
+  };
+
+  ILLER.forEach(i => {
+    const p = HARITA[i.il]; if (!p) return;
+    const cx = (p.q + 1) * w + (p.r % 2 ? w / 2 : 0), cy = p.r * h + R;
+    const nokta = [0, 1, 2, 3, 4, 5].map(k => {
+      const a = Math.PI / 180 * (60 * k - 90);
+      return `${(cx + R * Math.cos(a)).toFixed(1)},${(cy + R * Math.sin(a)).toFixed(1)}`;
+    }).join(" ");
+    const g = el("g", { style: "cursor:pointer" });
+    g.appendChild(el("polygon", { points: nokta, fill: renk(deger(i)),
+      stroke: i.il === secili ? "var(--ink)" : "var(--surface)",
+      "stroke-width": i.il === secili ? 3 : 2, opacity: i.il === secili ? 1 : 0.92 }));
+    const t1 = el("text", { x: cx, y: cy - 2, "text-anchor": "middle", fill: "#fff",
+      "font-size": 10.5, "font-weight": 600 });
+    t1.textContent = i.il.length > 9 ? i.il.slice(0, 8) + "." : i.il;
+    const t2 = el("text", { x: cx, y: cy + 12, "text-anchor": "middle", fill: "#fff",
+      "font-size": 11, "font-family": "IBM Plex Mono, monospace", "font-weight": 600, opacity: .92 });
+    t2.textContent = etiket(i);
+    g.appendChild(t1); g.appendChild(t2);
+    g.addEventListener("mouseenter", () => {
+      tip.innerHTML = `<div class="ty">${i.il} · toprak notu ${i.saglik.harf}</div>` +
+        `<div class="tr"><span>pH</span><b>${fmt(i.toprak.ph, 1)}</b></div>` +
+        `<div class="tr"><span>Organik madde</span><b>%${fmt(i.toprak.om, 1)}</b></div>` +
+        `<div class="tr"><span>Kireç</span><b>%${i.toprak.kirec}</b></div>` +
+        `<div class="tr"><span>Tuzluluk</span><b>${fmt(i.toprak.ec, 1)} dS/m</b></div>` +
+        `<div class="tr"><span>Ekili ürün uyumu</span><b>${fmt(i.ekili_ortalama, 0)}</b></div>`;
+      tip.style.opacity = 1;
+      const box = svg.getBoundingClientRect();
+      tip.style.left = Math.min(Math.max((cx / W) * box.width - 85, 0), box.width - 190) + "px";
+      tip.style.top = Math.max(0, (cy / H) * box.height - 100) + "px";
+    });
+    g.addEventListener("click", () => { secili = i.il; ciz(); haritaCiz(); });
+    svg.appendChild(g);
+  });
+  svg.onmouseleave = () => { tip.style.opacity = 0; };
+}
+document.getElementById("harita-gosterge").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  gosterge = b.dataset.g;
+  [...e.currentTarget.children].forEach(x => x.setAttribute("aria-pressed", x === b));
+  haritaCiz();
+});
+
+/* ---- 03–05 il detayı ---- */
+const BILESEN_ADI = { organik: "Organik madde", tuzluluk: "Tuzluluk", erozyon: "Erozyon",
+  drenaj: "Drenaj", derinlik: "Derinlik", kirec: "Kireç" };
+const UYGUNLUK_ADI = { ph: "pH", tuzluluk: "Tuzluluk", kirec: "Kireç", bunye: "Bünye",
+  drenaj: "Drenaj", organik: "Organik madde", derinlik: "Derinlik" };
+
+function ciz() {
+  const i = ILLER.find(x => x.il === secili);
+  document.getElementById("il-baslik").textContent = `${i.il} · toprak künyesi`;
+
+  document.getElementById("karne").innerHTML = `
+    <div class="not" style="background:${puanRenk(i.saglik.puan)}">${i.saglik.harf}<small>${i.saglik.puan}/100</small></div>
+    <div style="display:flex; flex-direction:column; gap:10px">
+      <div><strong style="font-size:18px">${i.il}</strong>
+        <span class="note"> · ${i.bolge} · bünye: ${i.bunye} · zayıf halka:
+        ${BILESEN_ADI[i.saglik.zayif_halka] || i.saglik.zayif_halka}</span></div>
+      <div class="barlar">${Object.entries(i.saglik.bilesen).map(([k, v]) => `
+        <div class="bar-satir"><span>${BILESEN_ADI[k] || k}</span>
+          <span class="bar"><i style="width:${v}%;background:${puanRenk(v)}"></i></span>
+          <span class="p" style="color:${puanRenk(v)}">${Math.round(v)}</span></div>`).join("")}</div>
+    </div>`;
+
+  const t = i.toprak;
+  document.getElementById("kunye").innerHTML = [
+    ["pH", fmt(t.ph, 1)], ["Organik madde", "%" + fmt(t.om, 1)], ["Kireç (CaCO₃)", "%" + t.kirec],
+    ["Tuzluluk", fmt(t.ec, 1) + " dS/m"], ["Kil / Kum / Silt", `${t.kil}/${t.kum}/${t.silt}`],
+    ["Fosfor (P₂O₅)", fmt(t.p2o5, 1)], ["Potasyum (K₂O)", tr(t.k2o)],
+    ["Drenaj", t.drenaj], ["Erozyon", t.erozyon + " / 5"], ["Derinlik", t.derinlik + " cm"],
+  ].map(([k, v]) => `<div><span class="k">${k}</span><span class="v">${v}</span></div>`).join("");
+
+  document.getElementById("il-not").innerHTML = i.not_
+    ? `<div class="callout"><h3>Bu ilin toprak sorunu</h3><p class="note">${i.not_}</p></div>`
+    : (i.sorunlu_ekimler.length
+      ? `<div class="callout"><h3>Dikkat</h3><p class="note">Bu ilde hâlen ekili olan
+         <strong>${i.sorunlu_ekimler.join(", ")}</strong> toprak koşullarına tam uymuyor;
+         uygunluk tablosunda kısıtlayıcı faktöre bak.</p></div>`
+      : `<div class="callout"><h3>Durum</h3><p class="note">Bu ilde ekili ürünlerin tamamı toprak
+         koşullarına uyumlu görünüyor. Alternatif olarak
+         <strong>${i.alternatifler.slice(0, 3).join(", ")}</strong> da değerlendirilebilir.</p></div>`);
+
+  const sinifRenk = s => s === "çok uygun" ? "ok" : s === "uygun" ? "neu"
+    : s === "sınırlı" ? "warn" : "bad";
+  document.getElementById("tb-uygunluk").innerHTML = [...i.urunler]
+    .sort((a, b) => b.puan - a.puan).map(u => `
+    <tr class="${u.ekili ? "ekili" : ""}">
+      <td>${u.urun}</td>
+      <td>${u.ekili ? '<span class="chip neu">ekili</span>' : '<span class="chip" style="color:var(--muted)">aday</span>'}</td>
+      <td class="num">${fmt(u.puan, 1)}</td>
+      <td><span class="chip ${sinifRenk(u.sinif)}">${u.sinif}</span></td>
+      <td>${UYGUNLUK_ADI[u.kisitlayici]} (${Math.round(u.kisit_puani)})</td>
+      <td class="num">${Math.round(u.bilesen.ph)}</td>
+      <td class="num">${Math.round(u.bilesen.tuzluluk)}</td>
+      <td class="num">${Math.round(u.bilesen.kirec)}</td>
+      <td class="num">${Math.round(u.bilesen.bunye)}</td>
+      <td class="num">${Math.round(u.bilesen.drenaj)}</td>
+      <td class="num">${Math.round(u.bilesen.organik)}</td>
+      <td class="num">${Math.round(u.bilesen.derinlik)}</td>
+    </tr>`).join("");
+
+  const ekili = i.urunler.filter(u => u.ekili && u.gubre);
+  document.getElementById("tb-gubre").innerHTML = ekili.map(u => `
+    <tr><td>${u.urun}</td><td class="num">${fmt(u.verim, 2)} t/da</td>
+      <td class="num">${fmt(u.gubre.azot, 1)}</td>
+      <td class="num">${fmt(u.gubre.fosfor, 1)}</td>
+      <td class="num">${fmt(u.gubre.potasyum, 1)}</td>
+      <td>${u.gubre.organik_gubre_gerekli
+        ? '<span class="chip warn">gerekli</span>' : '<span class="chip ok">yeterli</span>'}</td>
+    </tr>`).join("") || `<tr><td colspan="6">Bu ilde ekili ürün kaydı yok.</td></tr>`;
+}
+
+/* ---- 06 tüm iller ---- */
+document.getElementById("tb-iller").innerHTML = ILLER.map(i => `
+  <tr class="${i.il === PILOT ? "ekili" : ""}">
+    <td>${i.il}</td><td>${i.bolge.replace(" Anadolu", "")}</td>
+    <td><span class="chip ${i.saglik.harf === "A" ? "ok" : i.saglik.harf === "B" ? "neu"
+      : i.saglik.harf === "C" ? "warn" : "bad"}">${i.saglik.harf} (${i.saglik.puan})</span></td>
+    <td class="num">${fmt(i.toprak.ph, 1)}</td>
+    <td class="num">%${fmt(i.toprak.om, 1)}</td>
+    <td class="num">%${i.toprak.kirec}</td>
+    <td class="num">${fmt(i.toprak.ec, 1)}</td>
+    <td>${i.bunye}</td><td>${i.toprak.drenaj}</td>
+    <td class="num">${i.toprak.erozyon}/5</td>
+    <td class="num">${fmt(i.ekili_ortalama, 0)}</td>
+  </tr>`).join("");
+
+haritaCiz();
+ciz();
+</script>

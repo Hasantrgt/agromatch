@@ -1,0 +1,612 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AGROMATCH Senaryo Simülatörü</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f5f5f1; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+    --muted: #898781; --grid: #e1e0d9; --axis: #c3c2b7; --hair: rgba(11,11,11,0.10);
+    --brand: #1f4733; --brand-soft: #e8efe9;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b; --warn-ink: #9a6b00;
+    --hl: rgba(237,161,0,0.16); --iyi: #0ca30c; --kotu: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+      --muted: #898781; --grid: #2c2c2a; --axis: #383835; --hair: rgba(255,255,255,0.10);
+      --brand: #9ec9ac; --brand-soft: #1e2a22;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+      --warn-ink: #fab219; --hl: rgba(201,133,0,0.20); --kotu: #e66767;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --axis: #383835; --hair: rgba(255,255,255,0.10);
+    --brand: #9ec9ac; --brand-soft: #1e2a22;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --warn-ink: #fab219; --hl: rgba(201,133,0,0.20); --kotu: #e66767;
+  }
+
+  body { margin: 0; background: var(--page); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.55; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 16px; padding-block: 32px 56px; }
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(26px, 4.2vw, 36px); font-weight: 600; letter-spacing: -0.02em; }
+  h2 { font-size: 19px; font-weight: 600; }
+  h3 { font-size: 15px; font-weight: 600; }
+  p { margin: 0; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  header { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; border-bottom: 2px solid var(--brand); }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--brand); font-weight: 600; }
+  .lede { color: var(--ink-2); max-width: 68ch; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .tag { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; padding: 3px 9px; border-radius: 4px;
+    background: var(--brand-soft); color: var(--brand); border: 1px solid var(--hair); }
+  .tag.warn { background: transparent; color: var(--ink-2); border-style: dashed; }
+
+  section { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
+  .sec-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .sec-num { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+  .note { color: var(--ink-2); font-size: 13.5px; max-width: 74ch; }
+
+  .card { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 16px; }
+  .chart-wrap { position: relative; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .tip { position: absolute; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: var(--surface); border: 1px solid var(--hair); border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.16); padding: 8px 10px; font-size: 12.5px; min-width: 165px; z-index: 4; }
+  .tip .ty { font-family: "IBM Plex Mono", monospace; font-weight: 600; margin-bottom: 4px; }
+  .tip .tr { display: flex; justify-content: space-between; gap: 14px; color: var(--ink-2); }
+  .tip .tr b { font-family: "IBM Plex Mono", monospace; font-weight: 600; color: var(--ink); }
+
+  .fgroup { display: inline-flex; border: 1px solid var(--hair); border-radius: 7px; overflow: hidden;
+    background: var(--surface); flex-wrap: wrap; }
+  .fgroup button { border: 0; background: transparent; color: var(--ink-2); font: inherit; font-size: 12.5px;
+    padding: 6px 11px; cursor: pointer; border-right: 1px solid var(--hair); }
+  .fgroup button:last-child { border-right: 0; }
+  .fgroup button[aria-pressed="true"] { background: var(--brand); color: #fff; font-weight: 600; }
+  :root[data-theme="dark"] .fgroup button[aria-pressed="true"] { color: #0d0d0d; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .fgroup button[aria-pressed="true"] { color: #0d0d0d; } }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+  /* senaryo kurgusu */
+  .kurgu { display: grid; gap: 14px; }
+  .kurgu-satir { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .kurgu label { font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+  select { font: inherit; font-size: 13.5px; padding: 7px 10px; border-radius: 7px;
+    border: 1px solid var(--hair); background: var(--surface); color: var(--ink); min-width: 150px; }
+  input[type="range"] { width: 100%; accent-color: var(--brand); }
+  .slider-row { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; }
+  .slider-deger { font-family: "IBM Plex Mono", monospace; font-size: 22px; font-weight: 600; white-space: nowrap; }
+  .slider-alt { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    font-size: 12.5px; color: var(--ink-2); }
+  .mini { font: inherit; font-size: 12px; padding: 4px 9px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--hair); background: var(--page); color: var(--ink-2); }
+
+  /* öncesi-sonrası */
+  .os { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+  .os-kart { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 14px 15px;
+    display: flex; flex-direction: column; gap: 5px; }
+  .os-kart .k { font-size: 11.5px; color: var(--muted); }
+  .os-kart .satir { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+    font-family: "IBM Plex Mono", monospace; }
+  .os-kart .once, .os-kart .sonra, .os-kart .fark { white-space: nowrap; }
+  .os-kart .once { font-size: 15px; color: var(--muted); text-decoration: line-through; }
+  .os-kart .ok { color: var(--muted); font-size: 13px; }
+  .os-kart .sonra { font-size: 22px; font-weight: 600; }
+  .os-kart .fark { font-size: 12.5px; font-weight: 600; font-family: "IBM Plex Mono", monospace; }
+  .os-kart .u { font-size: 12px; color: var(--ink-2); font-family: "IBM Plex Sans", sans-serif; font-weight: 400; }
+  .iyi { color: var(--iyi); } .kotu { color: var(--kotu); } .notr { color: var(--muted); }
+
+  .notrozet { display: flex; align-items: center; gap: 14px; background: var(--surface);
+    border: 1px solid var(--hair); border-radius: 10px; padding: 16px; flex-wrap: wrap; }
+  .notkutu { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 10px;
+    font-family: "IBM Plex Mono", monospace; font-size: 30px; font-weight: 600; color: #fff; }
+  .notkutu small { display: block; font-size: 10px; font-weight: 500; }
+
+  .tbl-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: right; padding: 8px 11px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  tbody td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.kaynak-satir { font-weight: 600; }
+
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px; border: 1px solid var(--hair); white-space: nowrap; }
+  .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+  .chip.ok { color: var(--good); } .chip.warn { color: var(--warn-ink); }
+  .chip.bad { color: var(--critical); } .chip.neu { color: var(--ink-2); }
+  .chip.tahmin { color: var(--warn-ink); } .chip.literatur { color: var(--s1); }
+  .chip.yapisal { color: var(--good); }
+
+  .callout { border-left: 3px solid var(--brand); background: var(--surface); border-radius: 0 8px 8px 0;
+    padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .callout ul, .callout ol { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 13.5px; }
+  .imza { color: var(--ink-2); font-weight: 600; }
+  footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--grid);
+    color: var(--muted); font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">AGROMATCH · Senaryo Simülatörü</span>
+    <h1>Ekim desenini değiştirsek ne olur?</h1>
+    <p class="lede">Haritadan bir il seç, tarlanın bir kısmını başka bir ürüne aktar. Yem açığı,
+      sulama suyu, karbon, çiftçi geliri ve ilin karne notu aynı anda yeniden hesaplanır.
+      Panelin amacı bir tabloyu göstermek değil, kararın sonucunu önceden görmektir.</p>
+    <div class="meta-row">
+      <span class="tag">23 il · canlı hesap</span>
+      <span class="tag">Duyarlılık analizi dahil</span>
+      <span class="tag warn">Girdiler ön tahmin — künye aşağıda</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>İl seç</h2></div>
+    <div class="fgroup" id="harita-gosterge">
+      <button data-g="harf" aria-pressed="true">Karne notu</button>
+      <button data-g="yem" aria-pressed="false">Yem karşılama</button>
+      <button data-g="su" aria-pressed="false">Mavi su (m³/ton)</button>
+      <button data-g="gelir" aria-pressed="false">Net gelir (TL/da)</button>
+    </div>
+    <div class="card">
+      <div class="chart-wrap"><svg id="harita" role="img"
+        aria-label="Doğu ve Güneydoğu Anadolu illerinin altıgen haritası"></svg>
+        <div class="tip" id="t-harita"></div></div>
+      <p class="note" style="margin-top:10px">Altıgen kutucuk haritası: iller gerçek coğrafi
+        konumlarına göre yerleştirilmiştir, alanları değil konumları ölçeklidir. Tıklayarak seç.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2 id="kurgu-baslik">Senaryo</h2></div>
+    <div class="card kurgu">
+      <div class="kurgu-satir">
+        <label>Hangi üründen<select id="kaynak"></select></label>
+        <label>Hangi ürüne<select id="hedef"></select></label>
+      </div>
+      <div class="slider-row">
+        <input type="range" id="alan" min="0" max="100" value="0" step="1" aria-label="Aktarılacak alan">
+        <span class="slider-deger" id="alan-deger">0 da</span>
+        <div class="slider-alt">
+          <button class="mini" data-hizli="oneri">Motorun önerisi</button>
+          <button class="mini" data-hizli="25">%25</button>
+          <button class="mini" data-hizli="50">%50</button>
+          <button class="mini" data-hizli="0">Sıfırla</button>
+          <span id="alan-aciklama"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Senaryonun sonucu</h2></div>
+    <div class="notrozet" id="not-ozet"></div>
+    <div class="os" id="sonuc"></div>
+    <p class="note" id="yorum"></p>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Ürün bazında değişim</h2></div>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>Ürün</th><th>Alan önce (da)</th><th>Alan sonra (da)</th>
+          <th>Üretim sonra (ton)</th><th>İhtiyaç (ton)</th><th>Oran sonra</th>
+          <th>Net gelir (TL/da)</th><th>Gelir değişimi (TL)</th></tr></thead>
+        <tbody id="tb-degisim"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Duyarlılık analizi</h2></div>
+    <p class="note">Girdilerimiz tahmin olduğuna göre, sonuç ne kadar güvenilir? Aşağıdaki grafik
+      her katsayıyı kendi belirsizlik aralığında oynatıp senaryonun çıktısını yeniden hesaplar.
+      Çubuğu uzun olan katsayı, sonucu en çok belirleyen ve önce doğrulanması gereken girdidir.</p>
+    <div class="fgroup" id="duyarlilik-cikti">
+      <button data-c="gelir" aria-pressed="true">Net gelir değişimi</button>
+      <button data-c="yem" aria-pressed="false">Yem karşılama oranı</button>
+      <button data-c="su" aria-pressed="false">Mavi su tüketimi</button>
+    </div>
+    <div class="card">
+      <div class="chart-wrap"><svg id="tornado" role="img" aria-label="Duyarlılık analizi"></svg>
+        <div class="tip" id="t-tornado"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Veri künyesi</h2></div>
+    <p class="note">Modeldeki her girdinin türü, kaynağı ve belirsizlik payı. <strong>Tahmin</strong>
+      işaretli satırlar gerçek veriyle değiştirilecektir; <strong>yapısal bilgi</strong> satırları
+      bölgenin bilinen yapısına dayanır ve büyük ölçüde günceldir.</p>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>Girdi</th><th>Tür</th><th>Belirsizlik</th><th>Kaynak / doğrulanacağı yer</th></tr></thead>
+        <tbody id="tb-kunye"></tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <h3>Bu panel ne değildir</h3>
+      <p class="note">Bu bir veri raporu değil, çalışan bir karar modelidir. Sayılar gerçek veriyle
+        değiştirildiğinde kodda tek satır değişmez. Panelin bugünkü işlevi, yöntemin doğru
+        kurulduğunu ve hangi girdinin sonucu ne kadar etkilediğini göstermektir.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>AGROMATCH · Senaryo Simülatörü</span>
+    <span>23 il · Doğu ve Güneydoğu Anadolu</span>
+    <span>Girdiler ön tahmindir; yöntem ve şema gerçek veri için hazırdır.</span>
+    <span class="imza">Bu paneli hazırlayan Hasan Turgut'tur.</span>
+  </footer>
+</div>
+
+<script>
+const VERI = __SENARYO_JSON__;
+const ILLER = VERI.iller, HARITA = VERI.harita, AGIRLIK = VERI.agirlik;
+const URUN_ORT = VERI.urun_ort_mavi_su, HEDEF_CESIT = VERI.hedef_urun_cesidi;
+
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
+  for (const k in a) e.setAttribute(k, a[k]); return e; };
+const tr = n => Math.round(n).toLocaleString("tr-TR");
+const fmt = (v, n = 1) => Number(v).toFixed(n).replace(".", ",");
+const kisa = n => { const m = Math.abs(n);
+  return m >= 1e9 ? fmt(n / 1e9, 1) + " mr" : m >= 1e6 ? fmt(n / 1e6, 1) + " mn"
+    : m >= 1e3 ? fmt(n / 1e3, 0) + " bin" : tr(n); };
+const puanRenk = p => p >= 80 ? "var(--good)" : p >= 65 ? "var(--s3)"
+  : p >= 50 ? "var(--warning)" : "var(--critical)";
+const harfBul = p => p >= 80 ? "A" : p >= 65 ? "B" : p >= 50 ? "C" : "D";
+
+let secili = "Muş", gosterge = "harf", duyarliCikti = "gelir";
+let kaynakUrun = null, hedefUrun = null, aktarim = 0;
+
+/* ============ HESAP MOTORU ============ */
+function hesapla(il, aktar, kaynak, hedef, pert = {}) {
+  const p = Object.assign({ verim: 1, su: 1, fiyat: 1, maliyet: 1, hayvan: 1 }, pert);
+  const alanlar = {};
+  il.urunler.forEach(u => alanlar[u.urun] = u.alan_dekar);
+  if (kaynak && hedef && kaynak !== hedef) {
+    alanlar[kaynak] = Math.max(0, alanlar[kaynak] - aktar);
+    alanlar[hedef] = (alanlar[hedef] || 0) + aktar;
+  }
+
+  let mavi = 0, elektrik = 0, mazot = 0, karbon = 0, gelir = 0, anizAlan = 0;
+  const urunler = il.urunler.map(u => {
+    const alan = alanlar[u.urun];
+    const verim = u.verim * p.verim;
+    const uretim = alan * verim;
+    mavi += alan * u.mavi_su_da * p.su;
+    elektrik += alan * u.elektrik_da * p.su;
+    mazot += alan * u.mazot_da;
+    karbon += alan * u.karbon_da;
+    const gelirDa = verim * u.fiyat_tl_ton * p.fiyat - u.maliyet_tl_dekar * p.maliyet + u.destek_tl_dekar;
+    gelir += alan * gelirDa;
+    if (u.aniz) anizAlan += alan;
+    return { ...u, alan_yeni: alan, uretim_yeni: uretim, gelir_da_yeni: Math.round(gelirDa),
+             oran_yeni: uretim / Math.max(u.ihtiyac_ton, 1) };
+  });
+
+  const yemU = urunler.find(u => u.tip === "kaba yem");
+  const yemArz = (yemU ? yemU.uretim_yeni : 0) + il.mera_ton + anizAlan * il.aniz_verim;
+  const yemIhtiyac = il.yem_ihtiyac_ton * p.hayvan;
+  const yemOrani = yemArz / Math.max(yemIhtiyac, 1);
+
+  /* --- karne puanları */
+  const toplamUretim = urunler.reduce((s, u) => s + u.uretim_yeni, 0) || 1;
+  const paylar = urunler.map(u => u.uretim_yeni / toplamUretim).filter(x => x > 0);
+  const shannon = -paylar.reduce((s, x) => s + x * Math.log(x), 0);
+  const etkin = paylar.length ? Math.exp(shannon) : 1;
+  const cesitlilik = Math.min(100, etkin / HEDEF_CESIT * 100);
+
+  const sapma = urunler.filter(u => u.alan_yeni > 0)
+    .map(u => Math.min(Math.abs(Math.log(Math.max(u.oran_yeni, 0.05))), 1.5));
+  const uyum = sapma.length ? Math.max(0, 100 * (1 - (sapma.reduce((a, b) => a + b, 0) / sapma.length) / 1.5)) : 0;
+
+  let endeks = 0, agirlikTop = 0;
+  urunler.forEach(u => {
+    if (u.uretim_yeni <= 0) return;
+    const ort = URUN_ORT[u.urun] || 0;
+    const deger = (u.mavi_su_da * p.su) / Math.max(u.verim * p.verim, 0.001);
+    const oran = ort <= 0 ? 1 : deger <= 0 ? 2 : Math.min(2, ort / deger);
+    const ag = u.uretim_yeni / toplamUretim;
+    endeks += oran * ag; agirlikTop += ag;
+  });
+  endeks = agirlikTop ? endeks / agirlikTop : 1;
+
+  const puan = {
+    yem: Math.round(Math.min(100, yemOrani * 100)),
+    su: Math.round(Math.max(0, Math.min(100, endeks * 50))),
+    cesitlilik: Math.round(cesitlilik),
+    uyum: Math.round(uyum) };
+  const genel = Math.round(Object.keys(AGIRLIK).reduce((s, k) => s + puan[k] * AGIRLIK[k], 0));
+
+  return { urunler, mavi_su: mavi, elektrik, mazot, karbon, gelir,
+    yem_arz: yemArz, yem_ihtiyac: yemIhtiyac, yem_orani: yemOrani,
+    yem_acik: Math.max(0, yemIhtiyac - yemArz), uretim: toplamUretim,
+    puan, genel_puan: genel, harf: harfBul(genel), etkin_urun: etkin };
+}
+
+/* ============ HARİTA ============ */
+function haritaCiz() {
+  const svg = document.getElementById("harita"), tip = document.getElementById("t-harita");
+  svg.innerHTML = "";
+  const R = 30, w = Math.sqrt(3) * R, h = 1.5 * R;
+  const maxQ = Math.max(...Object.values(HARITA).map(p => p.q));
+  const maxR = Math.max(...Object.values(HARITA).map(p => p.r));
+  const W = (maxQ + 2) * w, H = (maxR + 1) * h + R * 1.2;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+  const deger = i => gosterge === "harf" ? i.mevcut.genel_puan
+    : gosterge === "yem" ? i.mevcut.kaba_yem_orani * 100
+    : gosterge === "su" ? i.mevcut.mavi_su_ton_basi
+    : hesapla(i, 0, null, null).gelir / Math.max(i.urunler.reduce((s, u) => s + u.alan_dekar, 0), 1);
+  const degerler = ILLER.map(deger);
+  const dMin = Math.min(...degerler), dMax = Math.max(...degerler);
+  const tersMi = gosterge === "su";           // su için düşük olan iyi
+
+  const renk = v => {
+    const t = (v - dMin) / Math.max(dMax - dMin, 0.0001);
+    const s = tersMi ? 1 - t : t;
+    return s >= 0.75 ? "var(--good)" : s >= 0.5 ? "var(--s3)"
+      : s >= 0.25 ? "var(--warning)" : "var(--critical)";
+  };
+  const etiket = i => gosterge === "harf" ? i.mevcut.harf
+    : gosterge === "yem" ? fmt(i.mevcut.kaba_yem_orani, 2)
+    : gosterge === "su" ? tr(i.mevcut.mavi_su_ton_basi)
+    : tr(deger(i));
+
+  ILLER.forEach(i => {
+    const p = HARITA[i.il]; if (!p) return;
+    const cx = (p.q + 1) * w + (p.r % 2 ? w / 2 : 0), cy = p.r * h + R;
+    const noktalar = [0, 1, 2, 3, 4, 5].map(k => {
+      const a = Math.PI / 180 * (60 * k - 90);
+      return `${(cx + R * Math.cos(a)).toFixed(1)},${(cy + R * Math.sin(a)).toFixed(1)}`;
+    }).join(" ");
+    const g = el("g", { style: "cursor:pointer" });
+    g.appendChild(el("polygon", { points: noktalar, fill: renk(deger(i)),
+      stroke: i.il === secili ? "var(--ink)" : "var(--surface)",
+      "stroke-width": i.il === secili ? 3 : 2, opacity: i.il === secili ? 1 : 0.92 }));
+    const t1 = el("text", { x: cx, y: cy - 2, "text-anchor": "middle", fill: "#fff",
+      "font-size": 10.5, "font-weight": 600 });
+    t1.textContent = i.il.length > 9 ? i.il.slice(0, 8) + "." : i.il;
+    const t2 = el("text", { x: cx, y: cy + 12, "text-anchor": "middle", fill: "#fff",
+      "font-size": 11, "font-family": "IBM Plex Mono, monospace", "font-weight": 600, opacity: 0.92 });
+    t2.textContent = etiket(i);
+    g.appendChild(t1); g.appendChild(t2);
+    g.addEventListener("mouseenter", () => {
+      const s = hesapla(i, 0, null, null);
+      const alan = i.urunler.reduce((a, u) => a + u.alan_dekar, 0);
+      tip.innerHTML = `<div class="ty">${i.il} · ${i.mevcut.harf}</div>` +
+        `<div class="tr"><span>Karne puanı</span><b>${i.mevcut.genel_puan}</b></div>` +
+        `<div class="tr"><span>Yem karşılama</span><b>${fmt(i.mevcut.kaba_yem_orani, 2)}</b></div>` +
+        `<div class="tr"><span>Mavi su</span><b>${tr(i.mevcut.mavi_su_ton_basi)} m³/t</b></div>` +
+        `<div class="tr"><span>Net gelir</span><b>${tr(s.gelir / alan)} TL/da</b></div>`;
+      tip.style.opacity = 1;
+      const box = svg.getBoundingClientRect();
+      tip.style.left = Math.min(Math.max((cx / W) * box.width - 80, 0), box.width - 185) + "px";
+      tip.style.top = Math.max(0, (cy / H) * box.height - 92) + "px";
+    });
+    g.addEventListener("click", () => { secili = i.il; ilDegisti(); });
+    svg.appendChild(g);
+  });
+  svg.onmouseleave = () => { tip.style.opacity = 0; };
+}
+
+/* ============ SEÇİMLER ============ */
+function ilDegisti() {
+  const i = ILLER.find(x => x.il === secili);
+  const adaylar = [...i.urunler].sort((a, b) => b.alan_dekar - a.alan_dekar);
+  kaynakUrun = (adaylar.find(u => u.tip !== "kaba yem") || adaylar[0]).urun;
+  hedefUrun = (i.urunler.find(u => u.tip === "kaba yem") || adaylar[adaylar.length - 1]).urun;
+  document.getElementById("kaynak").innerHTML = i.urunler.map(u =>
+    `<option value="${u.urun}" ${u.urun === kaynakUrun ? "selected" : ""}>${u.urun} (${tr(u.alan_dekar)} da)</option>`).join("");
+  document.getElementById("hedef").innerHTML = i.urunler.map(u =>
+    `<option value="${u.urun}" ${u.urun === hedefUrun ? "selected" : ""}>${u.urun}</option>`).join("");
+  // Panel boş değil, motorun önerdiği senaryoyla açılır
+  const temel = hesapla(i, 0, null, null);
+  const oranK = temel.urunler.find(u => u.urun === kaynakUrun).oran_yeni;
+  const kAlan = i.urunler.find(u => u.urun === kaynakUrun).alan_dekar;
+  aktarim = Math.max(0, Math.round(kAlan * (1 - 1.5 / Math.max(oranK, 0.01))));
+  sliderAyarla();
+  ciz();
+}
+
+function sliderAyarla() {
+  const i = ILLER.find(x => x.il === secili);
+  const k = i.urunler.find(u => u.urun === kaynakUrun);
+  const s = document.getElementById("alan");
+  s.max = Math.max(1, Math.round(k.alan_dekar * 0.6));
+  s.step = Math.max(1, Math.round(k.alan_dekar / 400));
+  s.value = Math.min(aktarim, s.max);
+  aktarim = +s.value;
+}
+
+document.getElementById("kaynak").addEventListener("change", e => {
+  kaynakUrun = e.target.value; aktarim = 0; sliderAyarla(); ciz(); });
+document.getElementById("hedef").addEventListener("change", e => {
+  hedefUrun = e.target.value; ciz(); });
+document.getElementById("alan").addEventListener("input", e => {
+  aktarim = +e.target.value; ciz(); });
+document.querySelectorAll("[data-hizli]").forEach(b => b.addEventListener("click", () => {
+  const i = ILLER.find(x => x.il === secili);
+  const k = i.urunler.find(u => u.urun === kaynakUrun);
+  const t = b.dataset.hizli;
+  if (t === "oneri") {
+    // ihtiyacın 1,5 katı güvenlik payını koruyarak serbest kalan alan
+    const temel = hesapla(i, 0, null, null);
+    const oran = temel.urunler.find(u => u.urun === kaynakUrun).oran_yeni;
+    aktarim = Math.max(0, Math.round(k.alan_dekar * (1 - 1.5 / Math.max(oran, 0.01))));
+  } else aktarim = Math.round(k.alan_dekar * (+t) / 100);
+  sliderAyarla(); ciz();
+}));
+document.getElementById("harita-gosterge").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  gosterge = b.dataset.g;
+  [...e.currentTarget.children].forEach(x => x.setAttribute("aria-pressed", x === b));
+  haritaCiz();
+});
+document.getElementById("duyarlilik-cikti").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  duyarliCikti = b.dataset.c;
+  [...e.currentTarget.children].forEach(x => x.setAttribute("aria-pressed", x === b));
+  tornadoCiz();
+});
+
+/* ============ ÇİZİM ============ */
+function ciz() {
+  const i = ILLER.find(x => x.il === secili);
+  const once = hesapla(i, 0, null, null);
+  const sonra = hesapla(i, aktarim, kaynakUrun, hedefUrun);
+  const alanTop = i.urunler.reduce((a, u) => a + u.alan_dekar, 0);
+
+  document.getElementById("kurgu-baslik").textContent = `${i.il} · senaryo`;
+  document.getElementById("alan-deger").textContent = `${tr(aktarim)} da`;
+  const k = i.urunler.find(u => u.urun === kaynakUrun);
+  document.getElementById("alan-aciklama").textContent =
+    `${kaynakUrun} alanının %${fmt(aktarim / Math.max(k.alan_dekar, 1) * 100, 1)}'i · ` +
+    `kalan ${tr(k.alan_dekar - aktarim)} da`;
+
+  /* karne özeti */
+  document.getElementById("not-ozet").innerHTML = `
+    <div class="notkutu" style="background:${puanRenk(once.genel_puan)}">${once.harf}<small>${once.genel_puan}</small></div>
+    <span class="ok mono" style="font-size:20px;color:var(--muted)">→</span>
+    <div class="notkutu" style="background:${puanRenk(sonra.genel_puan)}">${sonra.harf}<small>${sonra.genel_puan}</small></div>
+    <div style="flex:1;min-width:220px">
+      <div style="font-weight:600;margin-bottom:2px">${i.il} karne notu</div>
+      <div class="note">${["yem", "su", "cesitlilik", "uyum"].map(a => {
+        const ad = { yem: "Yem", su: "Su", cesitlilik: "Çeşitlilik", uyum: "Uyum" }[a];
+        const f = sonra.puan[a] - once.puan[a];
+        return `${ad} ${once.puan[a]}${f ? ` <span class="${f > 0 ? "iyi" : "kotu"} mono">${f > 0 ? "+" : ""}${f}</span>` : ""}`;
+      }).join(" &nbsp;·&nbsp; ")}</div>
+    </div>`;
+
+  /* öncesi / sonrası kartları */
+  const kartlar = [
+    ["Kaba yem karşılama", once.yem_orani, sonra.yem_orani, v => fmt(v, 2), "", true],
+    ["Kaba yem açığı", once.yem_acik, sonra.yem_acik, v => kisa(v), "ton", false],
+    ["Net çiftçi geliri", once.gelir, sonra.gelir, v => kisa(v), "TL/yıl", true],
+    ["Dekar başına gelir", once.gelir / alanTop, sonra.gelir / alanTop, v => tr(v), "TL/da", true],
+    ["Sulama suyu", once.mavi_su, sonra.mavi_su, v => kisa(v), "m³/yıl", false],
+    ["Sulama elektriği", once.elektrik / 1000, sonra.elektrik / 1000, v => kisa(v), "MWh/yıl", false],
+    ["Karbon", once.karbon / 1000, sonra.karbon / 1000, v => kisa(v), "ton CO₂e", false],
+  ];
+  document.getElementById("sonuc").innerHTML = kartlar.map(([ad, a, b, f, birim, artIyi]) => {
+    const fark = b - a, degisti = Math.abs(fark) > Math.abs(a) * 0.0005;
+    const sinif = !degisti ? "notr" : (fark > 0) === artIyi ? "iyi" : "kotu";
+    const yuzde = a ? (fark / Math.abs(a)) * 100 : 0;
+    return `<div class="os-kart"><span class="k">${ad}</span>
+      <div class="satir">${degisti ? `<span class="once">${f(a)}</span><span class="ok">→</span>` : ""}
+        <span class="sonra">${f(b)}</span>${birim ? `<span class="u">${birim}</span>` : ""}</div>
+      <span class="fark ${sinif}">${degisti ? `${fark > 0 ? "+" : "−"}${f(Math.abs(fark))} (${fark > 0 ? "+" : "−"}${fmt(Math.abs(yuzde), 1)}%)` : "değişmedi"}</span>
+    </div>`;
+  }).join("");
+
+  /* yorum */
+  const gFark = sonra.gelir - once.gelir, yFark = sonra.yem_acik - once.yem_acik;
+  document.getElementById("yorum").innerHTML = aktarim === 0
+    ? `Kaydırıcıyı hareket ettir ya da <strong>Motorun önerisi</strong> düğmesine bas.`
+    : `${tr(aktarim)} dekar ${kaynakUrun.toLocaleLowerCase("tr")} alanı ${hedefUrun.toLocaleLowerCase("tr")}e
+       aktarılırsa: kaba yem açığı <strong>${kisa(Math.abs(yFark))} ton ${yFark < 0 ? "azalır" : "artar"}</strong>,
+       çiftçi geliri <strong>${kisa(Math.abs(gFark))} TL ${gFark > 0 ? "artar" : "azalır"}</strong>,
+       sulama suyu <strong>${kisa(Math.abs(sonra.mavi_su - once.mavi_su))} m³
+       ${sonra.mavi_su > once.mavi_su ? "artar" : "azalır"}</strong> ve ilin karne notu
+       <strong>${once.harf} → ${sonra.harf}</strong> olur.`;
+
+  /* değişim tablosu */
+  document.getElementById("tb-degisim").innerHTML = sonra.urunler.map((u, n) => {
+    const o = once.urunler[n];
+    const gd = (u.alan_yeni - o.alan_yeni) * u.gelir_da_yeni;
+    const vurgu = u.urun === kaynakUrun || u.urun === hedefUrun;
+    return `<tr><td class="${vurgu ? "kaynak-satir" : ""}">${u.urun}</td>
+      <td class="num">${tr(o.alan_yeni)}</td><td class="num">${tr(u.alan_yeni)}</td>
+      <td class="num">${tr(u.uretim_yeni)}</td><td class="num">${tr(u.ihtiyac_ton)}</td>
+      <td class="num">${fmt(u.oran_yeni, 2)}</td>
+      <td class="num">${tr(u.gelir_da_yeni)}</td>
+      <td class="num ${gd > 0 ? "iyi" : gd < 0 ? "kotu" : ""}">${gd ? (gd > 0 ? "+" : "−") + kisa(Math.abs(gd)) : "—"}</td></tr>`;
+  }).join("");
+
+  tornadoCiz();
+}
+
+/* ============ DUYARLILIK (TORNADO) ============ */
+function tornadoCiz() {
+  const i = ILLER.find(x => x.il === secili);
+  const svg = document.getElementById("tornado"), tip = document.getElementById("t-tornado");
+  svg.innerHTML = "";
+  const olc = s => duyarliCikti === "gelir" ? s.gelir : duyarliCikti === "yem" ? s.yem_orani : s.mavi_su;
+  const birim = duyarliCikti === "gelir" ? "TL" : duyarliCikti === "yem" ? "" : "m³";
+  const bicim = v => duyarliCikti === "yem" ? fmt(v, 2) : kisa(v);
+
+  const temel = olc(hesapla(i, aktarim, kaynakUrun, hedefUrun));
+  const satirlar = VERI.duyarlilik.map(d => {
+    const alt = olc(hesapla(i, aktarim, kaynakUrun, hedefUrun, { [d.anahtar]: 1 - d.oran }));
+    const ust = olc(hesapla(i, aktarim, kaynakUrun, hedefUrun, { [d.anahtar]: 1 + d.oran }));
+    return { ...d, alt, ust, genislik: Math.abs(ust - alt) };
+  }).sort((a, b) => b.genislik - a.genislik);
+
+  const tumu = satirlar.flatMap(r => [r.alt, r.ust]).concat(temel);
+  const min = Math.min(...tumu), max = Math.max(...tumu), aralik = (max - min) || 1;
+  const M = { l: 132, r: 76, t: 26, b: 10 }, rowH = 34, W = 760;
+  const H = M.t + M.b + satirlar.length * rowH, iw = W - M.l - M.r;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const x = v => M.l + ((v - min) / aralik) * iw;
+
+  // temel çizgi
+  svg.appendChild(el("line", { x1: x(temel), x2: x(temel), y1: M.t - 8, y2: H - M.b,
+    stroke: "var(--axis)", "stroke-width": 1.5, "stroke-dasharray": "5 4" }));
+  const tl = el("text", { x: x(temel), y: M.t - 14, "text-anchor": "middle", fill: "var(--muted)",
+    "font-size": 11, "font-family": "IBM Plex Mono, monospace" });
+  tl.textContent = `senaryo: ${bicim(temel)}`;
+  svg.appendChild(tl);
+
+  satirlar.forEach((r, n) => {
+    const y = M.t + n * rowH, g = el("g", {});
+    const lb = el("text", { x: M.l - 10, y: y + rowH / 2 + 4, "text-anchor": "end",
+      fill: "var(--ink-2)", "font-size": 12 });
+    lb.textContent = r.ad; g.appendChild(lb);
+    const x1 = Math.min(x(r.alt), x(r.ust)), x2 = Math.max(x(r.alt), x(r.ust));
+    g.appendChild(el("rect", { x: x1, y: y + 7, width: Math.max(x2 - x1, 2), height: rowH - 18,
+      fill: "var(--s1)", opacity: 0.75, rx: 3 }));
+    const vl = el("text", { x: x2 + 8, y: y + rowH / 2 + 4, fill: "var(--muted)",
+      "font-size": 11, "font-family": "IBM Plex Mono, monospace" });
+    vl.textContent = `±${Math.round(r.oran * 100)}%"`.replace('"', ""); g.appendChild(vl);
+    const hit = el("rect", { x: 0, y: y, width: W, height: rowH, fill: "transparent" });
+    hit.addEventListener("mouseenter", () => {
+      tip.innerHTML = `<div class="ty">${r.ad} ±${Math.round(r.oran * 100)}%</div>` +
+        `<div class="tr"><span>Alt</span><b>${bicim(r.alt)} ${birim}</b></div>` +
+        `<div class="tr"><span>Senaryo</span><b>${bicim(temel)} ${birim}</b></div>` +
+        `<div class="tr"><span>Üst</span><b>${bicim(r.ust)} ${birim}</b></div>` +
+        `<div class="tr" style="margin-top:4px"><span>${r.aciklama}</span></div>`;
+      tip.style.opacity = 1;
+      const box = svg.getBoundingClientRect();
+      tip.style.left = Math.min(box.width - 230, box.width * 0.4) + "px";
+      tip.style.top = Math.max(0, (y / H) * box.height - 20) + "px";
+    });
+    g.appendChild(hit);
+    svg.appendChild(g);
+  });
+  svg.onmouseleave = () => { tip.style.opacity = 0; };
+}
+
+/* ============ KÜNYE ============ */
+document.getElementById("tb-kunye").innerHTML = VERI.kunye.map(r => {
+  const sinif = r.tur === "tahmin" ? "tahmin" : r.tur === "literatür" ? "literatur" : "yapisal";
+  return `<tr><td>${r.girdi}</td><td><span class="chip ${sinif}">${r.tur}</span></td>
+    <td class="num">${r.belirsizlik}</td><td style="text-align:left;white-space:normal">${r.kaynak}</td></tr>`;
+}).join("");
+
+haritaCiz();
+ilDegisti();
+</script>

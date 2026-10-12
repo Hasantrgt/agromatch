@@ -1,0 +1,566 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AGROMATCH Hastalık Riski</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f5f5f1; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e;
+    --muted: #898781; --grid: #e1e0d9; --axis: #c3c2b7; --hair: rgba(11,11,11,0.10);
+    --brand: #7a2e2e; --brand-soft: #f6e9e9;
+    --s1: #2a78d6; --s3: #1baf7a; --s4: #eda100;
+    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b; --warn-ink: #9a6b00;
+    --hl: rgba(237,161,0,0.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+      --muted: #898781; --grid: #2c2c2a; --axis: #383835; --hair: rgba(255,255,255,0.10);
+      --brand: #e39a9a; --brand-soft: #2a1a1a;
+      --s1: #3987e5; --s3: #199e70; --s4: #c98500;
+      --warn-ink: #fab219; --hl: rgba(201,133,0,0.18);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --axis: #383835; --hair: rgba(255,255,255,0.10);
+    --brand: #e39a9a; --brand-soft: #2a1a1a;
+    --s1: #3987e5; --s3: #199e70; --s4: #c98500;
+    --warn-ink: #fab219; --hl: rgba(201,133,0,0.18);
+  }
+
+  body { margin: 0; background: var(--page); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px; line-height: 1.55; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 16px; padding-block: 32px 56px; }
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(26px, 4.2vw, 36px); font-weight: 600; letter-spacing: -0.02em; }
+  h2 { font-size: 19px; font-weight: 600; }
+  h3 { font-size: 15px; font-weight: 600; }
+  p { margin: 0; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  header { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; border-bottom: 2px solid var(--brand); }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--brand); font-weight: 600; }
+  .lede { color: var(--ink-2); max-width: 68ch; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .tag { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; padding: 3px 9px; border-radius: 4px;
+    background: var(--brand-soft); color: var(--brand); border: 1px solid var(--hair); }
+  .tag.warn { background: transparent; color: var(--ink-2); border-style: dashed; }
+
+  section { margin-top: 34px; display: flex; flex-direction: column; gap: 14px; }
+  .sec-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .sec-num { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+  .note { color: var(--ink-2); font-size: 13.5px; max-width: 74ch; }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 13px 15px;
+    display: flex; flex-direction: column; gap: 3px; }
+  .tile .k { font-size: 11.5px; color: var(--muted); }
+  .tile .v { font-family: "IBM Plex Mono", monospace; font-size: 24px; font-weight: 600; line-height: 1.15; }
+  .tile .d { font-size: 12.5px; color: var(--ink-2); }
+
+  .card { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 16px; }
+  .chart-wrap { position: relative; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .fgroup { display: inline-flex; border: 1px solid var(--hair); border-radius: 7px; overflow: hidden;
+    background: var(--surface); flex-wrap: wrap; }
+  .fgroup button { border: 0; background: transparent; color: var(--ink-2); font: inherit; font-size: 12.5px;
+    padding: 6px 11px; cursor: pointer; border-right: 1px solid var(--hair); }
+  .fgroup button:last-child { border-right: 0; }
+  .fgroup button[aria-pressed="true"] { background: var(--brand); color: #fff; font-weight: 600; }
+  :root[data-theme="dark"] .fgroup button[aria-pressed="true"] { color: #0d0d0d; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .fgroup button[aria-pressed="true"] { color: #0d0d0d; } }
+  button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .tip { position: absolute; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: var(--surface); border: 1px solid var(--hair); border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.16); padding: 8px 10px; font-size: 12.5px; min-width: 175px; z-index: 4; }
+  .tip .ty { font-family: "IBM Plex Mono", monospace; font-weight: 600; margin-bottom: 4px; }
+  .tip .tr { display: flex; justify-content: space-between; gap: 14px; color: var(--ink-2); }
+  .tip .tr b { font-family: "IBM Plex Mono", monospace; font-weight: 600; color: var(--ink); }
+
+  .hkart { background: var(--surface); border: 1px solid var(--hair); border-radius: 10px;
+    padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+  .hkart.yuksek { border-left: 3px solid var(--critical); }
+  .hkart.orta { border-left: 3px solid var(--warning); }
+  .hkart.dusuk { border-left: 3px solid var(--grid); }
+  .hkart-ust { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+  .hkart .patojen { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--muted);
+    font-style: italic; }
+  .risk-kutu { display: flex; align-items: center; gap: 10px; }
+  .risk-sayi { font-family: "IBM Plex Mono", monospace; font-size: 26px; font-weight: 600; line-height: 1; }
+  .bar { height: 7px; border-radius: 4px; background: var(--grid); overflow: hidden; width: 100%; }
+  .bar i { display: block; height: 100%; border-radius: 4px; }
+  .hkart .satirlar { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px 18px; }
+  .hkart .satirlar div { font-size: 13px; color: var(--ink-2); }
+  .hkart .satirlar b { color: var(--ink); font-weight: 600; }
+
+  .takvim { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+  .ay { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .ay .kutu { width: 100%; height: 44px; border-radius: 6px; display: grid; place-items: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; color: #fff; }
+  .ay .ad { font-size: 11px; color: var(--muted); }
+
+  .tbl-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: right; padding: 8px 11px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+  thead th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  tbody td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px; border: 1px solid var(--hair); white-space: nowrap; }
+  .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+  .chip.ok { color: var(--good); } .chip.warn { color: var(--warn-ink); }
+  .chip.bad { color: var(--critical); } .chip.neu { color: var(--ink-2); }
+  .chip.goruntu { color: var(--s1); }
+
+  .adimlar { display: grid; gap: 10px; }
+  .adim { background: var(--surface); border: 1px solid var(--hair); border-radius: 8px; padding: 14px 16px;
+    display: grid; grid-template-columns: 34px 1fr; gap: 4px 14px; align-items: start; }
+  .adim .no { font-family: "IBM Plex Mono", monospace; font-size: 20px; font-weight: 600; color: var(--brand); }
+  .adim .ac { grid-column: 2; font-size: 13.5px; color: var(--ink-2); }
+  .adim .ck { grid-column: 2; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); }
+
+  .callout { border-left: 3px solid var(--brand); background: var(--surface); border-radius: 0 8px 8px 0;
+    padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .callout ul { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 13.5px; }
+  .callout li { margin-bottom: 3px; }
+  .asama-izgara { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .asama-kart { background: var(--surface); border: 1px solid var(--hair); border-radius: 10px;
+    overflow: hidden; display: flex; flex-direction: column; }
+  .asama-kart img { width: 100%; display: block; background: #111; aspect-ratio: 4 / 3; object-fit: cover; }
+  .asama-govde { padding: 12px 14px; display: flex; flex-direction: column; gap: 5px; }
+  .asama-govde .no { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--brand);
+    font-weight: 600; letter-spacing: 0.08em; }
+  .asama-govde .ac { font-size: 13px; color: var(--ink-2); }
+  .siddet-izgara { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .siddet-kart { background: var(--surface); border: 1px solid var(--hair); border-radius: 10px;
+    overflow: hidden; }
+  .siddet-kart img { width: 100%; display: block; aspect-ratio: 4 / 3; object-fit: cover; }
+  .siddet-kart .govde { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .siddet-kart .deger { font-family: "IBM Plex Mono", monospace; font-size: 20px; font-weight: 600; }
+  .siniflar { display: flex; flex-wrap: wrap; gap: 6px; }
+  .siniflar span { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; padding: 3px 9px;
+    border-radius: 5px; background: var(--page); border: 1px solid var(--hair); color: var(--ink-2); }
+  footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--grid);
+    color: var(--muted); font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .imza { color: var(--ink-2); font-weight: 600; }
+  @media (max-width: 640px) { .takvim { grid-template-columns: repeat(6, 1fr); } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">AGROMATCH · Hastalık Riski ve Erken Uyarı</span>
+    <h1>Hangi hastalık, nerede, ne zaman?</h1>
+    <p class="lede">İki katman: bugün çalışan <strong>iklime dayalı risk haritası</strong> ve
+      eğitilecek <strong>görüntüden hastalık tespiti</strong> modeli. İlki hangi ilde hangi hastalığın
+      çıkma ihtimalinin yüksek olduğunu söyler; ikincisi çiftçinin çektiği yaprak fotoğrafından
+      hastalığı tanır. İkisi birleştiğinde erken uyarı olur.</p>
+    <div class="meta-row">
+      <span class="tag">23 il · <span id="h-sayi"></span> hastalık</span>
+      <span class="tag">İklim riski + görüntü işleme hattı</span>
+      <span class="tag warn">İklim eşikleri literatürden — saha gözlemiyle doğrulanacak</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>Bölge özeti</h2></div>
+    <div class="tiles" id="ozet"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>İl seç</h2></div>
+    <div class="fgroup" id="harita-gosterge">
+      <button data-g="ortalama" aria-pressed="true">Ortalama risk</button>
+      <button data-g="yuksek" aria-pressed="false">Yüksek riskli hastalık sayısı</button>
+      <button data-g="sicaklik" aria-pressed="false">Sıcaklık</button>
+      <button data-g="yagis" aria-pressed="false">Yağış</button>
+    </div>
+    <div class="card">
+      <div class="chart-wrap"><svg id="harita" role="img" aria-label="23 ilin hastalık risk haritası"></svg>
+        <div class="tip" id="t-harita"></div></div>
+      <p class="note" style="margin-top:10px">Risk = sıcaklık uygunluğu × nem uygunluğu × ekim yoğunluğu.
+        Aynı ürün ne kadar geniş alanda ekilirse hastalık baskısı o kadar artar.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2 id="il-baslik">Hastalıklar</h2></div>
+    <div id="hastalik-listesi" style="display:flex; flex-direction:column; gap:10px"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Risk takvimi</h2></div>
+    <p class="note">Her ay için, o ayda kritik dönemde olan hastalıkların en yüksek risk değeri.
+      Koyu aylar ilaçlama ve tarla kontrolü penceresidir.</p>
+    <div class="card"><div class="takvim" id="takvim"></div></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Bölge genelinde hastalıklar</h2></div>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>Hastalık</th><th>Ürün</th><th>Tip</th><th>Ortalama risk</th>
+          <th>Yüksek riskli il</th><th>Görüntüden tespit</th><th>Veri seti karşılığı</th></tr></thead>
+        <tbody id="tb-hastalik"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>Görüntüden hastalık tespiti</h2></div>
+    <div class="tiles" id="goruntu-tiles"></div>
+    <p class="note">Toprak kaynaklı solgunluklar ve tohumla taşınan hastalıklar yaprak görüntüsünden
+      güvenilir biçimde tanınamaz; bunlar iklim riski katmanında kalır. Model, yaprakta belirti veren
+      hastalıklar için eğitilir.</p>
+    <div class="adimlar" id="hat"></div>
+    <div class="callout">
+      <h3>Öncelikli veri seti sınıfları</h3>
+      <p class="note">PlantVillage içinden bölge ürünlerine karşılık gelen sınıflarla başlanır:</p>
+      <div class="siniflar" id="siniflar"></div>
+      <p class="note" id="metrik-not"></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">07</span><h2>Uygulamalı örnek: şeker pancarında Cercospora</h2></div>
+    <p class="note" id="cerco-giris"></p>
+
+    <div class="tiles" id="cerco-ozet"></div>
+
+    <h3 style="margin-top:6px">Görüntü işleme hattı, adım adım</h3>
+    <div class="asama-izgara" id="cerco-asamalar"></div>
+
+    <h3 style="margin-top:10px">Şiddet ölçeği ve ilaçlama kararı</h3>
+    <p class="note">Hastalık tespiti tek başına yeterli değildir: ilaçlama kararı <strong>şiddete</strong>
+      bağlıdır. Enfekte yaprak alanı yüzdesi, kabul görmüş altı basamaklı ölçeğe çevrilir.</p>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>Seviye</th><th>Enfekte alan</th><th>Durum</th><th>Karar</th></tr></thead>
+        <tbody id="cerco-siddet"></tbody>
+      </table>
+    </div>
+    <div class="siddet-izgara" id="cerco-ornekler"></div>
+
+    <h3 style="margin-top:10px">Algoritma doğru çalışıyor mu?</h3>
+    <p class="note">Saha fotoğrafları toplanana kadar doğruluğu ölçmenin yolu, lekelerin yerini ve
+      sayısını <strong>önceden bildiğimiz</strong> görüntüler üretmektir. 12 sentetik yaprak, 0'dan 52
+      lekeye kadar değişen şiddetlerde oluşturuldu; algoritmanın bulduğu lekeler gerçek konumlarla
+      eşleştirildi.</p>
+    <div class="tiles" id="cerco-dogrulama-ozet"></div>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>Görüntü</th><th>Gerçek leke</th><th>Bulunan</th><th>Doğru (TP)</th>
+          <th>Yanlış (FP)</th><th>Kaçan (FN)</th><th>Enfekte alan</th><th>Şiddet</th></tr></thead>
+        <tbody id="cerco-dogrulama"></tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:10px">Parametre seçimi</h3>
+    <p class="note">En küçük leke alanı eşiği taranarak seçildi. Eşik düşükken toz zerreleri leke
+      sayılıyor (temiz yaprakta yanlış alarm); yükseldikçe yanlış pozitifler sıfırlanıyor ama çok
+      küçük lekeler kaçmaya başlıyor.</p>
+    <div class="card tbl-scroll">
+      <table>
+        <thead><tr><th>En küçük alan (piksel)</th><th>Kesinlik</th><th>Duyarlılık</th><th>F1</th>
+          <th>Temiz yaprakta yanlış alarm</th></tr></thead>
+        <tbody id="cerco-tarama"></tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <h3>Bu örneğin sınırları</h3>
+      <ul>
+        <li>Görüntüler <strong>sentetiktir</strong>: algoritmayı doğrulamak için üretildi, gerçek
+          tarla fotoğrafı değildir. Saha fotoğraflarında ışık, gölge, toprak sıçraması ve yaprak
+          kıvrılması başarıyı düşürür.</li>
+        <li>Hat yalnızca <strong>Cercospora benzeri yuvarlak lekeleri</strong> tanır; başka bir
+          hastalığın lekesini de aynı şekilde sayar. Hastalık ayrımı için CNN gerekir.</li>
+        <li>Şiddet, <strong>tek yaprak</strong> üzerinden ölçülür. Tarla kararı için parselden
+          rastgele 20–30 yaprak örneklenip ortalaması alınmalıdır.</li>
+        <li>Çapın milimetre karşılığı için fotoğrafta <strong>cetvel ya da bilinen boyutta bir nesne</strong>
+          bulunmalıdır; aksi hâlde ölçüm piksel cinsinde kalır.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">08</span><h2>Yöntem ve veri durumu</h2></div>
+    <div class="callout">
+      <h3>Neyi biliyoruz, neyi varsayıyoruz?</h3>
+      <ul>
+        <li><strong>Hastalık kataloğu</strong> — bölgede ekonomik önemi olan hastalıklar; bitki koruma
+          literatürüne dayanır ve büyük ölçüde doğrudur.</li>
+        <li><strong>İklim eşikleri</strong> — hastalığın geliştiği sıcaklık ve nem aralıkları; literatürden
+          alınan yaklaşık değerlerdir, Zirai Mücadele Teknik Talimatları ile doğrulanacaktır.</li>
+        <li><strong>İl sıcaklık ve yağış değerleri</strong> — ön tahmin. Gerçek veri Open-Meteo ve MGM'den
+          çekilince risk aylık çözünürlükte hesaplanacak (şu an yıllık ortalama kullanılıyor).</li>
+        <li><strong>Model metrikleri</strong> — henüz eğitim yapılmadı; panelde hedef değerler gösteriliyor,
+          gerçek sonuçlar eğitimden sonra buraya yazılacak.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>AGROMATCH · Hastalık Riski</span>
+    <span>23 il · Doğu ve Güneydoğu Anadolu</span>
+    <span class="imza">Bu paneli hazırlayan Hasan Turgut'tur.</span>
+  </footer>
+</div>
+
+<script>
+const VERI = __HASTALIK_JSON__;
+const CERCO = __CERCOSPORA_JSON__;
+const HARITA = __HARITA_JSON__;
+const ILLER = VERI.iller;
+const PILOT = "Muş";
+
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (n, a = {}) => { const e = document.createElementNS(SVGNS, n);
+  for (const k in a) e.setAttribute(k, a[k]); return e; };
+const fmt = (v, n = 1) => Number(v).toFixed(n).replace(".", ",");
+const riskRenk = r => r >= 65 ? "var(--critical)" : r >= 40 ? "var(--warning)"
+  : r >= 20 ? "var(--s3)" : "var(--good)";
+
+let secili = PILOT, gosterge = "ortalama";
+document.getElementById("h-sayi").textContent = VERI.ozet.izlenen_hastalik;
+
+/* ---- 01 özet ---- */
+(() => {
+  const o = VERI.ozet, g = VERI.goruntu_hatti;
+  document.getElementById("ozet").innerHTML = [
+    ["İzlenen hastalık", o.izlenen_hastalik, "Bölgede ekonomik önemi olanlar"],
+    ["Yüksek riskli il–hastalık", o.yuksek_riskli_cift, "Risk skoru 65 ve üstü"],
+    ["En riskli hastalık", o.en_riskli_hastalik, "Bölge ortalamasına göre"],
+    ["Görüntüden tespit edilebilir", `${g.goruntuden_tespit} / ${g.toplam_hastalik}`,
+      "Yaprakta belirti veren hastalıklar"],
+    ["Hazır veri seti karşılığı", `${g.veri_seti_karsiligi}`,
+      "PlantVillage'da sınıfı bulunan"],
+  ].map(([k, v, d]) => `<div class="tile"><span class="k">${k}</span>
+    <span class="v">${v}</span><span class="d">${d}</span></div>`).join("");
+})();
+
+/* ---- 02 harita ---- */
+const deger = i => gosterge === "ortalama" ? i.ortalama_risk
+  : gosterge === "yuksek" ? i.yuksek_risk_sayisi
+  : gosterge === "sicaklik" ? i.sicaklik : i.yagis;
+const etiket = i => gosterge === "ortalama" ? i.ortalama_risk
+  : gosterge === "yuksek" ? i.yuksek_risk_sayisi
+  : gosterge === "sicaklik" ? fmt(i.sicaklik, 1) : i.yagis;
+
+function haritaCiz() {
+  const svg = document.getElementById("harita"), tip = document.getElementById("t-harita");
+  svg.innerHTML = "";
+  const R = 30, w = Math.sqrt(3) * R, h = 1.5 * R;
+  const maxQ = Math.max(...Object.values(HARITA).map(p => p.q));
+  const maxR = Math.max(...Object.values(HARITA).map(p => p.r));
+  const W = (maxQ + 2) * w, H = (maxR + 1) * h + R * 1.2;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+  const d = ILLER.map(deger), dMin = Math.min(...d), dMax = Math.max(...d);
+  const riskGosterge = (gosterge === "ortalama" || gosterge === "yuksek");
+  const renk = v => {
+    const t = (v - dMin) / Math.max(dMax - dMin, 0.0001);
+    if (riskGosterge) return t >= 0.75 ? "var(--critical)" : t >= 0.5 ? "var(--warning)"
+      : t >= 0.25 ? "var(--s3)" : "var(--good)";
+    return t >= 0.75 ? "var(--s4)" : t >= 0.5 ? "var(--s3)" : t >= 0.25 ? "var(--s1)" : "var(--good)";
+  };
+
+  ILLER.forEach(i => {
+    const p = HARITA[i.il]; if (!p) return;
+    const cx = (p.q + 1) * w + (p.r % 2 ? w / 2 : 0), cy = p.r * h + R;
+    const nokta = [0, 1, 2, 3, 4, 5].map(k => {
+      const a = Math.PI / 180 * (60 * k - 90);
+      return `${(cx + R * Math.cos(a)).toFixed(1)},${(cy + R * Math.sin(a)).toFixed(1)}`;
+    }).join(" ");
+    const g = el("g", { style: "cursor:pointer" });
+    g.appendChild(el("polygon", { points: nokta, fill: renk(deger(i)),
+      stroke: i.il === secili ? "var(--ink)" : "var(--surface)",
+      "stroke-width": i.il === secili ? 3 : 2, opacity: i.il === secili ? 1 : 0.92 }));
+    const t1 = el("text", { x: cx, y: cy - 2, "text-anchor": "middle", fill: "#fff",
+      "font-size": 10.5, "font-weight": 600 });
+    t1.textContent = i.il.length > 9 ? i.il.slice(0, 8) + "." : i.il;
+    const t2 = el("text", { x: cx, y: cy + 12, "text-anchor": "middle", fill: "#fff",
+      "font-size": 11, "font-family": "IBM Plex Mono, monospace", "font-weight": 600, opacity: .92 });
+    t2.textContent = etiket(i);
+    g.appendChild(t1); g.appendChild(t2);
+    g.addEventListener("mouseenter", () => {
+      const e = i.en_riskli;
+      tip.innerHTML = `<div class="ty">${i.il}</div>` +
+        `<div class="tr"><span>Ortalama risk</span><b>${i.ortalama_risk}</b></div>` +
+        `<div class="tr"><span>Yüksek riskli</span><b>${i.yuksek_risk_sayisi} hastalık</b></div>` +
+        `<div class="tr"><span>Sıcaklık</span><b>${fmt(i.sicaklik, 1)} °C</b></div>` +
+        `<div class="tr"><span>Yağış</span><b>${i.yagis} mm</b></div>` +
+        (e ? `<div class="tr"><span>En riskli</span><b>${e.ad}</b></div>` : "");
+      tip.style.opacity = 1;
+      const box = svg.getBoundingClientRect();
+      tip.style.left = Math.min(Math.max((cx / W) * box.width - 88, 0), box.width - 195) + "px";
+      tip.style.top = Math.max(0, (cy / H) * box.height - 102) + "px";
+    });
+    g.addEventListener("click", () => { secili = i.il; ciz(); haritaCiz(); });
+    svg.appendChild(g);
+  });
+  svg.onmouseleave = () => { tip.style.opacity = 0; };
+}
+document.getElementById("harita-gosterge").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  gosterge = b.dataset.g;
+  [...e.currentTarget.children].forEach(x => x.setAttribute("aria-pressed", x === b));
+  haritaCiz();
+});
+
+/* ---- 03 il detayı + 04 takvim ---- */
+function ciz() {
+  const i = ILLER.find(x => x.il === secili);
+  document.getElementById("il-baslik").textContent =
+    `${i.il} · ${i.hastaliklar.length} hastalık izleniyor`;
+
+  document.getElementById("hastalik-listesi").innerHTML = i.hastaliklar.map(h => `
+    <div class="hkart ${h.sinif === "yüksek" ? "yuksek" : h.sinif === "orta" ? "orta" : "dusuk"}">
+      <div class="hkart-ust">
+        <div>
+          <h3>${h.ad} <span class="note" style="font-weight:400">· ${h.urun}</span></h3>
+          <div class="patojen">${h.patojen}</div>
+        </div>
+        <div class="risk-kutu">
+          ${h.goruntuden ? '<span class="chip goruntu">görüntüden tespit</span>'
+            : '<span class="chip neu">görüntüden tespit edilemez</span>'}
+          <span class="chip ${h.sinif === "yüksek" ? "bad" : h.sinif === "orta" ? "warn" : "ok"}">${h.sinif} risk</span>
+          <span class="risk-sayi" style="color:${riskRenk(h.risk)}">${h.risk}</span>
+        </div>
+      </div>
+      <span class="bar"><i style="width:${h.risk}%;background:${riskRenk(h.risk)}"></i></span>
+      <div class="satirlar">
+        <div><b>Belirti:</b> ${h.belirti}</div>
+        <div><b>Mücadele:</b> ${h.yonetim}</div>
+        <div><b>Kritik dönem:</b> ${h.ilaclama_penceresi}</div>
+        <div><b>Sıcaklık uyumu:</b> ${fmt(h.sicaklik_uyum * 100, 0)} · <b>Nem:</b> ${fmt(h.nem_uyum * 100, 0)} ·
+          <b>Ekim yoğunluğu:</b> ${fmt((h.ekim_yogunlugu ?? 0) * 100, 0)}</div>
+        <div><b>Kritik ay sıcaklığı:</b> ${fmt(h.kritik_ay_sicakligi, 1)} °C</div>
+      </div>
+    </div>`).join("") || `<div class="card">Bu ilde izlenen ürünlere ait hastalık kaydı yok.</div>`;
+
+  document.getElementById("takvim").innerHTML = i.takvim.map(a => `
+    <div class="ay">
+      <div class="kutu" style="background:${a.risk ? riskRenk(a.risk) : "var(--grid)"};
+        color:${a.risk ? "#fff" : "var(--muted)"}">${a.risk || "–"}</div>
+      <span class="ad">${a.ad.slice(0, 3)}</span>
+    </div>`).join("");
+}
+
+/* ---- 05 bölge tablosu ---- */
+document.getElementById("tb-hastalik").innerHTML = VERI.hastalik_ozet.map(h => `
+  <tr><td>${h.ad}</td><td>${h.urun}</td><td>${h.tip}</td>
+    <td class="num" style="color:${riskRenk(h.ortalama_risk)};font-weight:600">${h.ortalama_risk}</td>
+    <td class="num">${h.yuksek_riskli_il.length}</td>
+    <td>${h.goruntuden ? '<span class="chip goruntu">evet</span>' : '<span class="chip neu">hayır</span>'}</td>
+    <td class="mono" style="font-size:12px;color:var(--muted)">${h.pv_sinif || "—"}</td>
+  </tr>`).join("");
+
+/* ---- 06 görüntü işleme hattı ---- */
+(() => {
+  const g = VERI.goruntu_hatti;
+  document.getElementById("goruntu-tiles").innerHTML = [
+    ["Hedef doğruluk", g.hedef_metrikler.dogruluk, "Eğitim sonrası ölçülecek"],
+    ["Hedef F1 skoru", g.hedef_metrikler.f1, "Sınıf dengesizliği için kritik metrik"],
+    ["Öncelikli sınıf", g.oncelikli_siniflar.length, "PlantVillage'dan seçilen"],
+    ["Model", "MobileNetV2 / ResNet50", "Transfer öğrenme"],
+  ].map(([k, v, d]) => `<div class="tile"><span class="k">${k}</span>
+    <span class="v" style="font-size:${String(v).length > 14 ? 17 : 24}px">${v}</span>
+    <span class="d">${d}</span></div>`).join("");
+
+  document.getElementById("hat").innerHTML = g.adimlar.map((a, n) => `
+    <div class="adim"><span class="no">${n + 1}</span><h3>${a.ad}</h3>
+      <span class="ac">${a.aciklama}</span><span class="ck">çıktı: ${a.cikti}</span></div>`).join("");
+
+  document.getElementById("siniflar").innerHTML =
+    g.oncelikli_siniflar.map(s => `<span>${s}</span>`).join("");
+  document.getElementById("metrik-not").textContent = g.hedef_metrikler.not_;
+})();
+
+/* ---- 07 Cercospora uygulamalı örneği ---- */
+(() => {
+  const c = CERCO, o = c.ornek, d = c.dogrulama;
+  const mus = ILLER.find(x => x.il === "Muş");
+  const cercoRisk = mus && mus.hastaliklar.find(h => h.ad.startsWith("Cercospora"));
+
+  document.getElementById("cerco-giris").innerHTML =
+    `Muş'un en büyük sanayi bitkisi şeker pancarı ve bu üründeki başlıca yaprak hastalığı
+     Cercospora beticola. ${cercoRisk ? `Panelin iklim katmanı Muş için bu hastalığa
+     <strong>${cercoRisk.risk} risk</strong> veriyor (${cercoRisk.sinif}), kritik dönem
+     ${cercoRisk.ilaclama_penceresi}.` : ""}
+     Lekesi görüntü işleme için ideal bir hedef: <strong>yuvarlak biçim, gri merkez,
+     kırmızı-kahve halka, 3–5 mm çap</strong>. Aşağıdaki hat derin öğrenme kullanmadan,
+     yalnızca renk ve biçim ölçerek lekeleri sayar ve hastalık şiddetini hesaplar.`;
+
+  document.getElementById("cerco-ozet").innerHTML = [
+    ["Bulunan leke", o.leke_sayisi, "Örnek yaprakta"],
+    ["Enfekte yaprak alanı", "%" + fmt(o.enfekte_alan_yuzdesi, 2), "Lezyon alanı / yaprak alanı"],
+    ["Ortalama leke çapı", fmt(o.ortalama_cap_piksel, 1) + " px", "Cetvelle mm'ye çevrilir"],
+    ["Şiddet", o.siddet.ad, o.siddet.karar],
+  ].map(([k, v, dd]) => `<div class="tile"><span class="k">${k}</span>
+    <span class="v" style="font-size:${String(v).length > 12 ? 17 : 24}px">${v}</span>
+    <span class="d">${dd}</span></div>`).join("");
+
+  document.getElementById("cerco-asamalar").innerHTML = c.asamalar.map(a => `
+    <div class="asama-kart">
+      <img src="${a.gorsel}" alt="${a.ad}">
+      <div class="asama-govde"><span class="no">ADIM ${a.no}</span>
+        <h3>${a.ad}</h3><span class="ac">${a.aciklama}</span></div>
+    </div>`).join("");
+
+  const sRenk = s => s <= 0 ? "var(--good)" : s === 1 ? "var(--s3)" : s === 2 ? "var(--warning)"
+    : s === 3 ? "var(--s4)" : "var(--critical)";
+  document.getElementById("cerco-siddet").innerHTML = c.siddet_olcegi.map((r, n) => {
+    const alt = n === 0 ? 0 : c.siddet_olcegi[n - 1].ust_sinir;
+    const aralik = r.seviye === 5 ? "%30 ve üstü" : `%${fmt(alt, alt < 1 ? 1 : 0)} – %${fmt(r.ust_sinir, r.ust_sinir < 1 ? 1 : 0)}`;
+    return `<tr><td><span class="chip" style="color:${sRenk(r.seviye)}">${r.seviye}</span></td>
+      <td class="num">${aralik}</td><td><strong>${r.ad}</strong></td><td style="white-space:normal">${r.karar}</td></tr>`;
+  }).join("");
+
+  document.getElementById("cerco-ornekler").innerHTML = c.siddet_ornek.map(e => `
+    <div class="siddet-kart"><img src="${e.gorsel}" alt="${e.siddet.ad} örneği">
+      <div class="govde">
+        <span class="k" style="font-size:11.5px;color:var(--muted)">${e.leke_sayisi} leke ·
+          ortalama çap ${fmt(e.ortalama_cap, 1)} px</span>
+        <span class="deger" style="color:${sRenk(e.siddet.seviye)}">%${fmt(e.enfekte, 2)}</span>
+        <span class="chip" style="color:${sRenk(e.siddet.seviye)};align-self:flex-start">${e.siddet.ad}</span>
+        <span class="note" style="font-size:12.5px">${e.siddet.karar}</span>
+      </div></div>`).join("");
+
+  document.getElementById("cerco-dogrulama-ozet").innerHTML = [
+    ["Kesinlik", fmt(d.kesinlik * 100, 1) + "%", "Bulunanların kaçı gerçek leke"],
+    ["Duyarlılık", fmt(d.duyarlilik * 100, 1) + "%", "Gerçek lekelerin kaçı bulundu"],
+    ["F1 skoru", fmt(d.f1, 3), "İkisinin dengesi"],
+    ["Sayım sapması", fmt(d.ortalama_mutlak_sapma, 2), "Ortalama mutlak hata (leke)"],
+  ].map(([k, v, dd]) => `<div class="tile"><span class="k">${k}</span>
+    <span class="v">${v}</span><span class="d">${dd}</span></div>`).join("");
+
+  document.getElementById("cerco-dogrulama").innerHTML = d.satirlar.map(r => `
+    <tr><td class="mono" style="font-size:12.5px">${r.dosya}</td>
+      <td class="num">${r.gercek}</td><td class="num">${r.bulunan}</td>
+      <td class="num" style="color:var(--good)">${r.tp}</td>
+      <td class="num" style="color:${r.fp ? "var(--critical)" : "var(--muted)"}">${r.fp}</td>
+      <td class="num" style="color:${r.fn ? "var(--warn-ink)" : "var(--muted)"}">${r.fn}</td>
+      <td class="num">%${fmt(r.enfekte_yuzde, 2)}</td><td>${r.siddet}</td></tr>`).join("");
+
+  document.getElementById("cerco-tarama").innerHTML = c.parametre_taramasi.map(r => `
+    <tr${r.min_alan === c.parametreler.min_alan ? ' style="background:var(--hl)"' : ""}>
+      <td class="num">${r.min_alan}${r.min_alan === c.parametreler.min_alan ? " ← seçilen" : ""}</td>
+      <td class="num">${fmt(r.kesinlik * 100, 1)}%</td>
+      <td class="num">${fmt(r.duyarlilik * 100, 1)}%</td>
+      <td class="num">${fmt(r.f1, 3)}</td>
+      <td class="num" style="color:${r.temiz_yaprak_yanlis_pozitif ? "var(--critical)" : "var(--good)"}">
+        ${r.temiz_yaprak_yanlis_pozitif}</td></tr>`).join("");
+})();
+
+haritaCiz();
+ciz();
+</script>
