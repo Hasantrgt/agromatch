@@ -110,6 +110,12 @@ def main():
     toprak = oku("mus_toprak.json")
     hastalik = oku("mus_hastalik.json")
     cerco = oku("cercospora.json", BOS_CERCO)
+    if not cerco.get("asamalar"):
+        print("NOT: Cercospora görüntü verisi yok, panelde o bölüm boş kalacak.")
+        print("     Üretmek için (opencv ve pillow gerekir):")
+        print("       pip install -r requirements-goruntu.txt")
+        print("       python src/goruntu/sentetik_yaprak.py")
+        print("       python src/goruntu/cercospora_panel_veri.py")
     belirsiz = oku("mus_belirsizlik.json")
     izveri = oku("mus_iz.json", {"sorular": []})
 

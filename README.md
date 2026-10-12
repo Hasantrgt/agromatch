@@ -39,6 +39,21 @@ fazla kişinin dokunabilmesi için.
 **Depoda üretilen hiçbir dosya durmaz.** `outputs/`, paneller ve föyler
 `.gitignore` içindedir ve yukarıdaki tek komutla yeniden üretilir.
 
+### Cercospora görüntü bölümü
+
+Hastalık sekmesindeki görüntü işleme bölümü ayrı bir adım ister, çünkü
+opencv ve pillow gerektirir:
+
+```bash
+pip install -r requirements-goruntu.txt
+python src/goruntu/sentetik_yaprak.py          # sentetik yaprak kümesi
+python src/goruntu/cercospora_panel_veri.py    # hat aşamaları + doğrulama
+python src/mus_panel_uret.py                   # paneli yeniden üret
+```
+
+Bu adım atlanırsa panel çalışır, yalnızca o bölüm boş kalır ve üretici
+bunu söyler.
+
 ---
 
 ## Dizin yapısı
