@@ -1,8 +1,20 @@
 """
 AGROMATCH - Muş paneli üretici
 ==============================
-Analiz çıktılarını tek dosyalık mus_panel.html içine gömer. Panel elle
-düzenlenmez; veri değişince bu betik yeniden çalıştırılır:
+Panelin kaynağı src/panel/ altında parçalara ayrılmıştır:
+
+    panel/bas.html      <title>, yazı tipi bağlantıları
+    panel/stil.css      bütün biçimlendirme
+    panel/govde.html    sayfa iskeleti
+    panel/js/*.js       sıra numarasına göre birleştirilen betikler
+
+Bu betik hepsini birleştirip TEK DOSYALIK mus_panel.html üretir. Tek dosya
+olması bilinçli: panelin dış bağlantı olmadan, bir USB bellekten ya da
+e-posta ekinden açılabilmesi gerekiyor. Kaynağın parçalı olması ise
+ayrı bir ihtiyaç — 1.100 satırlık tek bir betiğe birden fazla kişi
+dokunamaz.
+
+Panel elle düzenlenmez; veri değişince bu betik yeniden çalıştırılır:
 
     python src/mus_profil.py        # veri tutarlılığını denetle
     python src/mus_toprak.py        # toprak + iklim
@@ -64,6 +76,32 @@ def oku(ad, varsayilan=None):
     return json.loads(yol.read_text(encoding="utf-8"))
 
 
+def sablonu_birlestir():
+    """src/panel/ altındaki parçaları tek bir HTML şablonuna birleştirir.
+
+    JS dosyaları ad sırasına göre yüklenir; sıra numaraları (00_, 10_, 90_)
+    bunun içindir. Yükleme sırası önemlidir: yardımcılar sekme fonksiyonlarından,
+    sekme fonksiyonları da yönlendirmeden önce gelmelidir.
+    """
+    kaynak = Path(__file__).parent / "panel"
+    js_dosyalari = sorted((kaynak / "js").glob("*.js"))
+    if not js_dosyalari:
+        raise SystemExit(f"{kaynak / 'js'} içinde betik yok")
+
+    betik = "\n\n".join(
+        f"// ===== {d.name} " + "=" * max(0, 60 - len(d.name))
+        + "\n" + d.read_text(encoding="utf-8").strip()
+        for d in js_dosyalari)
+
+    return (
+        kaynak.joinpath("bas.html").read_text(encoding="utf-8").rstrip()
+        + "\n<style>\n"
+        + kaynak.joinpath("stil.css").read_text(encoding="utf-8").rstrip()
+        + "\n</style>\n\n"
+        + kaynak.joinpath("govde.html").read_text(encoding="utf-8").strip()
+        + "\n\n<script>\n" + betik + "\n</script>\n")
+
+
 def main():
     if "--hepsi" in sys.argv:
         hepsini_calistir()
@@ -75,7 +113,7 @@ def main():
     belirsiz = oku("mus_belirsizlik.json")
     izveri = oku("mus_iz.json", {"sorular": []})
 
-    sablon = (Path(__file__).parent / "mus_sablon.html").read_text(encoding="utf-8")
+    sablon = sablonu_birlestir()
     html = (sablon
             .replace("__MUS_JSON__", json.dumps(mus, ensure_ascii=False))
             .replace("__TOPRAK_JSON__", json.dumps(toprak, ensure_ascii=False))

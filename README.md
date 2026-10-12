@@ -31,6 +31,11 @@ python src/mus_panel_uret.py --hepsi
 Son komut bütün analizleri çalıştırır ve `mus_panel.html` dosyasını üretir.
 Tarayıcıda açmanız yeterlidir; dış bağlantı gerektirmez.
 
+Panelin kaynağı `src/panel/` altında parçalıdır, çıktısı tek dosyadır. İkisi
+ayrı ihtiyaç: tek dosya çıktısı panelin USB bellekten ya da e-posta ekinden
+açılabilmesi için; parçalı kaynak ise 1.100 satırlık tek bir betiğe birden
+fazla kişinin dokunabilmesi için.
+
 **Depoda üretilen hiçbir dosya durmaz.** `outputs/`, paneller ve föyler
 `.gitignore` içindedir ve yukarıdaki tek komutla yeniden üretilir.
 
@@ -48,8 +53,12 @@ src/
   mus_belirsizlik.py   Monte Carlo belirsizlik yayılımı ve ölçüm önceliği
   iz.py                İzlenebilir hesap grafiği (alan bağımsız kütüphane)
   mus_iz.py            Denge hesaplarının iz.py ile kurulmuş hâli
-  mus_sablon.html      Panel şablonu
   mus_panel_uret.py    Her şeyi çalıştırır ve paneli üretir
+  panel/               Panel kaynağı (parçalı)
+    bas.html             başlık ve yazı tipi bağlantıları
+    stil.css             bütün biçimlendirme
+    govde.html           sayfa iskeleti
+    js/                  sıra numarasına göre birleştirilen betikler
   goruntu/             Cercospora görüntü işleme hattı
   veri_cek/            Dış veri kaynağı araçları
 tests/                 Test takımı
