@@ -18,6 +18,7 @@ mus_profil.py'deki veriyi alır, altı ilçe için şunları hesaplar:
 import json
 import math
 from pathlib import Path
+from typing import Any
 
 import mus_profil as mp
 
@@ -28,13 +29,13 @@ ESIK_FAZLA = 1.10      # arz/ihtiyaç bunun üstündeyse "fazla"
 ESIK_ACIK = 0.95       # bunun altındaysa "açık"
 
 
-def sayi(x, basamak=0):
+def sayi(x: float, basamak: int = 0) -> str:
     """Türkçe binlik ayracı: 570000 -> 570.000"""
     return f"{x:,.{basamak}f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
 # --------------------------------------------------------------- 1. denge
-def ihtiyac_hesapla(ilce):
+def ihtiyac_hesapla(ilce: str) -> dict[str, float]:
     """Bir ilçenin ürün bazında yıllık ihtiyacını ton cinsinden döndürür."""
     rakim, nufus, bb, kb, mera, sul = mp.ILCE[ilce]
     ihtiyac = {}
@@ -70,12 +71,12 @@ def ihtiyac_hesapla(ilce):
     return ihtiyac
 
 
-def kuru_madde(urun):
+def kuru_madde(urun: str) -> float:
     """Kuru madde oranı; tek tanım mus_profil'de durur."""
     return mp.kuru_madde(urun)
 
 
-def denge_analizi():
+def denge_analizi() -> list[dict[str, Any]]:
     satirlar = []
     for ilce in mp.ILCE:
         ihtiyac = ihtiyac_hesapla(ilce)
@@ -107,7 +108,7 @@ def denge_analizi():
 
 
 # -------------------------------------------------------- 2. yem bilançosu
-def yem_bilancosu(ilce):
+def yem_bilancosu(ilce: str) -> dict[str, Any]:
     rakim, nufus, bb, kb, mera, sul = mp.ILCE[ilce]
     ihtiyac = bb * mp.YEM_IHTIYAC["buyukbas"] + kb * mp.YEM_IHTIYAC["kucukbas"]
 
@@ -136,7 +137,7 @@ def yem_bilancosu(ilce):
 
 
 # ---------------------------------------------------------- 3. su ve enerji
-def kaynak_analizi():
+def kaynak_analizi() -> list[dict[str, Any]]:
     satirlar = []
     for ilce in mp.ILCE:
         rakim, nufus, bb, kb, mera, sul_oran = mp.ILCE[ilce]
@@ -172,7 +173,7 @@ def kaynak_analizi():
 
 
 # ------------------------------------------------------- 4. fabrika kotası
-def kota_dagitimi():
+def kota_dagitimi() -> dict[str, float]:
     """Fabrika kapasitesini ilçelere mevcut alan ve verim payına göre dağıtır."""
     tavan = mp.FABRIKA["gunluk_kapasite_ton"] * mp.FABRIKA["kampanya_gun"]
     uretimler = {ilce: mp.DESEN[ilce].get("Şeker pancarı", (0, 0))[0]
@@ -185,7 +186,7 @@ def kota_dagitimi():
     return {ilce: u * k for ilce, u in uretimler.items()}
 
 
-def kota_ozeti():
+def kota_ozeti() -> dict[str, Any]:
     tavan = mp.FABRIKA["gunluk_kapasite_ton"] * mp.FABRIKA["kampanya_gun"]
     uretim = sum(mp.DESEN[i].get("Şeker pancarı", (0, 0))[0]
                  * mp.DESEN[i].get("Şeker pancarı", (0, 0))[1] for i in mp.ILCE)
@@ -212,7 +213,7 @@ def kota_ozeti():
 AGIRLIK = dict(yem=0.32, su=0.24, cesitlilik=0.18, toprak=0.26)
 
 
-def cesitlilik(ilce):
+def cesitlilik(ilce: str) -> float:
     """Shannon çeşitlilik -> etkin ürün sayısı."""
     alanlar = [a for a, v in mp.DESEN[ilce].values()]
     toplam = sum(alanlar)
@@ -222,14 +223,16 @@ def cesitlilik(ilce):
     return math.exp(h)
 
 
-def karne(toprak_puanlari=None):
+def karne(toprak_puanlari: dict[str, float] | None = None) -> list[dict[str, Any]]:
     kaynak = kaynak_analizi()
     # Ürün bazında il ortalaması su yoğunluğu — ürün karmasından arındırmak için
-    il_ort = {}
+    # İki ayrı isim: biri biriktirme listesi, diğeri ortalama. Aynı değişkeni
+    # tip değiştirerek kullanmak okuyanı yanıltır (mypy de uyarıyordu).
+    birikim: dict[str, list[float]] = {}
     for r in kaynak:
         if r["su_ton_basina"] is not None:
-            il_ort.setdefault(r["urun"], []).append(r["su_ton_basina"])
-    il_ort = {u: sum(v) / len(v) for u, v in il_ort.items()}
+            birikim.setdefault(r["urun"], []).append(r["su_ton_basina"])
+    il_ort: dict[str, float] = {u: sum(v) / len(v) for u, v in birikim.items()}
 
     satirlar = []
     for ilce in mp.ILCE:
@@ -241,7 +244,7 @@ def karne(toprak_puanlari=None):
         for r in kaynak:
             if r["ilce"] != ilce or r["su_ton_basina"] is None:
                 continue
-            ort = il_ort.get(r["urun"], 0)
+            ort = il_ort.get(r["urun"], 0.0)
             deger = r["su_ton_basina"]
             oran = 1.0 if ort <= 0 else (2.0 if deger <= 0 else min(2.0, ort / deger))
             agirlikli += oran * r["alan_dekar"]
@@ -273,7 +276,7 @@ def karne(toprak_puanlari=None):
 
 
 # ----------------------------------------------------------- 6. ekim önerisi
-def oneriler():
+def oneriler() -> list[dict[str, Any]]:
     """Her ilçe için somut, sayısal ekim kaydırma önerisi."""
     cikti = []
     kota = kota_ozeti()
@@ -281,7 +284,7 @@ def oneriler():
 
     for ilce in mp.ILCE:
         yem = yem_bilancosu(ilce)
-        madde = []
+        madde: list[dict[str, Any]] = []
 
         if yem["acik_ton"] > 0:
             madde.append(dict(
@@ -335,13 +338,13 @@ def oneriler():
                        f"fiyat ve hastalık şokunu doğrudan çiftçiye yansıtır."),
                 kazanc="Risk dağılır, münavebe hastalık baskısını kırar."))
 
-        madde.sort(key=lambda m: m["oncelik"])
+        madde.sort(key=lambda m: int(m["oncelik"]))
         cikti.append(dict(ilce=ilce, maddeler=madde))
     return cikti
 
 
 # --------------------------------------------------------------- toplayıcı
-def calistir(toprak_puanlari=None):
+def calistir(toprak_puanlari: dict[str, float] | None = None) -> dict[str, Any]:
     veri = dict(
         il="Muş",
         ilceler=[dict(ad=i, rakim=v[0], nufus=v[1], buyukbas=v[2],
@@ -371,7 +374,7 @@ def calistir(toprak_puanlari=None):
     return veri
 
 
-def main():
+def main() -> None:
     CIKTI.mkdir(exist_ok=True)
     veri = calistir()
     (CIKTI / "mus.json").write_text(

@@ -19,6 +19,7 @@ Böylece tek bir puanlama mantığı var, iki yerde bakım yapılmıyor.
 import json
 import math
 from pathlib import Path
+from typing import Any
 
 import mus_iklim
 import mus_profil as mp
@@ -38,7 +39,7 @@ CIKTI = Path(__file__).resolve().parent.parent / "outputs"
 
 # Muş'a özgü ürünlerin toprak istekleri.
 # N / P / K değerleri ÜRÜNÜN BİR TONU için kaldırdığı saf besin (kg).
-EK_ISTEK = {
+EK_ISTEK: dict[str, dict[str, Any]] = {
     "Yonca": dict(
         ph_opt=(6.5, 8.0), ph_sinir=(6.0, 8.5), ec_esik=2.0, kirec_tol="yüksek",
         bunye="tınlı", om_hedef=2.0, N=28, P=6, K=25, azot_baglar=True,
@@ -62,11 +63,12 @@ EK_ISTEK = {
 }
 
 # Muş'ta yetişen dokuz ürünün tamamı
-URUN_ISTEK = {u: dict(ORTAK_ISTEK[u]) if u in ORTAK_ISTEK else EK_ISTEK[u]
-              for u in mp.URUN}
+URUN_ISTEK: dict[str, dict[str, Any]] = {
+    u: dict(ORTAK_ISTEK[u]) if u in ORTAK_ISTEK else EK_ISTEK[u]
+    for u in mp.URUN}
 
 
-def ilce_toprak(ilce):
+def ilce_toprak(ilce: str) -> dict[str, Any]:
     ph, om, kirec, ec, kil, kum, silt, p, k, drenaj, erozyon, derinlik = mp.TOPRAK[ilce]
     return dict(ph=ph, om=om, kirec=kirec, ec=ec, kil=kil, kum=kum, silt=silt,
                 p2o5=p, k2o=k, drenaj=drenaj, erozyon=erozyon, derinlik=derinlik)
@@ -78,7 +80,7 @@ def ilce_toprak(ilce):
 KRITIK = ("drenaj", "tuzluluk", "derinlik")
 
 
-def uygunluk(ilce, urun):
+def uygunluk(ilce: str, urun: str) -> dict[str, Any]:
     t = ilce_toprak(ilce)
     istek = URUN_ISTEK[urun]
     sinif = bunye_sinifi(t["kil"], t["kum"], t["silt"])
@@ -100,19 +102,22 @@ def uygunluk(ilce, urun):
     puan = min(ham, tavan)
     tavanlandi = puan < ham - 0.05
 
-    kisit = min(bilesen, key=bilesen.get)
+    kisit = min(bilesen, key=lambda k: bilesen[k])
     etiket = ("çok uygun" if puan >= 80 else "uygun" if puan >= 65
               else "sınırlı" if puan >= 50 else "uygun değil")
     return dict(puan=round(puan, 1), ham_puan=round(ham, 1), sinif=etiket,
                 bilesen=bilesen, kisitlayici=kisit, kisit_puani=bilesen[kisit],
                 tavanlandi=tavanlandi,
-                tavan_sebebi=min(KRITIK, key=lambda k: bilesen[k]) if tavanlandi else None)
+                tavan_sebebi=(min(KRITIK, key=lambda k: bilesen[k])
+                              if tavanlandi else None))
 
 
-def gubre_onerisi(ilce, urun, verim):
+def gubre_onerisi(ilce: str, urun: str, verim: float) -> dict[str, Any]:
     t = ilce_toprak(ilce)
     istek = URUN_ISTEK[urun]
-    ihtiyac_n, ihtiyac_p, ihtiyac_k = verim * istek["N"], verim * istek["P"], verim * istek["K"]
+    ihtiyac_n = verim * istek["N"]
+    ihtiyac_p = verim * istek["P"]
+    ihtiyac_k = verim * istek["K"]
 
     # Soğuk ve kısa vejetasyonlu Muş'ta mineralizasyon yavaş: %1 OM ~ 1,2 kg N/da
     topraktan_n = t["om"] * 1.2
@@ -133,7 +138,7 @@ def gubre_onerisi(ilce, urun, verim):
     )
 
 
-def toprak_sagligi(ilce):
+def toprak_sagligi(ilce: str) -> dict[str, Any]:
     t = ilce_toprak(ilce)
     b = dict(
         organik=round(min(100.0, t["om"] / 3.0 * 100), 1),
@@ -147,10 +152,11 @@ def toprak_sagligi(ilce):
               derinlik=0.10, kirec=0.08)
     puan = sum(b[k] * ag[k] for k in ag)
     harf = "A" if puan >= 80 else "B" if puan >= 65 else "C" if puan >= 50 else "D"
-    return dict(puan=round(puan), harf=harf, bilesen=b, zayif_halka=min(b, key=b.get))
+    return dict(puan=round(puan), harf=harf, bilesen=b,
+                zayif_halka=min(b, key=lambda k: b[k]))
 
 
-def birlesik_puan(toprak_puan, iklim_puan):
+def birlesik_puan(toprak_puan: float, iklim_puan: float) -> float:
     """Toprak ve iklimin geometrik ortalaması.
 
     Aritmetik ortalama kullanılsaydı iklimi 46 olan bir ilçe, toprağı 98
@@ -161,13 +167,13 @@ def birlesik_puan(toprak_puan, iklim_puan):
     return round(math.sqrt(max(0.0, toprak_puan) * max(0.0, iklim_puan)), 1)
 
 
-def analiz():
-    ilceler = []
+def analiz() -> dict[str, Any]:
+    ilceler: list[dict[str, Any]] = []
     for ilce in mp.ILCE:
         t = ilce_toprak(ilce)
         ekili = {u: v for u, (a, v) in mp.DESEN[ilce].items() if a > 0}
 
-        urunler = []
+        urunler: list[dict[str, Any]] = []
         for urun in URUN_ISTEK:
             u = uygunluk(ilce, urun)
             ik = mus_iklim.uygunluk(ilce, urun)
@@ -206,13 +212,13 @@ def analiz():
         ))
 
     # Ürün bazında ilçe karşılaştırması: aynı ürün nerede daha rahat yetişir
-    urun_karsilastirma = []
+    urun_karsilastirma: list[dict[str, Any]] = []
     for urun in URUN_ISTEK:
         # urun varsayılan argümanla bağlanıyor: yoksa kapanış döngü
         # değişkenini yakalar ve döngü ilerleyince yanlış ürüne bakar.
-        def al(r, anahtar, urun=urun):
+        def al(r: dict[str, Any], anahtar: str, urun: str = urun) -> Any:
             return next(u[anahtar] for u in r["urunler"] if u["urun"] == urun)
-        satir = [dict(ilce=r["ilce"], puan=al(r, "birlesik"),
+        satir: list[dict[str, Any]] = [dict(ilce=r["ilce"], puan=al(r, "birlesik"),
                       toprak=al(r, "puan"), iklim=al(r, "iklim")["puan"],
                       darbogaz=al(r, "darbogaz"),
                       kisit=al(r, "kisitlayici"), alan=al(r, "alan"))
@@ -241,7 +247,7 @@ def analiz():
     return sonuc
 
 
-def ilce_puanlari(sonuc=None):
+def ilce_puanlari(sonuc: dict[str, Any] | None = None) -> dict[str, float]:
     """mus_analiz.karne() için ilçe uyum puanı (ekili alana göre ağırlıklı)."""
     return {r["ilce"]: r["ekili_ortalama"] for r in (sonuc or analiz())["ilceler"]}
 

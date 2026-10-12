@@ -22,6 +22,7 @@ doldurulacak, eğri devre dışı kalacaktır.
 """
 
 import math
+from typing import Any
 
 import mus_profil as mp
 
@@ -34,11 +35,11 @@ AY_AD = ["Oca", "Şub", "Mar", "Nis", "May", "Haz",
          "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
 
 # Gerçek istasyon verisi geldiğinde buraya ilçe: [12 aylık ortalama] yazılacak.
-AYLIK_SICAKLIK = {}
+AYLIK_SICAKLIK: dict[str, list[float]] = {}
 
 # ürün: (taban sıcaklık °C, gerekli GDD, don hassasiyeti 1-5,
 #        serin sever mi, hedef ekim ayı)
-IKLIM_ISTEK = {
+IKLIM_ISTEK: dict[str, tuple[int, int, int, bool, int]] = {
     "Şeker pancarı":  (5,  1800, 3, False, 4),
     "Buğday":         (0,  1400, 1, False, 10),
     "Arpa":           (0,  1250, 1, False, 10),
@@ -51,7 +52,7 @@ IKLIM_ISTEK = {
 }
 
 
-def aylik_sicaklik(ilce):
+def aylik_sicaklik(ilce: str) -> list[float]:
     """İlçenin 12 aylık ortalama sıcaklığı."""
     if ilce in AYLIK_SICAKLIK:
         return list(AYLIK_SICAKLIK[ilce])
@@ -60,13 +61,13 @@ def aylik_sicaklik(ilce):
             for ay in range(1, 13)]
 
 
-def gdd(ilce, taban):
+def gdd(ilce: str, taban: float) -> int:
     """Etkili sıcaklık toplamı: yıl boyunca tabanın üstünde geçen derece-gün."""
     return round(sum(max(0.0, t - taban) * g
                      for t, g in zip(aylik_sicaklik(ilce), AY_GUN)))
 
 
-def donsuz_gun(ilce):
+def donsuz_gun(ilce: str) -> int:
     """Gece minimumunun 0 °C üstünde kaldığı gün sayısı (yaklaşık).
 
     Gece minimumu, aylık ortalamadan GUNLUK_FARK kadar düşük varsayılır.
@@ -83,7 +84,7 @@ def donsuz_gun(ilce):
     return round(toplam)
 
 
-def ekim_penceresi(ilce, taban):
+def ekim_penceresi(ilce: str, taban: float) -> tuple[float, float] | None:
     """Toprağın ekim sıcaklığına ulaştığı ve düştüğü ay (ondalık)."""
     ort = mp.IKLIM[ilce][0]
     if ort + GENLIK <= taban:
@@ -94,7 +95,7 @@ def ekim_penceresi(ilce, taban):
     return round(ZIRVE_AY - acik, 1), round(ZIRVE_AY + acik, 1)
 
 
-def uygunluk(ilce, urun):
+def uygunluk(ilce: str, urun: str) -> dict[str, Any]:
     taban, gerekli, don_hassas, serin, ekim_ay = IKLIM_ISTEK[urun]
     mevcut = gdd(ilce, taban)
     pay = mevcut / gerekli if gerekli else 1.0
@@ -139,7 +140,7 @@ def uygunluk(ilce, urun):
     )
 
 
-def ozet():
+def ozet() -> list[dict[str, Any]]:
     return [dict(ilce=i, rakim=mp.ILCE[i][0], ortalama=mp.IKLIM[i][0],
                  yagis=mp.IKLIM[i][1], donsuz_gun=donsuz_gun(i),
                  aylik=aylik_sicaklik(i),

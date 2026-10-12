@@ -24,7 +24,9 @@ Birimler:
   erozyon     : 1 (çok az) – 5 (çok şiddetli)
 """
 
-DRENAJ_PUAN = {"iyi": 100, "orta": 70, "zayıf": 40}
+from typing import Any
+
+DRENAJ_PUAN: dict[str, float] = {"iyi": 100, "orta": 70, "zayıf": 40}
 
 # il: pH, OM%, kireç%, EC, kil%, kum%, silt%, P2O5, K2O, drenaj, erozyon, derinlik
 TOPRAK = {
@@ -83,7 +85,7 @@ IL_NOTU = {
 #   kok_derinlik  : ürünün rahat gelişmesi için istediği etkili toprak derinliği, cm
 #   azot_baglar : baklagil ise True (azot ihtiyacının çoğunu havadan karşılar)
 # ---------------------------------------------------------------------------
-URUN_ISTEK = {
+URUN_ISTEK: dict[str, dict[str, Any]] = {
     "Buğday":        dict(ph_opt=(6.0, 7.5), ph_sinir=(5.5, 8.3), ec_esik=6.0,
                           kirec_tol="yüksek", bunye="tınlı", om_hedef=2.0,
                           N=25, P=10, K=18, azot_baglar=False, drenaj_hassas=3, kok_derinlik=90),
@@ -134,10 +136,10 @@ URUN_ISTEK = {
                           N=35, P=12, K=50, azot_baglar=False, drenaj_hassas=3, kok_derinlik=70),
 }
 
-KIREC_ESIK = {"yüksek": 30, "orta": 18, "düşük": 10}   # bu değerin üstü sorun
+KIREC_ESIK: dict[str, float] = {"yüksek": 30, "orta": 18, "düşük": 10}   # bu değerin üstü sorun
 
 
-def bunye_sinifi(kil, kum, silt):
+def bunye_sinifi(kil: float, kum: float, silt: float) -> str:
     if kil >= 45:
         return "killi"
     if kil >= 35:
@@ -147,5 +149,5 @@ def bunye_sinifi(kil, kum, silt):
     return "tınlı"
 
 
-def il_toprak(il):
+def il_toprak(il: str) -> dict[str, Any]:
     return dict(zip(ALANLAR, TOPRAK[il]))

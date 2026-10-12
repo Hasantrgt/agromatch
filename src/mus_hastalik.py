@@ -29,6 +29,7 @@ kesinleştirilecektir. Bu panel ilaçlama kararı değil, ÖNCELİK SIRASI üret
 
 import json
 from pathlib import Path
+from typing import Any
 
 import mus_iklim
 import mus_profil as mp
@@ -37,7 +38,8 @@ from hastalik_profil import HASTALIKLAR as ORTAK
 CIKTI = Path(__file__).resolve().parent.parent / "outputs"
 
 # Ortak katalogdaki ürün adlarını Muş'un ürün setine eşle
-ESLEME = {"Mısır (dane)": "Silajlık mısır", "Yem bitkileri": "Yonca"}
+ESLEME: dict[str, str] = {"Mısır (dane)": "Silajlık mısır",
+                          "Yem bitkileri": "Yonca"}
 
 # Muş'un ürün setinde olup ortak katalogda bulunmayan hastalıklar
 EK_HASTALIK = [
@@ -98,12 +100,13 @@ EK_HASTALIK = [
 ]
 
 
-def hastalik_listesi():
+def hastalik_listesi() -> list[dict[str, Any]]:
     """Muş'ta ekilen ürünlere ait hastalıkların tamamı."""
     urunler = set(mp.URUN)
-    liste = []
+    liste: list[dict[str, Any]] = []
     for h in ORTAK:
-        urun = ESLEME.get(h["urun"], h["urun"])
+        kaynak_urun = str(h["urun"])
+        urun = ESLEME.get(kaynak_urun, kaynak_urun)
         if urun in urunler:
             kayit = dict(h)
             kayit["urun"] = urun
@@ -113,7 +116,8 @@ def hastalik_listesi():
     return liste
 
 
-def sicaklik_uygunlugu(ilce, kritik_aylar, aralik):
+def sicaklik_uygunlugu(ilce: str, kritik_aylar: list[int],
+                       aralik: tuple[float, float]) -> float:
     alt, ust = aralik
     aylik = mus_iklim.aylik_sicaklik(ilce)
     puanlar = []
@@ -127,7 +131,7 @@ def sicaklik_uygunlugu(ilce, kritik_aylar, aralik):
     return sum(puanlar) / len(puanlar) if puanlar else 0.0
 
 
-def nem_uygunlugu(ilce, esik, urun):
+def nem_uygunlugu(ilce: str, esik: float, urun: str) -> float:
     """Yağış vekil değişken; sulanan üründe yaprak ıslaklığı tabanı yükseltir."""
     yagis = mp.IKLIM[ilce][1]
     taban = max(0.15, min(1.0, yagis / esik))
@@ -136,7 +140,7 @@ def nem_uygunlugu(ilce, esik, urun):
     return min(1.0, taban + sulama * 0.25)
 
 
-def analiz():
+def analiz() -> dict[str, Any]:
     hastaliklar = hastalik_listesi()
     satirlar = []
 
@@ -174,7 +178,7 @@ def analiz():
     satirlar.sort(key=lambda r: -r["risk"])
 
     # Hastalık bazında il geneli özet: riskli alan ağırlıklı
-    ozet = {}
+    ozet: dict[str, dict[str, Any]] = {}
     for r in satirlar:
         anahtar = f"{r['hastalik']} · {r['urun']}"
         o = ozet.setdefault(anahtar, dict(
@@ -191,12 +195,12 @@ def analiz():
     for o in ozet.values():
         o["ortalama_risk"] = round(o["agirlikli"] / o["toplam_alan"]) if o["toplam_alan"] else 0
         del o["agirlikli"]
-    ozet = sorted(ozet.values(), key=lambda o: -(o["riskli_alan"] or o["ortalama_risk"]))
+    ozet_sirali = sorted(ozet.values(), key=lambda o: -(o["riskli_alan"] or o["ortalama_risk"]))
 
     # Aylık ilaçlama takvimi: hangi ayda hangi hastalık penceresi açık
     takvim = []
     for ay in range(1, 13):
-        aktif = [o for o in ozet if ay in o["kritik_aylar"] and o["ortalama_risk"] >= 35]
+        aktif = [o for o in ozet_sirali if ay in o["kritik_aylar"] and o["ortalama_risk"] >= 35]
         takvim.append(dict(
             ay=ay, ad=mus_iklim.AY_AD[ay - 1],
             sicaklik=round(sum(mus_iklim.aylik_sicaklik(i)[ay - 1]
@@ -207,10 +211,10 @@ def analiz():
         ))
 
     # Görüntü işleme önceliği: riskli alanı büyük VE görüntüden tespit edilebilir
-    goruntu_oncelik = [o for o in ozet if o["goruntuden"]][:8]
+    goruntu_oncelik = [o for o in ozet_sirali if o["goruntuden"]][:8]
 
     # İlçe özeti
-    ilce_ozet = []
+    ilce_ozet: list[dict[str, Any]] = []
     for ilce in mp.ILCE:
         kendi = [r for r in satirlar if r["ilce"] == ilce]
         yuksek = [r for r in kendi if r["risk"] >= 60]
@@ -223,11 +227,11 @@ def analiz():
     ilce_ozet.sort(key=lambda r: -r["ortalama_risk"])
 
     sonuc = dict(
-        il="Muş", satirlar=satirlar, ozet=ozet, takvim=takvim,
+        il="Muş", satirlar=satirlar, ozet=ozet_sirali, takvim=takvim,
         ilce_ozet=ilce_ozet, goruntu_oncelik=goruntu_oncelik,
         istatistik=dict(
-            hastalik_sayisi=len(ozet),
-            goruntuden_tespit=sum(1 for o in ozet if o["goruntuden"]),
+            hastalik_sayisi=len(ozet_sirali),
+            goruntuden_tespit=sum(1 for o in ozet_sirali if o["goruntuden"]),
             yuksek_riskli_kayit=sum(1 for r in satirlar if r["risk"] >= 60),
             en_riskli_ilce=ilce_ozet[0]["ilce"],
         ),

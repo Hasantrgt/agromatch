@@ -108,6 +108,10 @@ Test takımı dört şeyi korur:
 ## Doğrulama komutları
 
 ```bash
+ruff check src tests                # biçim ve statik denetim
+mypy                                # tip denetimi (çekirdek 8 modül)
+pytest                              # 121 test
+
 python src/mus_profil.py            # veri tutarlılığını denetler
 python src/mus_iz.py --dogrula      # noktasal değer ile dağılım merkezi tutarlı mı
 python src/mus_belirsizlik.py       # belirsizlik ve ölçüm önceliği

@@ -26,6 +26,7 @@ tek kanıtıdır.
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -40,7 +41,8 @@ TOHUM = 20261008
 KAYNAK = "TÜİK 2024 · Bakanlık Muş Tarımsal Yatırım Rehberi 2025"
 
 
-def yol(yontem, birim, miktar, zorluk, kim):
+def yol(yontem: str, birim: str, miktar: int, zorluk: int,
+        kim: str) -> dict[str, Any]:
     """Bir bilinmeyenin nasıl ölçüleceği.
 
     Emek = miktar × zorluk. Ölçüm önceliği bu sayıya göre sıralanır: tek bir
@@ -54,7 +56,7 @@ def yol(yontem, birim, miktar, zorluk, kim):
 # ======================================================================
 #  Ortak yapraklar — bir kez kurulur, bütün dengelerde paylaşılır
 # ======================================================================
-def yapraklar():
+def yapraklar() -> dict[str, iz.Dugum]:
     y = {}
     y["nufus"] = olcum("Muş nüfusu", mp.OLCUM["nufus"][0], "kişi", kaynak=KAYNAK)
     y["buyukbas"] = olcum("Büyükbaş hayvan", mp.OLCUM["buyukbas"][0], "baş",
@@ -181,7 +183,7 @@ def yapraklar():
 # ======================================================================
 #  Altı denge grafiği
 # ======================================================================
-def grafikler(y):
+def grafikler(y: dict[str, iz.Dugum]) -> dict[str, dict[str, Any]]:
     bb = carp("Büyükbaş (düzeltilmiş)", y["buyukbas"], y["hayvan_carpan"], birim="baş")
     kb = carp("Küçükbaş (düzeltilmiş)", y["kucukbas"], y["hayvan_carpan"], birim="baş")
 
@@ -275,7 +277,7 @@ def grafikler(y):
     }
 
 
-def denge_grafigi():
+def denge_grafigi() -> dict[str, dict[str, Any]]:
     """Denge grafiğini kurar ve döndürür. Tek giriş noktası.
 
     mus_belirsizlik bu fonksiyonu çağırır; denge formüllerinin ikinci bir
@@ -284,7 +286,8 @@ def denge_grafigi():
     return grafikler(yapraklar())
 
 
-def analiz(n=ORNEK, tohum=TOHUM):
+def analiz(n: int = ORNEK, tohum: int = TOHUM
+           ) -> tuple[dict[str, Any], dict[str, dict[str, Any]], Calisma]:
     y = yapraklar()
     g = grafikler(y)
     c = Calisma(n, tohum)
@@ -326,7 +329,7 @@ def analiz(n=ORNEK, tohum=TOHUM):
     return sonuc, g, c
 
 
-def dogrula():
+def dogrula() -> bool:
     """Grafiğin noktasal değeri, dağılımın merkeziyle tutarlı mı?
 
     Bir zamanlar bu fonksiyon grafiği, elle yazılmış ikinci bir hesapla
@@ -355,7 +358,7 @@ def dogrula():
     return hepsi
 
 
-def main():
+def main() -> None:
     if "--dogrula" in sys.argv:
         sys.exit(0 if dogrula() else 1)
 

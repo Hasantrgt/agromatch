@@ -30,10 +30,27 @@ BELGENİN KENDİ İÇİNDEKİ ÇELİŞKİLER (bilerek kayıt altına alındı)
     python src/mus_profil.py     # veri tutarlılığını denetler ve kaynakları listeler
 """
 
+from typing import Any
+
+# --------------------------------------------------------------- tip takma adları
+# Bu takma adlar veri yapılarının şeklini belgelendiriyor. Yorum satırı
+# eskiyebilir; tip takma adı eskidiğinde mypy söyler.
+Olcum = tuple[float, str, str]                 # (değer, birim, kaynak)
+Uretim = tuple[float, str]                     # (ton, kaynak)
+UrunKunye = tuple[str, float, float, float, float, float, float, float, float, bool]
+Pay = tuple[int, float, float, float, float, float]
+Toprak = tuple[float, float, float, float, int, int, int,
+               float, float, str, int, int]
+Iklim = tuple[float, int, int]                 # (ortalama °C, yağış mm, don ayı)
+Konum = tuple[float, float]                    # (enlem, boylam)
+Desen = dict[str, tuple[int, float]]           # ürün -> (alan dekar, verim)
+KunyeSatiri = tuple[str, str, str, str, str, str]
+
+
 # ======================================================================
 #  1. ÖLÇÜM — resmî kaynakta yayımlanmış il geneli sayılar
 # ======================================================================
-OLCUM = {
+OLCUM: dict[str, Olcum] = {
     "nufus":            (392301,  "kişi",  "TÜİK 2024"),
     "toplam_tarim_da":  (3241124, "dekar", "TÜİK 2024"),
     "mera_da":          (3716350, "dekar", "TÜİK 2024"),
@@ -43,7 +60,7 @@ OLCUM = {
 }
 
 # İl geneli ÜRETİM (ton) — TÜİK 2024, Bakanlık rehberi Tablo 3
-URETIM = {
+URETIM: dict[str, Uretim] = {
     "Şeker pancarı":  (665032, "TÜİK 2024"),
     "Buğday":         (368297, "TÜİK 2024"),
     "Arpa":            (98938, "TÜİK 2024"),
@@ -59,7 +76,7 @@ URETIM = {
 #  2. VARSAYIM — literatür katsayıları, Muş'ta ölçülmedi
 # ======================================================================
 # Ekim alanı = üretim / verim olarak TÜRETİLİR. Verim değişirse alan değişir.
-VERIM = {                       # ton / dekar
+VERIM: dict[str, float] = {                       # ton / dekar
     "Şeker pancarı":  6.00,     # Muş ovası sulu koşul
     # 368.297 t / 0,32 = 115.093 ha -> belgedeki "115 bin ha" ifadesiyle tutarlı
     "Buğday":         0.32,
@@ -73,13 +90,13 @@ VERIM = {                       # ton / dekar
 }
 
 # Yeşil/yaş üründen kuru maddeye çevrim
-KURU_MADDE = {
+KURU_MADDE: dict[str, float] = {
     "Yonca": 0.25, "Korunga": 0.25, "Fiğ": 0.25, "Silajlık mısır": 0.32,
 }
 
 # ad: (tip, su ihtiyacı mm, mazot L/da, N kg/da, P kg/da, K kg/da,
 #      fiyat TL/ton, maliyet TL/da, destek TL/da, kışlık mı)
-URUN = {
+URUN: dict[str, UrunKunye] = {
     "Şeker pancarı":   ("sanayi",  750, 24.0, 18, 10,  8,  2450,  9800, 1050, False),
     "Buğday":          ("gıda",    420, 13.5, 12,  7,  0,  9500,  3100,  520, True),
     "Arpa":            ("kesif",   370, 12.5, 10,  6,  0,  8800,  2700,  480, True),
@@ -105,7 +122,7 @@ URUN = {
 #                 bu projenin birinci fazının kapsamı dışındadır.
 #
 # ürün: (ölçek, taşınabilirlik 1-5, il fazlası sorun mu, açıklama)
-DENGE_OLCEGI = {
+DENGE_OLCEGI: dict[str, tuple[str, int, bool, str]] = {
     "Şeker pancarı":  ("fabrika havzası", 2, True,
                        "Alıcısı tek tesis. Tavanı fabrika kapasitesi belirler; "
                        "aşan miktar sökülse bile işlenemez."),
@@ -132,8 +149,8 @@ DENGE_OLCEGI = {
 KABA_YEM_GRUBU = ("Yonca", "Korunga", "Silajlık mısır", "Fiğ")
 
 # Hayvan başına yıllık kuru madde ihtiyacı (ton) — NRC/TÜRKVET mertebeleri
-YEM_IHTIYAC = {"buyukbas": 2.60, "kucukbas": 0.45}
-GIDA_IHTIYAC = {"Buğday": 0.250, "Patates": 0.085, "Kuru fasulye": 0.009}
+YEM_IHTIYAC: dict[str, float] = {"buyukbas": 2.60, "kucukbas": 0.45}
+GIDA_IHTIYAC: dict[str, float] = {"Buğday": 0.250, "Patates": 0.085, "Kuru fasulye": 0.009}
 
 MERA_VERIM = 0.10      # ton kuru madde / dekar / yıl — zayıf step merası
 ANIZ_VERIM = 0.05      # tahıl anızından ton KM / dekar
@@ -146,7 +163,7 @@ AZOT_KG_CO2 = 5.50
 # Muş Şeker Fabrikası — KAPASİTE TEYİT EDİLMEDİ
 # Resmî belgede kapasite yok. Aşağıdaki değer varsayımdır ve fabrika
 # müdürlüğünden teyit alınana kadar öyle kalacaktır.
-FABRIKA = {
+FABRIKA: dict[str, Any] = {
     "ad": "Muş Şeker Fabrikası",
     "gunluk_kapasite_ton": 7500,
     "kampanya_gun": 95,
@@ -163,7 +180,7 @@ FABRIKA = {
 # yoğunluğu gözetilerek verildi. Belgedeki iki somut dayanak:
 #   Bulanık Ovası 52.250 ha, Malazgirt Ovası 45.000 ha
 # ilçe: (rakım m, nüfus payı, tarım payı, mera payı, hayvan payı, sulanabilir oran)
-PAY = {
+PAY: dict[str, Pay] = {
     "Merkez":    (1350, 0.430, 0.255, 0.126, 0.260, 0.42),
     "Bulanık":   (1450, 0.205, 0.270, 0.200, 0.235, 0.34),
     "Malazgirt": (1540, 0.145, 0.235, 0.200, 0.215, 0.26),
@@ -174,7 +191,7 @@ PAY = {
 
 # Ürünün ilçelere dağılımı, genel tarım payından farklıysa burada ezilir.
 # Pancar sulanan ovada yoğunlaşır; Varto'da neredeyse yok.
-URUN_PAYI = {
+URUN_PAYI: dict[str, dict[str, float]] = {
     "Şeker pancarı": {"Merkez": 0.40, "Bulanık": 0.30, "Malazgirt": 0.15,
                       "Varto": 0.02, "Hasköy": 0.08, "Korkut": 0.05},
     "Silajlık mısır": {"Merkez": 0.35, "Bulanık": 0.28, "Malazgirt": 0.18,
@@ -184,26 +201,26 @@ URUN_PAYI = {
 }
 
 # İlçe verim düzeltmesi: rakım ve sulama erişimine göre il ortalamasına oran
-VERIM_DUZELTME = {
+VERIM_DUZELTME: dict[str, float] = {
     "Merkez": 1.04, "Bulanık": 1.03, "Malazgirt": 0.93,
     "Varto": 0.83, "Hasköy": 1.00, "Korkut": 0.94,
 }
 
-KOORDINAT = {
+KOORDINAT: dict[str, Konum] = {
     "Merkez":    (38.73, 41.49), "Bulanık":   (39.09, 42.27),
     "Malazgirt": (39.14, 42.54), "Varto":     (39.17, 41.45),
     "Hasköy":    (38.69, 41.69), "Korkut":    (38.73, 41.80),
 }
 
 # ---------------------------------------------------------- türetilen veri
-def il_alani(urun):
+def il_alani(urun: str) -> float:
     """Ekim alanı ölçülmedi; üretim / verim olarak türetilir."""
     return URETIM[urun][0] / VERIM[urun]
 
 
-def _desen():
+def _desen() -> dict[str, Desen]:
     """ilçe -> {ürün: (alan dekar, verim ton/da)} — tamamen türetilmiş."""
-    d = {}
+    d: dict[str, Desen] = {}
     for ilce, (rakim, n_pay, t_pay, m_pay, h_pay, sul) in PAY.items():
         d[ilce] = {}
         for urun in URUN:
@@ -232,7 +249,7 @@ ILCE = {
 # (pH, organik madde %, kireç %, EC dS/m, kil %, kum %, silt %,
 #  P ppm, K ppm, drenaj, erozyon 1-5, toprak derinliği cm)
 # TAMAMI TAHMİN — üniversite laboratuvarı analizleriyle değiştirilecek.
-TOPRAK = {
+TOPRAK: dict[str, Toprak] = {
     "Merkez":    (7.6, 2.0, 10, 0.6, 46, 20, 34, 4.2, 105, "zayıf", 2,  95),
     "Bulanık":   (7.5, 2.2,  9, 0.5, 42, 24, 34, 4.6, 112, "zayıf", 2, 100),
     "Malazgirt": (7.8, 1.7, 13, 0.6, 36, 30, 34, 3.8,  98, "orta",  4,  80),
@@ -241,7 +258,7 @@ TOPRAK = {
     "Korkut":    (7.7, 1.9, 11, 0.5, 38, 28, 34, 4.1, 102, "orta",  4,  80),
 }
 
-ILCE_NOTU = {
+ILCE_NOTU: dict[str, str] = {
     "Merkez": "Muş Ovası'nın kalbi. Ağır killi bünye ve yüksek taban suyu; "
               "drenaj açılmadan erken ilkbahar ekimi riskli, kök hastalıkları artıyor.",
     "Bulanık": "Murat vadisi tabanı; belgede ovası 52.250 ha olarak geçiyor. "
@@ -257,7 +274,7 @@ ILCE_NOTU = {
 # --------------------------------------------------------------- iklim
 # (yıllık ortalama sıcaklık °C, yıllık yağış mm, don riskli son ay)
 # İl ortalaması MGM mertebesi; ilçeler rakım farkıyla türetildi.
-IKLIM = {
+IKLIM: dict[str, Iklim] = {
     "Merkez":    (9.8,  780, 4), "Bulanık":   (9.2,  800, 5),
     "Malazgirt": (8.7,  700, 5), "Varto":     (8.2,  950, 5),
     "Hasköy":    (9.5,  790, 4), "Korkut":    (8.9,  760, 5),
@@ -265,7 +282,7 @@ IKLIM = {
 
 # ---------------------------------------------------------------- künye
 # (alan, tür, kaynak, yıl, güven, not)
-KUNYE = [
+KUNYE: list[KunyeSatiri] = [
     ("İl nüfusu", "ölçüm", "TÜİK — Bakanlık Muş Tarımsal Yatırım Rehberi 2025",
      "2024", "yüksek", "392.301 kişi."),
     ("İlçe nüfusları", "dağıtım", "İl toplamının tahmini dağıtımı", "—",
@@ -298,7 +315,7 @@ KUNYE = [
      "orta", "Muş'ta saha gözlemi yok. Zirai Mücadele Teknik Talimatları ile kesinleşecek."),
 ]
 
-KAYNAK_BAGLANTI = [
+KAYNAK_BAGLANTI: list[tuple[str, str]] = [
     ("Muş Tarımsal Yatırım Rehberi 2025 (Tarım ve Orman Bakanlığı)",
      "https://mus.tarimorman.gov.tr/Belgeler/DUYURULAR/"
      "Mu%C5%9F%20Tar%C4%B1msal%20Yat%C4%B1r%C4%B1m%20Rehberi-2025.pdf"),
@@ -306,26 +323,26 @@ KAYNAK_BAGLANTI = [
 
 
 # ------------------------------------------------------------ yardımcılar
-def kuru_madde(urun):
+def kuru_madde(urun: str) -> float:
     return KURU_MADDE.get(urun, 1.0)
 
 
-def ilce_listesi():
+def ilce_listesi() -> list[str]:
     return list(ILCE)
 
 
-def urunler():
+def urunler() -> list[str]:
     return list(URUN)
 
 
-def il_toplami(urun):
+def il_toplami(urun: str) -> tuple[float, float]:
     alan = sum(d.get(urun, (0, 0))[0] for d in DESEN.values())
     uretim = sum(a * v for a, v in (d.get(urun, (0, 0)) for d in DESEN.values()))
     return alan, uretim
 
 
-def denetle():
-    hata = []
+def denetle() -> list[str]:
+    hata: list[str] = []
     for ilce in ILCE:
         for sozluk, ad in ((DESEN, "DESEN"), (TOPRAK, "TOPRAK"),
                            (IKLIM, "IKLIM"), (KOORDINAT, "KOORDINAT"),
@@ -366,7 +383,7 @@ if __name__ == "__main__":
     else:
         print("Veri tutarlı.\n")
 
-    def sy(x, b=0):
+    def sy(x: float, b: int = 0) -> str:
         return f"{x:,.{b}f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
     print("ÖLÇÜM — resmî kaynak (TÜİK 2024)")
@@ -375,7 +392,7 @@ if __name__ == "__main__":
 
     print("\nTÜRETİLEN EKİM ALANI (üretim ÷ varsayılan verim)")
     print(f"  {'Ürün':<16}{'Üretim (ton)':>14}{'Verim':>8}{'Alan (da)':>12}  Kaynak")
-    toplam = 0
+    toplam = 0.0
     for u in URUN:
         a = il_alani(u)
         toplam += a

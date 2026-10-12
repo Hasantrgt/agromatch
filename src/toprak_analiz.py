@@ -18,6 +18,7 @@ de geçerse önerilir.
 
 import json
 from pathlib import Path
+from typing import Any
 
 from bolge_profil import DESEN, ILLER
 from toprak_profil import (
@@ -44,7 +45,7 @@ BUNYE_YAKINLIK = {
 }
 
 
-def ph_puan(ph, istek):
+def ph_puan(ph: float, istek: dict[str, Any]) -> float:
     """Optimum aralığın İÇİNDE de konum önemlidir.
 
     Önceki sürümde aralığın içindeki her değer 100 puan alıyordu; bu, aralığı
@@ -61,7 +62,7 @@ def ph_puan(ph, istek):
     return max(0.0, 88 - (ph - b) / max(ust - b, 0.1) * 68)
 
 
-def tuz_puan(ec, esik):
+def tuz_puan(ec: float, esik: float) -> float:
     """Tuzluluk eşiğin altındayken bile sürekli bir baskıdır.
 
     Mercimek (eşik 1,5 dS/m) ile arpa (eşik 8,0 dS/m) aynı tarlada aynı puanı
@@ -73,7 +74,7 @@ def tuz_puan(ec, esik):
     return max(0.0, 70 - (oran - 1) * 70)
 
 
-def kirec_puan(kirec, tolerans):
+def kirec_puan(kirec: float, tolerans: str) -> float:
     esik = KIREC_ESIK[tolerans]
     oran = kirec / esik
     if oran <= 1:
@@ -81,13 +82,13 @@ def kirec_puan(kirec, tolerans):
     return max(10.0, 75 - (oran - 1) * 60)
 
 
-def bunye_puan(topragin, istenen):
+def bunye_puan(topragin: str, istenen: str) -> float:
     if topragin == istenen:
         return 100.0
     return float(BUNYE_YAKINLIK.get((topragin, istenen), 55))
 
 
-def drenaj_puan(drenaj, hassasiyet):
+def drenaj_puan(drenaj: str, hassasiyet: float) -> float:
     """Drenaj ürüne göre değişir: mercimek ve patates ıslaklığa çok hassastır,
     buğday ve tütün daha toleranslıdır. Önceki sürümde bu puan ürüne bağlı
     değildi ve bütün ürünler aynı değeri alıyordu."""
@@ -96,12 +97,12 @@ def drenaj_puan(drenaj, hassasiyet):
     return max(10.0, 100 - ceza * katsayi)
 
 
-def derinlik_puan(derinlik, istenen):
+def derinlik_puan(derinlik: float, istenen: float) -> float:
     """Derin köklü ürün (yonca, antep fıstığı, pamuk) sığ toprakta zorlanır."""
     return max(20.0, min(100.0, derinlik / istenen * 100))
 
 
-def uygunluk(il, urun):
+def uygunluk(il: str, urun: str) -> dict[str, Any]:
     t = il_toprak(il)
     istek = URUN_ISTEK[urun]
     sinif = bunye_sinifi(t["kil"], t["kum"], t["silt"])
@@ -116,14 +117,14 @@ def uygunluk(il, urun):
         derinlik=round(derinlik_puan(t["derinlik"], istek["kok_derinlik"]), 1),
     )
     puan = sum(bilesen[k] * AGIRLIK[k] for k in AGIRLIK)
-    kisit = min(bilesen, key=bilesen.get)
+    kisit = min(bilesen, key=lambda k: bilesen[k])
     etiket = ("çok uygun" if puan >= 80 else "uygun" if puan >= 65
               else "sınırlı" if puan >= 50 else "uygun değil")
     return dict(puan=round(puan, 1), sinif=etiket, bilesen=bilesen,
                 kisitlayici=kisit, kisit_puani=bilesen[kisit])
 
 
-def gubre_onerisi(il, urun, verim):
+def gubre_onerisi(il: str, urun: str, verim: float) -> dict[str, Any]:
     """Hedef verime göre kg/dekar N-P2O5-K2O önerisi."""
     t = il_toprak(il)
     istek = URUN_ISTEK[urun]
@@ -153,7 +154,7 @@ def gubre_onerisi(il, urun, verim):
     )
 
 
-def toprak_sagligi(il):
+def toprak_sagligi(il: str) -> dict[str, Any]:
     t = il_toprak(il)
     b = dict(
         organik=round(min(100.0, t["om"] / 3.0 * 100), 1),
@@ -168,16 +169,16 @@ def toprak_sagligi(il):
     puan = sum(b[k] * ag[k] for k in ag)
     harf = "A" if puan >= 80 else "B" if puan >= 65 else "C" if puan >= 50 else "D"
     return dict(puan=round(puan), harf=harf, bilesen=b,
-                zayif_halka=min(b, key=b.get))
+                zayif_halka=min(b, key=lambda k: b[k]))
 
 
-def analiz():
-    iller = []
+def analiz() -> dict[str, Any]:
+    iller: list[dict[str, Any]] = []
     for il, (bolge, *_rest) in ILLER.items():
         t = il_toprak(il)
         ekili = {u: v for u, (a, v, _t) in DESEN[il].items()}
 
-        urunler = []
+        urunler: list[dict[str, Any]] = []
         for urun in URUN_ISTEK:
             u = uygunluk(il, urun)
             verim = ekili.get(urun)

@@ -39,6 +39,7 @@ getirmek ekonomik değildir. Pancarda belirleyici olan ne ilin tüketimi ne
 
 import json
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -51,7 +52,7 @@ ORNEK = 40000
 TOHUM = 20261008
 
 
-def soru_analizi(anahtar, kayit, c):
+def soru_analizi(anahtar: str, kayit: dict[str, Any], c: Calisma) -> dict[str, Any]:
     """Bir denge sorusunun belirsizlik çözümlemesi.
 
     Formüller burada değil: kayit, mus_iz.denge_grafigi()'nden gelen hesap
@@ -146,13 +147,14 @@ def soru_analizi(anahtar, kayit, c):
     )
 
 
-def _histogram(oran, kutu=32):
+def _histogram(oran: Any, kutu: int = 32) -> dict[str, Any]:
     alt, ust = float(np.percentile(oran, 0.3)), float(np.percentile(oran, 99.7))
     sayim, kenar = np.histogram(np.clip(oran, alt, ust), bins=kutu, range=(alt, ust))
     return dict(sayim=sayim.tolist(), kenar=[round(float(k), 4) for k in kenar])
 
 
-def karar_tablosu(sorular, toprak):
+def karar_tablosu(sorular: list[dict[str, Any]],
+                  toprak: dict[str, Any] | None) -> list[dict[str, Any]]:
     """Dengeyi uygunlukla çaprazlar ve her ürün için EYLEM üretir.
 
     "Açık var, ürün de uyuyor, o halde ekelim" yetmez: ARAZİ SINIRLIDIR.
@@ -167,7 +169,8 @@ def karar_tablosu(sorular, toprak):
     """
     if not toprak:
         return []
-    uygunluk, sirala = {}, {}
+    uygunluk: dict[str, dict[str, Any]] = {}
+    sirala: dict[str, dict[str, int]] = {}
     for u in toprak.get("urun_karsilastirma", []):
         puanlar = [d["puan"] for d in u["ilceler"]]
         uygunluk[u["urun"]] = dict(
@@ -250,7 +253,7 @@ def karar_tablosu(sorular, toprak):
     return cikti
 
 
-def kaldirac_analizi(sorular):
+def kaldirac_analizi(sorular: list[dict[str, Any]]) -> dict[str, Any] | None:
     """Yem açığı nasıl kapanır? Arazi bütçesiyle birlikte.
 
     Açığı sadece yem bitkisi ekerek kapatmak mümkün mü diye bakar. Gereken
@@ -270,7 +273,7 @@ def kaldirac_analizi(sorular):
     mevcut_yem = sum(mp.il_alani(u) for u in mp.KABA_YEM_GRUBU)
 
     mera_da = mp.OLCUM["mera_da"][0]
-    kaldiraclar = [
+    kaldiraclar: list[dict[str, Any]] = [
         dict(ad="Mera ıslahı (+0,03 ton KM/da)",
              tur="arazi rekabeti yok", kazanc=round(mera_da * 0.03),
              arazi=0,
@@ -314,7 +317,7 @@ def kaldirac_analizi(sorular):
     )
 
 
-def analiz(n=ORNEK, toprak=None):
+def analiz(n: int = ORNEK, toprak: dict[str, Any] | None = None) -> dict[str, Any]:
     if toprak is None:
         yol = CIKTI / "mus_toprak.json"
         toprak = (json.loads(yol.read_text(encoding="utf-8"))
@@ -325,7 +328,7 @@ def analiz(n=ORNEK, toprak=None):
     sorular = [soru_analizi(a, kayit, c) for a, kayit in grafik.items()]
 
     # Bütün sorular arasında en çok işe yarayan ölçümler
-    birikim = {}
+    birikim: dict[str, dict[str, Any]] = {}
     for s in sorular:
         for d in s["duyarlilik"]:
             # Gruplama etikete göre: düğüm kimliği her grafik kurulumunda

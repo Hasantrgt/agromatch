@@ -99,10 +99,22 @@ ignore = [
 # ------------------------------------------------------------------ mypy
 [tool.mypy]
 python_version = "3.10"
-files = ["src"]
 ignore_missing_imports = true
-# Tip ipuçları henüz tamamlanmadı; kademeli olarak sıkılaştırılacak.
-# Önce iz.py ve mus_profil.py tipleniyor, sonra diğerleri.
-disallow_untyped_defs = false
 warn_unused_ignores = true
 warn_redundant_casts = true
+
+# Kademeli tipleme. Çekirdek sekiz modül tam tipli ve mypy'den temiz geçiyor;
+# CI yalnızca onları denetler. Eski bölgesel modüller ve görüntü işleme hattı
+# henüz tiplenmedi — sırayla eklenecek, her eklemede bu liste büyüyecek.
+files = [
+    "src/iz.py",
+    "src/mus_profil.py",
+    "src/mus_iklim.py",
+    "src/mus_toprak.py",
+    "src/mus_hastalik.py",
+    "src/mus_analiz.py",
+    "src/mus_iz.py",
+    "src/mus_belirsizlik.py",
+]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
