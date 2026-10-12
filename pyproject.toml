@@ -67,17 +67,33 @@ markers = [
 
 # ------------------------------------------------------------------ ruff
 [tool.ruff]
-line-length = 92
+line-length = 100
 target-version = "py310"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
+# Kural kümesi bilerek dar tutuldu: bugün SIFIR uyarıyla geçiyor.
+# İlk günden kırmızı yanan bir denetim, görmezden gelinmeye alışılan bir
+# denetimdir. Eski dosyalar temizlendikçe ignore listesi kısaltılacak.
 select = ["E", "F", "W", "I", "UP", "B", "SIM"]
 ignore = [
-    "E741",  # tek harfli değişken adı (matematik formüllerinde okunaklı)
+    "E741",  # tek harfli değişken (matematik formüllerinde okunaklı)
+    "E702",  # aynı satırda noktalı virgülle iki ifade — eski dosyalarda var
+    "B007",  # kullanılmayan döngü değişkeni (tuple açarken kaçınılmaz)
+    "B905",  # zip(strict=) — davranış bilerek varsayılan
+    "SIM108",  # üçlü operatör dayatması; uzun koşullarda okunaklılığı bozuyor
 ]
 
 [tool.ruff.lint.per-file-ignores]
+# Belge üreticiler gömülü HTML ve CSS taşır; satır uzunluğu doğaldır.
+"src/kutu_foyu.py" = ["E501"]
+"src/ozet_uret.py" = ["E501"]
+# Veri tabloları hizalı yazıldığında okunaklıdır.
+"src/toprak_profil.py" = ["E501"]
+"src/hastalik_profil.py" = ["E501"]
+"src/bolge_profil.py" = ["E501"]
+"src/ekonomi_profil.py" = ["E501"]
+"src/kaynak_profil.py" = ["E501"]
 "tests/*" = ["E501"]
 
 # ------------------------------------------------------------------ mypy
