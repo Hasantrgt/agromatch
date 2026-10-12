@@ -240,3 +240,51 @@ def test_ozet_yuzdelikleri():
 def test_basamak_secimi(deger, beklenen_basamak):
     """Büyük sayı ondalık istemez, küçük sayı ister."""
     assert iz._basamak(deger) == beklenen_basamak
+
+
+# ------------------------------------------------------------- uç köşe
+def test_kose_tek_yaprak():
+    """Tek belirsiz yaprakta köşe, aralığın ucudur."""
+    v = varsayim("v", 5, aralik=(1, 9))
+    kok = carp("kök", olcum("sabit", 2), v)
+    assert kok.kose(en_buyuk=True) == 18    # 2 × 9
+    assert kok.kose(en_buyuk=False) == 2    # 2 × 1
+
+
+def test_kose_yonu_yaprak_konumuna_gore_secer():
+    """Payda tarafındaki yaprağın DÜŞÜĞÜ sonucu büyütür.
+
+    Kütüphane bunu analitik olarak bilmez; iki ucu da deneyip bakar.
+    """
+    pay = varsayim("pay", 10, aralik=(5, 20))
+    payda = varsayim("payda", 2, aralik=(1, 4))
+    kok = bol("oran", pay, payda)
+    assert kok.kose(en_buyuk=True) == pytest.approx(20)   # 20 / 1
+    assert kok.kose(en_buyuk=False) == pytest.approx(1.25)  # 5 / 4
+
+
+def test_kose_belirsizlik_yoksa_noktasal_deger():
+    kok = carp("kök", olcum("a", 3), olcum("b", 4))
+    assert kok.kose() == 12
+
+
+def test_kose_dugum_degerlerini_bozmaz():
+    """En kritik davranış: köşe hesabı yan etki bırakmamalı."""
+    v = varsayim("v", 5, aralik=(1, 9))
+    kok = carp("kök", olcum("sabit", 2), v)
+    once = kok.deger()
+    kok.kose(en_buyuk=True)
+    kok.kose(en_buyuk=False)
+    assert kok.deger() == once, "köşe hesabı düğüm değerlerini kalıcı değiştirmiş"
+    assert v.deger() == 5
+
+
+def test_kose_medyani_kapsar():
+    """Köşeler arası aralık, örneklemenin tamamını içermeli."""
+    kok = topla("kök",
+                varsayim("a", 10, aralik=(5, 15)),
+                varsayim("b", 20, aralik=(10, 30)))
+    c = Calisma(n=10000, tohum=11)
+    x = kok.ornek(c)
+    assert kok.kose(en_buyuk=False) <= x.min()
+    assert kok.kose(en_buyuk=True) >= x.max()

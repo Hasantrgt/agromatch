@@ -101,7 +101,7 @@ Test takımı dört şeyi korur:
 - **Saf fonksiyonlar** — puanlayıcılar, dönüşümler, sınır değerleri
 - **Veri tutarlılığı** — paylar 1'e toplanıyor mu, il üretim toplamı korunuyor mu
 - **Regresyon** — geliştirme sırasında bulunan hatalar bir daha geri gelmesin
-- **Çapraz doğrulama** — `iz.py` grafiği ile elle yazılmış hesap aynı sonucu versin
+- **Altın dosya** — refactor'lar çıktıyı değiştirmesin
 
 ---
 
@@ -109,9 +109,23 @@ Test takımı dört şeyi korur:
 
 ```bash
 python src/mus_profil.py            # veri tutarlılığını denetler
-python src/mus_iz.py --dogrula      # grafik hesabını elle yazılanla karşılaştırır
+python src/mus_iz.py --dogrula      # noktasal değer ile dağılım merkezi tutarlı mı
 python src/mus_belirsizlik.py       # belirsizlik ve ölçüm önceliği
 ```
+
+### Denge formülleri tek yerde
+
+Altı denge sorusunun formülleri yalnızca `mus_iz.denge_grafigi()` içinde,
+hesap grafiği olarak tanımlıdır. `mus_belirsizlik` oradan beslenir ve üstüne
+karar katmanını kurar:
+
+```
+mus_iz (ne hesaplanıyor)  ->  mus_belirsizlik (ne anlama geliyor)
+```
+
+Bu ayrım bir refactor'la kuruldu; öncesinde iki modül aynı formülleri ayrı
+ayrı tutuyordu. `tests/test_altin.py`, refactor'ın çıktıyı değiştirmediğini
+kaydedilmiş bir altın dosyayla doğrular.
 
 ---
 

@@ -1053,8 +1053,12 @@ function izDugumu(d, derinlik) {
   }
   if (d.gerekce) detay.push(el("span", { class: "dugum-kaynak", text: d.gerekce }));
   if (d.olcum_yolu) {
+    // Ölçüm yolu yapılandırılmış: yöntem, miktar, birim ve kimin yapacağı.
+    const y = d.olcum_yolu;
+    const olcek = y.miktar > 1 ? ` · ${y.miktar} ${y.birim}` : "";
     detay.push(el("span", { class: "dugum-kaynak",
-      html: "<strong>Nasıl ölçülür:</strong> " + d.olcum_yolu }));
+      html: `<strong>Nasıl ölçülür:</strong> ${y.yontem}${olcek}`
+        + (y.kim ? ` — ${y.kim}` : "") }));
   }
 
   if (!d.cocuklar || !d.cocuklar.length) {

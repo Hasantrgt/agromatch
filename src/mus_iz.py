@@ -40,6 +40,17 @@ TOHUM = 20261008
 KAYNAK = "TÜİK 2024 · Bakanlık Muş Tarımsal Yatırım Rehberi 2025"
 
 
+def yol(yontem, birim, miktar, zorluk, kim):
+    """Bir bilinmeyenin nasıl ölçüleceği.
+
+    Emek = miktar × zorluk. Ölçüm önceliği bu sayıya göre sıralanır: tek bir
+    resmî yazı (1 × 1) ile 40 noktalık saha çalışması (40 × 2) aynı kefeye
+    konamaz. masa_basi, saha işi gerektirmeyen kalemleri ayırır.
+    """
+    return dict(yontem=yontem, birim=birim, miktar=miktar, zorluk=zorluk,
+                kim=kim, emek=miktar * zorluk, masa_basi=bool(miktar <= 2))
+
+
 # ======================================================================
 #  Ortak yapraklar — bir kez kurulur, bütün dengelerde paylaşılır
 # ======================================================================
@@ -57,56 +68,64 @@ def yapraklar():
         "Büyükbaş yıllık kaba yem ihtiyacı", 2.60, "ton KM/baş", (2.20, 3.10),
         gerekce="Canlı ağırlığa, süt verimine ve barınma süresine bağlı. "
                 "Muş'ta ağırlıklı melez sığır var.",
-        olcum_yolu="İl Müdürlüğü ırk dağılımı (resmî yazı)")
+        olcum_yolu=yol("İl Müdürlüğü ırk dağılımı", "resmî yazı", 1, 1, "Danışman hoca"))
     y["yem_kb"] = varsayim(
         "Küçükbaş yıllık kaba yem ihtiyacı", 0.45, "ton KM/baş", (0.35, 0.58),
         gerekce="1,16 milyon başta küçük bir sapma büyük tonaja dönüşüyor.",
-        olcum_yolu="Sürü kompozisyonu anketi (30 işletme)")
+        olcum_yolu=yol("Sürü kompozisyonu anketi", "işletme", 30, 3, "Öğrenci ekibi + Zootekni"))
     y["kesif_bb"] = varsayim(
         "Büyükbaş yıllık kesif yem ihtiyacı", 0.80, "ton/baş", (0.55, 1.15),
         gerekce="Besi ve süt işletmeleri arasında iki kat fark olabilir.",
-        olcum_yolu="Yem bayisi satış kaydı + işletme anketi")
+        olcum_yolu=yol(
+                "Yem bayisi satış kaydı + işletme anketi", "işletme", 25,
+                3, "Öğrenci ekibi"))
     y["kesif_kb"] = varsayim(
         "Küçükbaş yıllık kesif yem ihtiyacı", 0.06, "ton/baş", (0.025, 0.10),
         gerekce="Meraya dayalı küçükbaşta az; ağıl döneminde artar.",
-        olcum_yolu="İşletme anketi")
+        olcum_yolu=yol("İşletme anketi", "işletme", 25, 3, "Öğrenci ekibi"))
 
     y["mera_verim"] = varsayim(
         "Mera verimi", 0.10, "ton KM/dekar", (0.05, 0.18),
         gerekce="Doğu Anadolu'da bozulmuş mera 0,04–0,08; iyi mera 0,15–0,25. "
                 "Muş'ta ölçüm yok.",
-        olcum_yolu="Kadran biçimi (40 nokta) + Sentinel-2 NDVI kalibrasyonu")
+        olcum_yolu=yol(
+                "Kadran biçimi + Sentinel-2 NDVI kalibrasyonu", "saha noktası", 40,
+                2, "Öğrenci ekibi + Tarla Bitkileri"))
     y["mera_oran"] = varsayim(
         "Otlatılabilir mera oranı", 0.88, "oran", (0.70, 1.00),
         gerekce="Kadastral alanın tamamı otlatılamaz: kayalık, dik, erişilemez.",
-        olcum_yolu="Uydu görüntüsünden eğim ve arazi örtüsü maskesi")
+        olcum_yolu=yol(
+                "Uydu görüntüsünden eğim ve arazi örtüsü maskesi", "ilçe", 6,
+                1, "Öğrenci ekibi (ücretsiz veri)"))
     y["aniz_verim"] = varsayim(
         "Anız verimi", 0.05, "ton KM/dekar", (0.02, 0.09),
         gerekce="Hasat sonrası tarlada kalan ve hayvanın yiyebildiği sap.",
-        olcum_yolu="Hasat sonrası kadran biçimi (20 tarla)")
+        olcum_yolu=yol("Hasat sonrası kadran biçimi", "tarla", 20, 2, "Öğrenci ekibi"))
     y["km_yesil"] = varsayim(
         "Yeşil otta kuru madde oranı", 0.25, "oran", (0.21, 0.30),
         gerekce="TÜİK yoncayı yeşil ot olarak kaydediyor; çevrim oranı biçim "
                 "zamanına ve kurutma koşullarına göre değişir.",
-        olcum_yolu="Etüv kurutma (24 örnek, laboratuvar)")
+        olcum_yolu=yol("Etüv kurutma (laboratuvar)", "örnek", 24, 2, "Üniversite laboratuvarı"))
 
     y["tohumluk"] = varsayim(
         "Tohumluk ve fire payı", 0.08, "oran", (0.04, 0.14),
         gerekce="Üretimin tohumluk ayrılan ve depoda kaybolan payı.",
-        olcum_yolu="İl Müdürlüğü sertifikalı tohum kaydı (resmî yazı)")
+        olcum_yolu=yol("İl Müdürlüğü sertifikalı tohum kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
     y["kb_bugday"] = varsayim(
         "Kişi başı yıllık buğday", 0.250, "ton/kişi", (0.195, 0.300),
         gerekce="Un, bulgur, makarna eşdeğeri. Kırsalda ev ekmeği nedeniyle "
                 "daha yüksek olabilir.",
-        olcum_yolu="TÜİK hanehalkı tüketim anketi + bölgesel düzeltme")
+        olcum_yolu=yol(
+                "TÜİK hanehalkı tüketim anketi + bölgesel düzeltme", "masa başı", 1,
+                2, "Öğrenci ekibi"))
     y["kb_patates"] = varsayim(
         "Kişi başı yıllık patates", 0.085, "ton/kişi", (0.055, 0.120),
         gerekce="Türkiye ortalaması mertebesi; bölgesel ölçüm yok.",
-        olcum_yolu="TÜİK hanehalkı tüketim anketi")
+        olcum_yolu=yol("TÜİK hanehalkı tüketim anketi", "masa başı", 1, 2, "Öğrenci ekibi"))
     y["kb_fasulye"] = varsayim(
         "Kişi başı yıllık kuru fasulye", 0.009, "ton/kişi", (0.005, 0.014),
         gerekce="Kuru baklagil tüketimi; bölgesel kayıt yok.",
-        olcum_yolu="TÜİK hanehalkı tüketim anketi")
+        olcum_yolu=yol("TÜİK hanehalkı tüketim anketi", "masa başı", 1, 2, "Öğrenci ekibi"))
 
     # Üretim: bir ölçümün kendisi de belirsiz olabilir
     y["u_bugday"] = olcum(
@@ -124,33 +143,33 @@ def yapraklar():
         "Fiğ üretimi", mp.URETIM["Fiğ"][0], "ton",
         (mp.URETIM["Fiğ"][0] * 0.6, mp.URETIM["Fiğ"][0] * 1.5),
         gerekce="Resmî tabloda ayrı kalem değil; tamamen tahmin.",
-        olcum_yolu="İl Müdürlüğü ürün bazlı üretim kaydı (resmî yazı)")
+        olcum_yolu=yol("İl Müdürlüğü ürün bazlı üretim kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
     y["u_fasulye"] = varsayim(
         "Kuru fasulye üretimi", mp.URETIM["Kuru fasulye"][0], "ton",
         (mp.URETIM["Kuru fasulye"][0] * 0.6, mp.URETIM["Kuru fasulye"][0] * 1.5),
         gerekce="Resmî tabloda ayrı kalem değil; tamamen tahmin.",
-        olcum_yolu="İl Müdürlüğü ürün bazlı üretim kaydı (resmî yazı)")
+        olcum_yolu=yol("İl Müdürlüğü ürün bazlı üretim kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
     y["yem_carpan"] = varsayim(
         "Yem bitkisi üretimi çarpanı", 1.00, "çarpan", (0.85, 1.15),
         gerekce="Belgenin kendi içinde çelişkisi var (494.853 / 1.515.000 ton).",
-        olcum_yolu="İl Müdürlüğü üretim kaydı (resmî yazı)")
+        olcum_yolu=yol("İl Müdürlüğü üretim kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
     y["pancar_carpan"] = varsayim(
         "Pancar üretimi çarpanı", 1.00, "çarpan", (0.95, 1.05),
         gerekce="TÜİK kaydı var; fabrika alım kaydıyla çapraz doğrulanabilir.",
-        olcum_yolu="Fabrika alım kaydı (resmî yazı)")
+        olcum_yolu=yol("Fabrika alım kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
     y["hayvan_carpan"] = varsayim(
         "Hayvan sayısı çarpanı", 1.00, "çarpan", (0.95, 1.05),
         gerekce="TÜİK kaydı var; kayıt dışı hayvan ve yıl içi dalgalanma.",
-        olcum_yolu="TÜRKVET kaydı (resmî yazı)")
+        olcum_yolu=yol("TÜRKVET kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
 
     y["fab_kapasite"] = varsayim(
         "Fabrika günlük kapasitesi", 7500, "ton/gün", (5000, 9500),
         gerekce="TEYİT EDİLMEDİ. Resmî kaynakta bulunamadı.",
-        olcum_yolu="Fabrika müdürlüğünden teyit (tek resmî yazı)")
+        olcum_yolu=yol("Fabrika müdürlüğünden teyit", "resmî yazı", 1, 1, "Danışman hoca"))
     y["fab_gun"] = varsayim(
         "Kampanya süresi", 95, "gün", (75, 115),
         gerekce="Pancarın geliş hızına ve hava koşullarına göre değişir.",
-        olcum_yolu="Fabrika kampanya kaydı (resmî yazı)")
+        olcum_yolu=yol("Fabrika kampanya kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
 
     y["tahil_alan"] = olcum(
         "Tahıl ekim alanı (buğday + arpa)",
@@ -221,20 +240,48 @@ def grafikler(y):
         carp("Fasulye tohumluk ve fire", y["u_fasulye"], y["tohumluk"], birim="ton"),
         birim="ton")
 
+    # Her dengenin kimliği: başlık, kapsadığı ürünler, ölçek, grafiğin iki
+    # tarafı, bu ölçekte fazlalığın sorun olup olmadığı ve okuma notu.
+    # BU SÖZLÜK PROJEDEKİ TEK DENGE TANIMIDIR; mus_belirsizlik buradan beslenir.
     return {
-        "kaba_yem": dict(baslik="Kaba yem", olcek="ilçe",
-                         arz=kaba_arz, ihtiyac=kaba_ihtiyac),
-        "pancar": dict(baslik="Şeker pancarı", olcek="fabrika havzası",
-                       arz=pancar_arz, ihtiyac=pancar_ihtiyac),
-        "arpa": dict(baslik="Arpa (kesif yem)", olcek="il ve çevre il",
-                     arz=y["u_arpa"], ihtiyac=arpa_ihtiyac),
-        "bugday": dict(baslik="Buğday", olcek="ulusal",
-                       arz=y["u_bugday"], ihtiyac=bugday_ihtiyac),
-        "patates": dict(baslik="Patates", olcek="ulusal",
-                        arz=y["u_patates"], ihtiyac=patates_ihtiyac),
-        "fasulye": dict(baslik="Kuru fasulye", olcek="ulusal",
-                        arz=y["u_fasulye"], ihtiyac=fasulye_ihtiyac),
+        "kaba_yem": dict(
+            baslik="Kaba yem", urunler=list(mp.KABA_YEM_GRUBU), olcek="ilçe",
+            arz=kaba_arz, ihtiyac=kaba_ihtiyac, fazla_sorun=True,
+            yorum="Hacimli ve ucuz; uzaktan getirmek ekonomik değil. Açık gerçek "
+                  "açıktır. Mera ve anız arz tarafına dahildir."),
+        "pancar": dict(
+            baslik="Şeker pancarı", urunler=["Şeker pancarı"],
+            olcek="fabrika havzası", arz=pancar_arz, ihtiyac=pancar_ihtiyac,
+            fazla_sorun=True,
+            yorum="Alıcısı tek tesis. 'İhtiyaç' burada fabrika kapasitesidir; "
+                  "aşan miktar sökülse bile işlenemez."),
+        "arpa": dict(
+            baslik="Arpa (kesif yem)", urunler=["Arpa"], olcek="il ve çevre il",
+            arz=y["u_arpa"], ihtiyac=arpa_ihtiyac, fazla_sorun=False,
+            yorum="Taşınabilir ama ağırlıklı olarak yerinde tüketilir."),
+        "bugday": dict(
+            baslik="Buğday", urunler=["Buğday"], olcek="ulusal",
+            arz=y["u_bugday"], ihtiyac=bugday_ihtiyac, fazla_sorun=False,
+            yorum="İl içi tüketim sadece referans. Fazla, ilin ülkeye katkısıdır; "
+                  "uyarı konusu değildir. Doğru soru ulusal ölçekte sorulur."),
+        "patates": dict(
+            baslik="Patates", urunler=["Patates"], olcek="ulusal",
+            arz=y["u_patates"], ihtiyac=patates_ihtiyac, fazla_sorun=False,
+            yorum="Ulusal piyasası var; il dengesi bağlayıcı değil."),
+        "fasulye": dict(
+            baslik="Kuru fasulye", urunler=["Kuru fasulye"], olcek="ulusal",
+            arz=y["u_fasulye"], ihtiyac=fasulye_ihtiyac, fazla_sorun=False,
+            yorum="Ulusal piyasası var; üretim verisi zaten tahmin."),
     }
+
+
+def denge_grafigi():
+    """Denge grafiğini kurar ve döndürür. Tek giriş noktası.
+
+    mus_belirsizlik bu fonksiyonu çağırır; denge formüllerinin ikinci bir
+    kopyası projede bulunmaz.
+    """
+    return grafikler(yapraklar())
 
 
 def analiz(n=ORNEK, tohum=TOHUM):
@@ -280,35 +327,32 @@ def analiz(n=ORNEK, tohum=TOHUM):
 
 
 def dogrula():
-    """Grafik, elle yazılmış modülle aynı sayıyı veriyor mu?
+    """Grafiğin noktasal değeri, dağılımın merkeziyle tutarlı mı?
 
-    Yeni bir soyutlama getirirken eskisiyle aynı sonucu verdiğini göstermek,
-    soyutlamanın doğru olduğunun tek kanıtıdır. Tutmuyorsa biri yanlıştır ve
-    hangisi olduğunu bulmak gerekir.
+    Bir zamanlar bu fonksiyon grafiği, elle yazılmış ikinci bir hesapla
+    karşılaştırıyordu. O ikinci hesap kaldırıldı (formüller artık tek yerde),
+    dolayısıyla karşılaştırma kendini kendisiyle yapmaya dönüşmüştü.
+
+    Yerine anlamlı bir kontrol kondu: noktasal değer (bütün varsayımlar en
+    olası uçlarında) ile Monte Carlo medyanı birbirine yakın olmalı. Çok
+    ayrışıyorlarsa ya dağılım aşırı çarpık ya da bir yerde hata var.
+
+    Refactor'ın sayıları bozmadığının asıl güvencesi tests/test_altin.py'dir.
     """
-    import mus_belirsizlik as mb
-
-    yeni, _, _ = analiz()
-    eski = mb.analiz()
-    eski_harita = {q["anahtar"]: q for q in eski["sorular"]}
-
-    print(f"{'DENGE':<22}{'GRAFİK':>10}{'ELLE YAZILAN':>14}{'FARK':>9}  SONUÇ")
-    hepsi_tuttu = True
-    for q in yeni["sorular"]:
-        e = eski_harita.get(q["anahtar"])
-        if not e:
-            print(f"{q['baslik']:<22}{'—':>10}{'yok':>14}")
-            continue
-        a, b = q["oran"]["medyan"], e["oran"]["medyan"]
-        fark_yuzde = abs(a - b) / max(abs(b), 1e-9) * 100
-        tuttu = fark_yuzde < 1.0
-        hepsi_tuttu &= tuttu
-        print(f"{q['baslik']:<22}{a:>10.3f}{b:>14.3f}{fark_yuzde:>8.2f}%"
-              f"  {'tuttu' if tuttu else 'TUTMADI'}")
+    sonuc, g, c = analiz()
+    print(f"{'DENGE':<22}{'NOKTASAL':>10}{'MC MEDYAN':>12}{'FARK':>9}  SONUÇ")
+    hepsi = True
+    for q in sonuc["sorular"]:
+        nokta, medyan = q["oran"]["noktasal"], q["oran"]["medyan"]
+        fark_yuzde = abs(nokta - medyan) / max(abs(medyan), 1e-9) * 100
+        tuttu = fark_yuzde < 15
+        hepsi &= tuttu
+        print(f"{q['baslik']:<22}{nokta:>10.3f}{medyan:>12.3f}{fark_yuzde:>8.1f}%"
+              f"  {'tutarlı' if tuttu else 'AYRIŞIYOR'}")
     print()
-    print("Bütün dengeler tuttu." if hepsi_tuttu
-          else "FARK VAR — iki hesaptan biri yanlış.")
-    return hepsi_tuttu
+    print("Noktasal değerler dağılım merkezleriyle tutarlı." if hepsi
+          else "AYRIŞMA VAR — dağılım çarpık ya da hesapta hata olabilir.")
+    return hepsi
 
 
 def main():

@@ -169,6 +169,42 @@ class Dugum:
             alt90=float(np.percentile(x, 5)), ust90=float(np.percentile(x, 95)),
             sapma=float(x.std()))
 
+    # ------------------------------------------------------------- uç köşe
+    def kose(self, en_buyuk=True):
+        """Bütün belirsiz yapraklar aynı anda uçlarındayken değer.
+
+        "Her şey ters giderse ne olur?" sorusunun cevabı. Monte Carlo bu
+        köşeye pratikte hiç uğramaz (on bağımsız değişkenin aynı anda aynı
+        uçta olma olasılığı sıfıra yakındır), ama sınırları görmek için
+        gerekir.
+
+        Hangi ucun sonucu büyüttüğü analitik olarak bilinemez: bir yaprak
+        arz tarafındaysa yükseği, talep tarafındaysa düşüğü sonucu büyütür.
+        Bu yüzden her yaprak için iki uç da denenir, diğerleri en olası
+        değerinde tutularak hangisinin sonucu büyüttüğüne bakılır.
+        """
+        belirsiz = self.belirsiz_yapraklar()
+        if not belirsiz:
+            return self.deger()
+
+        asil = {y.kimlik: y._deger for y in belirsiz}
+        try:
+            for y in belirsiz:
+                dusuk, _mod, yuksek = y.aralik
+                denemeler = {}
+                for uc, deger in (("dusuk", dusuk), ("yuksek", yuksek)):
+                    y._deger = deger
+                    denemeler[uc] = self.deger()
+                    y._deger = asil[y.kimlik]
+                buyuten = max(denemeler, key=denemeler.get)
+                secilen = buyuten if en_buyuk else (
+                    "yuksek" if buyuten == "dusuk" else "dusuk")
+                y._deger = dusuk if secilen == "dusuk" else yuksek
+            return self.deger()
+        finally:
+            for y in belirsiz:
+                y._deger = asil[y.kimlik]
+
     # --------------------------------------------------------- türeyiş ağacı
     def agac(self, calisma=None, paylar=None, derinlik=0, maks=6):
         """Panelde çizilecek türeyiş ağacı (iç içe sözlük)."""

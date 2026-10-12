@@ -1,0 +1,232 @@
+{
+ "sorular": [
+  {
+   "anahtar": "kaba_yem",
+   "baslik": "Kaba yem",
+   "olcek": "ilçe",
+   "oran": {
+    "medyan": 0.48,
+    "alt90": 0.357,
+    "ust90": 0.638
+   },
+   "karar": "açık",
+   "esigi_kesiyor": false,
+   "arz_medyan": 560099,
+   "ihtiyac_medyan": 1169927,
+   "baskin": "Mera verimi (ton KM/da)",
+   "baskin_pay": 73.3,
+   "duyarlilik": {
+    "Mera verimi (ton KM/da)": 73.3,
+    "Küçükbaş yıllık kaba yem ihtiyacı (ton KM)": 7.1,
+    "Otlatılabilir mera oranı": 6.1,
+    "Anız verimi (ton KM/da)": 4.8,
+    "Büyükbaş yıllık kaba yem ihtiyacı (ton KM)": 4.2,
+    "Hayvan sayısı çarpanı": 1.4,
+    "Yeşil otta kuru madde oranı": 0.9,
+    "Yem bitkisi üretimi çarpanı": 0.8,
+    "Kişi başı yıllık kuru fasulye (ton)": 0.2
+   }
+  },
+  {
+   "anahtar": "pancar",
+   "baslik": "Şeker pancarı",
+   "olcek": "fabrika havzası",
+   "oran": {
+    "medyan": 0.957,
+    "alt90": 0.758,
+    "ust90": 1.263
+   },
+   "karar": "belirsiz",
+   "esigi_kesiyor": true,
+   "arz_medyan": 664965,
+   "ihtiyac_medyan": 694736,
+   "baskin": "Fabrika günlük kapasitesi (ton)",
+   "baskin_pay": 67.5,
+   "duyarlilik": {
+    "Fabrika günlük kapasitesi (ton)": 67.5,
+    "Kampanya süresi (gün)": 29.0,
+    "Pancar üretimi çarpanı": 1.6,
+    "Otlatılabilir mera oranı": 0.2
+   }
+  },
+  {
+   "anahtar": "arpa",
+   "baslik": "Arpa (kesif yem)",
+   "olcek": "il ve çevre il",
+   "oran": {
+    "medyan": 0.352,
+    "alt90": 0.289,
+    "ust90": 0.438
+   },
+   "karar": "açık",
+   "esigi_kesiyor": false,
+   "arz_medyan": 98938,
+   "ihtiyac_medyan": 281193,
+   "baskin": "Büyükbaş yıllık kesif yem ihtiyacı (ton)",
+   "baskin_pay": 69.8,
+   "duyarlilik": {
+    "Büyükbaş yıllık kesif yem ihtiyacı (ton)": 69.8,
+    "Küçükbaş yıllık kesif yem ihtiyacı (ton)": 25.4,
+    "Hayvan sayısı çarpanı": 2.4,
+    "Tohumluk ve fire payı": 0.6
+   }
+  },
+  {
+   "anahtar": "bugday",
+   "baslik": "Buğday",
+   "olcek": "ulusal",
+   "oran": {
+    "medyan": 2.626,
+    "alt90": 2.151,
+    "ust90": 3.157
+   },
+   "karar": "fazla",
+   "esigi_kesiyor": false,
+   "arz_medyan": 335800,
+   "ihtiyac_medyan": 126081,
+   "baskin": "Buğday üretimi (ton)",
+   "baskin_pay": 41.3,
+   "duyarlilik": {
+    "Buğday üretimi (ton)": 41.3,
+    "Kişi başı yıllık buğday (ton)": 36.0,
+    "Tohumluk ve fire payı": 23.7,
+    "Kampanya süresi (gün)": 0.2
+   }
+  },
+  {
+   "anahtar": "patates",
+   "baslik": "Patates",
+   "olcek": "ulusal",
+   "oran": {
+    "medyan": 0.12,
+    "alt90": 0.095,
+    "ust90": 0.158
+   },
+   "karar": "açık",
+   "esigi_kesiyor": false,
+   "arz_medyan": 4087,
+   "ihtiyac_medyan": 34121,
+   "baskin": "Kişi başı yıllık patates (ton)",
+   "baskin_pay": 99.5,
+   "duyarlilik": {
+    "Kişi başı yıllık patates (ton)": 99.5,
+    "Kişi başı yıllık buğday (ton)": 0.2
+   }
+  },
+  {
+   "anahtar": "fasulye",
+   "baslik": "Kuru fasulye",
+   "olcek": "ulusal",
+   "oran": {
+    "medyan": 0.329,
+    "alt90": 0.215,
+    "ust90": 0.51
+   },
+   "karar": "açık",
+   "esigi_kesiyor": false,
+   "arz_medyan": 1228,
+   "ihtiyac_medyan": 3729,
+   "baskin": "Kişi başı yıllık kuru fasulye (ton)",
+   "baskin_pay": 56.3,
+   "duyarlilik": {
+    "Kişi başı yıllık kuru fasulye (ton)": 56.3,
+    "Kayıtsız ürün üretimi çarpanı": 40.9,
+    "Tohumluk ve fire payı": 0.2
+   }
+  }
+ ],
+ "karar": [
+  {
+   "urun": "Fiğ",
+   "eylem": "artır",
+   "olcek": "ilçe",
+   "oran": 0.48,
+   "en_iyi_ilce": "Varto",
+   "makas": 7.6,
+   "yeri_onemli": false
+  },
+  {
+   "urun": "Arpa",
+   "eylem": "artır",
+   "olcek": "il ve çevre il",
+   "oran": 0.352,
+   "en_iyi_ilce": "Varto",
+   "makas": 7.6,
+   "yeri_onemli": false
+  },
+  {
+   "urun": "Şeker pancarı",
+   "eylem": "önce ölç",
+   "olcek": "fabrika havzası",
+   "oran": 0.957,
+   "en_iyi_ilce": "Hasköy",
+   "makas": 9.2,
+   "yeri_onemli": false
+  },
+  {
+   "urun": "Korunga",
+   "eylem": "artır",
+   "olcek": "ilçe",
+   "oran": 0.48,
+   "en_iyi_ilce": "Hasköy",
+   "makas": 4.8,
+   "yeri_onemli": false
+  },
+  {
+   "urun": "Yonca",
+   "eylem": "artır",
+   "olcek": "ilçe",
+   "oran": 0.48,
+   "en_iyi_ilce": "Hasköy",
+   "makas": 3.3,
+   "yeri_onemli": false
+  },
+  {
+   "urun": "Silajlık mısır",
+   "eylem": "artır",
+   "olcek": "ilçe",
+   "oran": 0.48,
+   "en_iyi_ilce": "Hasköy",
+   "makas": 15.9,
+   "yeri_onemli": true
+  },
+  {
+   "urun": "Patates",
+   "eylem": "fırsat",
+   "olcek": "ulusal",
+   "oran": 0.12,
+   "en_iyi_ilce": "Varto",
+   "makas": 16.9,
+   "yeri_onemli": true
+  },
+  {
+   "urun": "Kuru fasulye",
+   "eylem": "fırsat",
+   "olcek": "ulusal",
+   "oran": 0.329,
+   "en_iyi_ilce": "Hasköy",
+   "makas": 15.0,
+   "yeri_onemli": true
+  },
+  {
+   "urun": "Buğday",
+   "eylem": "koru",
+   "olcek": "ulusal",
+   "oran": 2.626,
+   "en_iyi_ilce": "Hasköy",
+   "makas": 6.1,
+   "yeri_onemli": false
+  }
+ ],
+ "kaldirac": {
+  "acik_ton": 609828,
+  "sadece_ekimle_dekar": 641924,
+  "bugday_payi": 55.8,
+  "kat": 4.3
+ },
+ "belirsiz_karar": [
+  "Şeker pancarı"
+ ],
+ "masa_basi_kazanc": 33.8,
+ "saha_kazanc": 7.6
+}

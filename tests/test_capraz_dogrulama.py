@@ -23,31 +23,37 @@ KOK = Path(__file__).resolve().parent.parent
 
 
 # =====================================================================
-#  Çapraz doğrulama: iki ayrı yoldan aynı sayı
+#  Tek kaynak: denge formülleri yalnızca grafikte
 # =====================================================================
-# mus_belirsizlik.py dengeleri elle yazılmış fonksiyonlarla, mus_iz.py ise
-# hesap grafiğiyle hesaplar. İkisi aynı sonucu vermek ZORUNDA. Bu, yeni
-# soyutlamanın doğru olduğunun tek kanıtıdır — aksi halde elimizde sadece
-# daha şık görünen, doğruluğu bilinmeyen bir kod olurdu.
+# Bir zamanlar mus_belirsizlik ve mus_iz aynı altı dengeyi ayrı ayrı
+# hesaplıyordu ve bu test ikisini karşılaştırıyordu. İki kopya tutmak
+# bakım borcuydu: formül değişince biri unutulurdu. Refactor'da formüller
+# tek yere, mus_iz.denge_grafigi()'ne taşındı.
+#
+# Karşılaştıracak ikinci bir yol kalmadığı için koruma görevi artık
+# tests/test_altin.py'de: refactor öncesi çıktı altın dosya olarak
+# kaydedildi ve sayıların değişmediği orada doğrulanıyor.
+#
+# Burada kalan test, iki modülün AYNI grafiği kullandığını doğrular.
 
 @pytest.mark.yavas
-def test_grafik_ve_elle_yazilan_hesap_ayni_sonucu_verir():
-    yeni, _, _ = mus_iz.analiz(n=20000)
-    eski = mus_belirsizlik.analiz(n=20000)
-    eski_harita = {q["anahtar"]: q for q in eski["sorular"]}
+def test_iki_modul_ayni_grafigi_kullanir():
+    grafik = mus_iz.denge_grafigi()
+    belirsiz = mus_belirsizlik.analiz(n=20000)
 
-    assert len(yeni["sorular"]) == len(eski["sorular"])
+    assert set(grafik) == {q["anahtar"] for q in belirsiz["sorular"]}
 
-    for q in yeni["sorular"]:
-        e = eski_harita[q["anahtar"]]
-        a, b = q["oran"]["medyan"], e["oran"]["medyan"]
-        # Fark yalnızca Monte Carlo gürültüsü kadar olabilir
-        assert a == pytest.approx(b, rel=0.02), (
-            f"{q['baslik']}: grafik {a:.3f}, elle yazılan {b:.3f}")
+    for anahtar, kayit in grafik.items():
+        q = next(x for x in belirsiz["sorular"] if x["anahtar"] == anahtar)
+        assert q["baslik"] == kayit["baslik"]
+        assert q["olcek"] == kayit["olcek"]
+        assert q["urunler"] == kayit["urunler"]
+        # Noktasal değerler grafikten geliyor mu
+        assert q["arz_medyan"] == pytest.approx(kayit["arz"].deger(), rel=0.15)
 
 
 @pytest.mark.yavas
-def test_dogrula_komutu_basarili():
+def test_dogrula_komutu_calisir():
     """python src/mus_iz.py --dogrula komutunun kullandığı fonksiyon."""
     assert mus_iz.dogrula() is True
 

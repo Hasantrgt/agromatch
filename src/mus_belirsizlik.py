@@ -1,8 +1,7 @@
 """
 AGROMATCH - Ürün bazlı belirsizlik ve ölçüm önceliği
 =====================================================
-Panel her ürün için bir denge oranı söylüyor. Bu sayıların hepsi ölçülmemiş
-varsayımların üstünde duruyor. Bu modül iki soruyu HER ÜRÜN İÇİN AYRI sorar:
+Her denge sorusu için iki şeyi hesaplar:
 
   1. Bu oran ne kadar belirsiz?
      Her varsayıma makul bir aralık verilir, aralıktan on binlerce kez örnek
@@ -12,20 +11,26 @@ varsayımların üstünde duruyor. Bu modül iki soruyu HER ÜRÜN İÇİN AYRI 
      Birinci mertebe duyarlılık indisi (Sobol S1) ile varyans ayrıştırılır,
      her bilinmeyene bir ölçüm yolu eşlenir, ÖLÇÜM ÖNCELİK SIRASI çıkar.
 
+DENGE FORMÜLLERİ BURADA DEĞİL
+------------------------------
+Bu modül bir zamanlar denge formüllerinin kendi kopyasını tutuyordu. İki
+kopya demek, bir formül değiştiğinde birinin unutulması demektir. Formüller
+artık yalnızca mus_iz.denge_grafigi() içinde, hesap grafiği olarak tanımlı.
+Bu modül oradan beslenir ve üstüne karar katmanını kurar:
+
+    mus_iz (ne hesaplanıyor)  ->  mus_belirsizlik (ne anlama geliyor)
+
+Örnekleme, duyarlılık ve uç köşe hesabı da iz.py'nin işi; burada yok.
+
 HER ÜRÜN KENDİ ÖLÇEĞİNDE SORULUR
 ---------------------------------
 "Muş kendi ihtiyacını karşılıyor mu?" sorusu buğday için anlamsızdır: Muş
 368 bin ton buğday üretir, kendi nüfusu 98 bin ton tüketir, fazlası ülkeye
-gider. Bu ilin işlevidir, sorunu değil.
-
-Aynı soru kaba yem için tam yerindedir: yonca ve silaj hacimli ve ucuzdur,
-uzaktan getirmek ekonomik değildir, denge il içinde kurulmak zorundadır.
-
-Pancarda soru büsbütün başkadır: belirleyici olan ne ilin tüketimi ne
+gider. Aynı soru kaba yem için tam yerindedir: hacimli ve ucuzdur, uzaktan
+getirmek ekonomik değildir. Pancarda belirleyici olan ne ilin tüketimi ne
 ülkenin ihtiyacıdır — fabrikanın işleyebileceği miktardır.
 
-Ölçekler mus_profil.DENGE_OLCEGI'nde tanımlıdır ve ürünün taşınabilirliğinden
-türetilir. Kaba yem ürünleri birbirinin yerine geçtiği için tek grup sayılır.
+Ölçekler mus_iz.denge_grafigi() içinde her dengenin yanında tanımlıdır.
 
 Çıktı: outputs/mus_belirsizlik.json
 
@@ -37,310 +42,45 @@ from pathlib import Path
 
 import numpy as np
 
+import mus_iz
 import mus_profil as mp
+from iz import Calisma, bol, fark
 
 CIKTI = Path(__file__).resolve().parent.parent / "outputs"
 ORNEK = 40000
 TOHUM = 20261008
 
-# ======================================================================
-#  Belirsiz girdiler
-# ======================================================================
-# anahtar: (etiket, en düşük, en olası, en yüksek, tür, gerekçe)
-GIRDI = {
-    # --- hayvan ve mera tarafı
-    "mera_verim": (
-        "Mera verimi (ton KM/da)", 0.05, 0.10, 0.18, "varsayım",
-        "Doğu Anadolu'da bozulmuş mera 0,04–0,08; iyi durumdaki mera 0,15–0,25 "
-        "ton kuru madde/dekar verir. Muş'ta ölçüm yok. 3,7 milyon dekarda bu "
-        "katsayı yem arzının en büyük kalemini tek başına belirliyor."),
-    "mera_otlatilabilir": (
-        "Otlatılabilir mera oranı", 0.70, 0.88, 1.00, "varsayım",
-        "Kadastral mera alanının tamamı otlatılamaz: kayalık, çok dik, "
-        "erişilemeyen kısımlar vardır. Oran bilinmiyor."),
-    "aniz_verim": (
-        "Anız verimi (ton KM/da)", 0.02, 0.05, 0.09, "varsayım",
-        "Hasat sonrası tarlada kalan ve hayvanın yiyebildiği sap. Biçerdöver "
-        "ayarına ve sapın toplanıp toplanmadığına göre değişir."),
-    "yem_buyukbas": (
-        "Büyükbaş yıllık kaba yem ihtiyacı (ton KM)", 2.20, 2.60, 3.10, "varsayım",
-        "Canlı ağırlığa, süt verimine ve barınma süresine bağlı. Muş'ta "
-        "ağırlıklı olarak melez sığır var; ihtiyaç kültür ırkından düşük."),
-    "yem_kucukbas": (
-        "Küçükbaş yıllık kaba yem ihtiyacı (ton KM)", 0.35, 0.45, 0.58, "varsayım",
-        "Koyun ve keçi arasında fark var; 1,16 milyon başta küçük bir sapma "
-        "büyük tonaja dönüşüyor."),
-    "kesif_buyukbas": (
-        "Büyükbaş yıllık kesif yem ihtiyacı (ton)", 0.55, 0.80, 1.15, "varsayım",
-        "Süt veren hayvanda yoğun yem tüketimi çok değişken; besi ve süt "
-        "işletmeleri arasında iki kat fark olabilir."),
-    "kesif_kucukbas": (
-        "Küçükbaş yıllık kesif yem ihtiyacı (ton)", 0.025, 0.06, 0.10, "varsayım",
-        "Meraya dayalı küçükbaşta kesif yem az; ağıl döneminde artar."),
-    "hayvan_sayisi": (
-        "Hayvan sayısı çarpanı", 0.95, 1.00, 1.05, "ölçüm",
-        "TÜİK 2024 kaydı var; belirsizlik kayıt dışı hayvan ve yıl içi "
-        "dalgalanmadan geliyor. Diğerlerine göre çok dar."),
 
-    # --- üretim tarafı
-    "km_yesil_ot": (
-        "Yeşil otta kuru madde oranı", 0.21, 0.25, 0.30, "varsayım",
-        "TÜİK yonca ve korungayı yeşil ot olarak kaydediyor. Kuru maddeye "
-        "çevrim oranı biçim zamanına ve kurutma koşullarına göre değişir."),
-    "uretim_yem": (
-        "Yem bitkisi üretimi çarpanı", 0.85, 1.00, 1.15, "ölçüm",
-        "TÜİK kaydı var ama belgenin kendi içinde çelişkisi var "
-        "(Bölüm 2.1: 494.853 ton · Bölüm 2.2: 1.515.000 ton)."),
-    "uretim_bugday": (
-        "Buğday üretimi (ton)", 244000, 368297, 380000, "ölçüm",
-        "KAYNAK KENDİSİYLE ÇELİŞİYOR: Tablo 3'te 368.297 ton, Bölüm 2.2'de "
-        "'115 bin ha'da ~244 bin ton'. Ölçülmüş bir sayının bile belirsiz "
-        "olabileceğinin örneği."),
-    "uretim_tahmini": (
-        "Kayıtsız ürün üretimi çarpanı", 0.60, 1.00, 1.50, "varsayım",
-        "Fiğ ve kuru fasulye resmî tabloda ayrı kalem değil; üretimleri "
-        "tamamen tahmin."),
+def soru_analizi(anahtar, kayit, c):
+    """Bir denge sorusunun belirsizlik çözümlemesi.
 
-    # --- tüketim tarafı
-    "kisi_basi_bugday": (
-        "Kişi başı yıllık buğday (ton)", 0.195, 0.250, 0.300, "varsayım",
-        "Un, bulgur, makarna eşdeğeri. Türkiye ortalaması 200–250 kg; kırsalda "
-        "ev ekmeği nedeniyle daha yüksek olabilir."),
-    "kisi_basi_patates": (
-        "Kişi başı yıllık patates (ton)", 0.055, 0.085, 0.120, "varsayım",
-        "Türkiye ortalaması mertebesi; bölgesel ölçüm yok."),
-    "kisi_basi_fasulye": (
-        "Kişi başı yıllık kuru fasulye (ton)", 0.005, 0.009, 0.014, "varsayım",
-        "Kuru baklagil tüketimi; bölgesel kayıt yok."),
-    "tohumluk_oran": (
-        "Tohumluk ve fire payı", 0.04, 0.08, 0.14, "varsayım",
-        "Üretimin tohumluk ayrılan ve depoda kaybolan payı. Sertifikalı tohum "
-        "kullanım oranına göre değişir."),
-
-    # --- fabrika
-    "fabrika_kapasite": (
-        "Fabrika günlük kapasitesi (ton)", 5000, 7500, 9500, "varsayım",
-        "TEYİT EDİLMEDİ. Resmî kaynakta bulunamadı. Tek bir telefon görüşmesi "
-        "ya da resmî yazı bu belirsizliği tamamen kaldırır."),
-    "fabrika_gun": (
-        "Kampanya süresi (gün)", 75, 95, 115, "varsayım",
-        "Pancarın geliş hızına ve hava koşullarına göre değişir. "
-        "Fabrika kayıtlarında var."),
-    "pancar_uretim": (
-        "Pancar üretimi çarpanı", 0.95, 1.00, 1.05, "ölçüm",
-        "TÜİK 2024 kaydı; fabrika alım kayıtlarıyla çapraz doğrulanabilir."),
-}
-
-# Ölçüm yolu: (yöntem, birim, miktar, zorluk 1-5, kim yapar)
-OLCUM_YOLU = {
-    "mera_verim": ("Kadran biçimi + Sentinel-2 NDVI kalibrasyonu",
-                   "saha noktası", 40, 2, "Öğrenci ekibi + Tarla Bitkileri"),
-    "mera_otlatilabilir": ("Uydu görüntüsünden eğim ve arazi örtüsü maskesi",
-                           "ilçe", 6, 1, "Öğrenci ekibi (ücretsiz veri)"),
-    "aniz_verim": ("Hasat sonrası kadran biçimi", "tarla", 20, 2, "Öğrenci ekibi"),
-    "yem_buyukbas": ("Literatür + İl Müdürlüğü ırk dağılımı", "resmî yazı", 1, 1,
-                     "Danışman hoca"),
-    "yem_kucukbas": ("Sürü kompozisyonu anketi", "işletme", 30, 3,
-                     "Öğrenci ekibi + Zootekni"),
-    "kesif_buyukbas": ("Yem bayisi satış kaydı + işletme anketi", "işletme", 25, 3,
-                       "Öğrenci ekibi"),
-    "kesif_kucukbas": ("İşletme anketi", "işletme", 25, 3, "Öğrenci ekibi"),
-    "hayvan_sayisi": ("TÜRKVET kaydı", "resmî yazı", 1, 1, "Danışman hoca"),
-    "km_yesil_ot": ("Etüv kurutma (laboratuvar)", "örnek", 24, 2,
-                    "Üniversite laboratuvarı"),
-    "uretim_yem": ("İl Müdürlüğü üretim kaydı", "resmî yazı", 1, 1, "Danışman hoca"),
-    "uretim_bugday": ("İl Müdürlüğü ve TMO alım kaydı karşılaştırması",
-                      "resmî yazı", 1, 1, "Danışman hoca"),
-    "uretim_tahmini": ("İl Müdürlüğü ürün bazlı üretim kaydı", "resmî yazı", 1, 1,
-                       "Danışman hoca"),
-    "kisi_basi_bugday": ("TÜİK hanehalkı tüketim anketi + bölgesel düzeltme",
-                         "masa başı", 1, 2, "Öğrenci ekibi"),
-    "kisi_basi_patates": ("TÜİK hanehalkı tüketim anketi", "masa başı", 1, 2,
-                          "Öğrenci ekibi"),
-    "kisi_basi_fasulye": ("TÜİK hanehalkı tüketim anketi", "masa başı", 1, 2,
-                          "Öğrenci ekibi"),
-    "tohumluk_oran": ("İl Müdürlüğü sertifikalı tohum dağıtım kaydı",
-                      "resmî yazı", 1, 1, "Danışman hoca"),
-    "fabrika_kapasite": ("Fabrika müdürlüğünden teyit", "resmî yazı", 1, 1,
-                         "Danışman hoca"),
-    "fabrika_gun": ("Fabrika kampanya kaydı", "resmî yazı", 1, 1, "Danışman hoca"),
-    "pancar_uretim": ("Fabrika alım kaydı", "resmî yazı", 1, 1, "Danışman hoca"),
-}
-
-
-# ======================================================================
-#  Denge soruları — her biri kendi ölçeğinde
-# ======================================================================
-def _nufus():
-    return mp.OLCUM["nufus"][0]
-
-
-def _hayvan(x):
-    return (mp.OLCUM["buyukbas"][0] * x["hayvan_sayisi"],
-            mp.OLCUM["kucukbas"][0] * x["hayvan_sayisi"])
-
-
-def denge_pancar(x):
-    """Ölçek: fabrika havzası. Tavanı fabrika koyar, tüketim değil."""
-    arz = mp.URETIM["Şeker pancarı"][0] * x["pancar_uretim"]
-    ihtiyac = x["fabrika_kapasite"] * x["fabrika_gun"]
-    return arz, ihtiyac
-
-
-def denge_bugday(x):
-    """Ölçek: ulusal. İl içi tüketim sadece referans; fazla sorun değil."""
-    arz = x["uretim_bugday"]
-    tohumluk = arz * x["tohumluk_oran"]
-    ihtiyac = _nufus() * x["kisi_basi_bugday"] + tohumluk
-    return arz, ihtiyac
-
-
-def denge_arpa(x):
-    """Ölçek: il ve çevre il. Arpa ağırlıklı olarak kesif yem."""
-    bb, kb = _hayvan(x)
-    arz = mp.URETIM["Arpa"][0]
-    tohumluk = arz * x["tohumluk_oran"]
-    ihtiyac = bb * x["kesif_buyukbas"] + kb * x["kesif_kucukbas"] + tohumluk
-    return arz, ihtiyac
-
-
-def denge_kaba_yem(x):
-    """Ölçek: ilçe. Grup olarak sorulur — ürünler birbirinin yerine geçer.
-
-    Arz = mera + anız + yem bitkileri (hepsi kuru madde).
-    Mera ve anız da arz tarafındadır; hayvan onları da yer.
+    Formüller burada değil: kayit, mus_iz.denge_grafigi()'nden gelen hesap
+    grafiğinin bir dalıdır. Burada yapılan iş, o daldan çıkan dağılımı karar
+    diline çevirmektir.
     """
-    bb, kb = _hayvan(x)
-    ihtiyac = bb * x["yem_buyukbas"] + kb * x["yem_kucukbas"]
+    arz_d, ihtiyac_d = kayit["arz"], kayit["ihtiyac"]
+    oran_d = bol("Arz / ihtiyaç", arz_d, ihtiyac_d, birim="oran")
 
-    mera = mp.OLCUM["mera_da"][0] * x["mera_otlatilabilir"] * x["mera_verim"]
-    tahil_alan = sum(mp.il_alani(u) for u in ("Buğday", "Arpa"))
-    aniz = tahil_alan * x["aniz_verim"]
-
-    yesil = mp.URETIM["Yonca"][0] + mp.URETIM["Korunga"][0]
-    fig = mp.URETIM["Fiğ"][0] * x["uretim_tahmini"]
-    silaj = mp.URETIM["Silajlık mısır"][0] * mp.KURU_MADDE["Silajlık mısır"]
-    yem_bitkisi = ((yesil + fig) * x["km_yesil_ot"] + silaj) * x["uretim_yem"]
-
-    return mera + aniz + yem_bitkisi, ihtiyac
-
-
-def denge_patates(x):
-    arz = mp.URETIM["Patates"][0]
-    ihtiyac = _nufus() * x["kisi_basi_patates"] + arz * x["tohumluk_oran"]
-    return arz, ihtiyac
-
-
-def denge_fasulye(x):
-    arz = mp.URETIM["Kuru fasulye"][0] * x["uretim_tahmini"]
-    ihtiyac = _nufus() * x["kisi_basi_fasulye"] + arz * x["tohumluk_oran"]
-    return arz, ihtiyac
-
-
-# anahtar: (başlık, ürünler, ölçek, fonksiyon, "fazla sorun mu", yorum)
-SORU = {
-    "kaba_yem": (
-        "Kaba yem", list(mp.KABA_YEM_GRUBU), "ilçe", denge_kaba_yem, True,
-        "Hacimli ve ucuz; uzaktan getirmek ekonomik değil. Açık gerçek açıktır. "
-        "Mera ve anız arz tarafına dahildir."),
-    "pancar": (
-        "Şeker pancarı", ["Şeker pancarı"], "fabrika havzası", denge_pancar, True,
-        "Alıcısı tek tesis. 'İhtiyaç' burada fabrika kapasitesidir; aşan miktar "
-        "sökülse bile işlenemez."),
-    "arpa": (
-        "Arpa (kesif yem)", ["Arpa"], "il ve çevre il", denge_arpa, False,
-        "Taşınabilir ama ağırlıklı olarak yerinde tüketilir."),
-    "bugday": (
-        "Buğday", ["Buğday"], "ulusal", denge_bugday, False,
-        "İl içi tüketim sadece referans. Fazla, ilin ülkeye katkısıdır; "
-        "uyarı konusu değildir. Doğru soru ulusal ölçekte sorulur."),
-    "patates": (
-        "Patates", ["Patates"], "ulusal", denge_patates, False,
-        "Ulusal piyasası var; il dengesi bağlayıcı değil."),
-    "fasulye": (
-        "Kuru fasulye", ["Kuru fasulye"], "ulusal", denge_fasulye, False,
-        "Ulusal piyasası var; üretim verisi zaten tahmin."),
-}
-
-
-# ======================================================================
-#  Motor
-# ======================================================================
-def ornekle(n=ORNEK, tohum=TOHUM):
-    """Üçgen dağılım: en düşük, en olası ve en yüksek bilindiğinde kullanılan
-    standart seçim. Sınırların dışına çıkmaz — mera verimi negatif olamaz."""
-    rng = np.random.default_rng(tohum)
-    return {ad: rng.triangular(d, m, y, n)
-            for ad, (_e, d, m, y, _t, _g) in GIRDI.items()}
-
-
-def s1_indisi(girdi, cikti, kutu=28):
-    """Birinci mertebe duyarlılık: Var(E[Y|X]) / Var(Y).
-
-    Örnekler girdiye göre eşit büyüklükte kutulara ayrılır, her kutunun çıktı
-    ortalaması alınır, bu ortalamaların varyansı toplam varyansa bölünür.
-    Girdi çıktıyı etkilemiyorsa kutu ortalamaları eşitlenir, indis sıfıra iner.
-    """
-    if np.allclose(girdi, girdi[0]):
-        return 0.0
-    y = cikti[np.argsort(girdi)]
-    parcalar = np.array_split(y, kutu)
-    ort = np.array([p.mean() for p in parcalar])
-    ag = np.array([len(p) for p in parcalar], dtype=float)
-    ag /= ag.sum()
-    genel = (ort * ag).sum()
-    toplam = cikti.var()
-    if toplam <= 0:
-        return 0.0
-    return float(max(0.0, min(1.0, (ag * (ort - genel) ** 2).sum() / toplam)))
-
-
-def kose_degeri(fn, acik_buyusun):
-    """Bütün girdiler aynı anda en uç noktalarındayken oran.
-
-    Hangi uç "kötü" olduğu girdinin arz mı talep mi tarafında olduğuna bağlı.
-    Bunu analitik olarak bilmek yerine iki ucu da deneyip seçiyoruz: her girdi
-    için tek tek hangi ucun oranı düşürdüğüne bakılır.
-    """
-    orta = {ad: np.array([m]) for ad, (_e, _d, m, _y, _t, _g) in GIRDI.items()}
-    secim = {}
-    for ad, (_e, dusuk, mod, yuksek, _t, _g) in GIRDI.items():
-        denemeler = {}
-        for uc, deger in (("dusuk", dusuk), ("yuksek", yuksek)):
-            gecici = dict(orta)
-            gecici[ad] = np.array([deger])
-            arz, iht = fn(gecici)
-            denemeler[uc] = float(np.asarray(arz / iht).ravel()[0])
-        # Açığın büyümesi = oranın küçülmesi
-        kotu = min(denemeler, key=denemeler.get)
-        secilen = kotu if acik_buyusun else ("yuksek" if kotu == "dusuk" else "dusuk")
-        secim[ad] = np.array([dusuk if secilen == "dusuk" else yuksek])
-    arz, iht = fn(secim)
-    return float(np.asarray(arz / iht).ravel()[0])
-
-
-def soru_analizi(anahtar, x):
-    baslik, urunler, olcek, fn, fazla_sorun, yorum = SORU[anahtar]
-    arz, ihtiyac = fn(x)
-    oran = np.asarray(arz / ihtiyac, dtype=float)
-
+    oran = oran_d.ornek(c)
     p = {q: float(np.percentile(oran, q)) for q in (5, 25, 50, 75, 95)}
     sapma = float(oran.std())
 
+    # Duyarlılık hesabı iz.py'de; burada sadece karar katmanı eklenir.
     duyarlilik = []
-    for ad, (etiket, d, m, y, tur, gerekce) in GIRDI.items():
-        s1 = s1_indisi(x[ad], oran)
-        if s1 < 0.002:
-            continue                      # bu soruya girmiyor
-        yontem, birim, miktar, zorluk, kim = OLCUM_YOLU[ad]
+    for d in oran_d.duyarlilik(c):
+        if d["s1"] < 0.002:
+            continue                      # bu dengeye girmiyor
+        y = d["olcum_yolu"] or {}
+        kalan_oran = float(np.sqrt(max(0.0, 1 - d["s1"])))
         duyarlilik.append(dict(
-            anahtar=ad, etiket=etiket, tur=tur, gerekce=gerekce,
-            aralik=[d, y], en_olasi=m, s1=round(s1, 4),
-            varyans_payi=round(s1 * 100, 1),
-            kazanc_yp=round((sapma - sapma * float(np.sqrt(max(0.0, 1 - s1)))) * 100, 2),
-            yontem=yontem, birim=birim, miktar=miktar, zorluk=zorluk, kim=kim,
-            masa_basi=bool(miktar <= 2)))
-    duyarlilik.sort(key=lambda r: -r["s1"])
+            anahtar=d["kimlik"], etiket=d["ad"], tur="varsayım",
+            gerekce=d["gerekce"], aralik=[d["aralik"][0], d["aralik"][2]],
+            en_olasi=d["aralik"][1], s1=d["s1"], varyans_payi=d["varyans_payi"],
+            kazanc_yp=round((sapma - sapma * kalan_oran) * 100, 2),
+            yontem=y.get("yontem", "—"), birim=y.get("birim", "—"),
+            miktar=y.get("miktar", 1), zorluk=y.get("zorluk", 1),
+            kim=y.get("kim", "—"), emek=y.get("emek", 1),
+            masa_basi=bool(y.get("masa_basi", True))))
 
     # Ölçüm planı: masa başı işler önce toplu, saha ölçümleri etkiye göre
     masa = [r for r in duyarlilik if r["masa_basi"]]
@@ -353,14 +93,14 @@ def soru_analizi(anahtar, x):
                          kalemler=[r["etiket"] for r in masa],
                          yontem="İl Müdürlüğü, TÜRKVET, fabrika yazışması",
                          kim="Danışman hoca",
-                         emek=sum(r["miktar"] * r["zorluk"] for r in masa),
+                         emek=sum(r["emek"] for r in masa),
                          sapma_yp=round(sapma * float(np.sqrt(kalan)) * 100, 2),
                          aciklanan=round((1 - kalan) * 100, 1)))
     for r in saha:
         kalan = max(0.0, kalan - r["s1"])
         plan.append(dict(adim=len(plan) + 1, asama="saha / laboratuvar",
                          etiket=r["etiket"], kalemler=None, yontem=r["yontem"],
-                         kim=r["kim"], emek=r["miktar"] * r["zorluk"],
+                         kim=r["kim"], emek=r["emek"],
                          sapma_yp=round(sapma * float(np.sqrt(kalan)) * 100, 2),
                          aciklanan=round((1 - kalan) * 100, 1)))
 
@@ -378,29 +118,29 @@ def soru_analizi(anahtar, x):
     else:
         karar = "fazla"
         karar_notu = ("En kötümser uçta bile arz ihtiyacın üstünde. "
-                      + ("Fazlalık bu ölçekte sorundur." if fazla_sorun
+                      + ("Fazlalık bu ölçekte sorundur." if kayit["fazla_sorun"]
                          else "Bu ölçekte fazlalık sorun değildir."))
 
-    sayisal = {k: dict(arz=round(float(np.percentile(np.asarray(arz, dtype=float)
-                                                     * np.ones_like(oran), q))),
-                       ihtiyac=round(float(np.percentile(
-                           np.asarray(ihtiyac, dtype=float) * np.ones_like(oran), q))))
-               for k, q in (("p50", 50),)}
+    acik_d = fark("Açık", ihtiyac_d, arz_d, birim=ihtiyac_d.birim, en_az_sifir=True)
 
     return dict(
-        anahtar=anahtar, baslik=baslik, urunler=urunler, olcek=olcek,
-        fazla_sorun=fazla_sorun, yorum=yorum,
+        anahtar=anahtar, baslik=kayit["baslik"], urunler=kayit["urunler"],
+        olcek=kayit["olcek"], fazla_sorun=kayit["fazla_sorun"],
+        yorum=kayit["yorum"],
         oran=dict(medyan=round(p[50], 3), alt90=round(p[5], 3),
                   ust90=round(p[95], 3), alt50=round(p[25], 3),
                   ust50=round(p[75], 3), sapma=round(sapma, 4),
                   sapma_yp=round(sapma * 100, 1)),
-        arz_medyan=sayisal["p50"]["arz"], ihtiyac_medyan=sayisal["p50"]["ihtiyac"],
+        arz_medyan=round(float(np.percentile(arz_d.ornek(c), 50))),
+        ihtiyac_medyan=round(float(np.percentile(ihtiyac_d.ornek(c), 50))),
+        acik_medyan=round(float(np.percentile(acik_d.ornek(c), 50))),
         karar=karar, karar_notu=karar_notu,
         esigi_kesiyor=bool(kesiyor),
-        en_iyimser=round(kose_degeri(fn, False), 3),
-        en_kotumser=round(kose_degeri(fn, True), 3),
+        en_iyimser=round(oran_d.kose(en_buyuk=True), 3),
+        en_kotumser=round(oran_d.kose(en_buyuk=False), 3),
         baskin=duyarlilik[0] if duyarlilik else None,
         duyarlilik=duyarlilik, plan=plan,
+        dugum_sayisi=oran_d.dugum_sayisi(), derinlik=oran_d.derinlik(),
         toplam_s1=round(sum(r["s1"] for r in duyarlilik), 3),
         histogram=_histogram(oran),
     )
@@ -579,17 +319,21 @@ def analiz(n=ORNEK, toprak=None):
         yol = CIKTI / "mus_toprak.json"
         toprak = (json.loads(yol.read_text(encoding="utf-8"))
                   if yol.exists() else None)
-    x = ornekle(n)
-    sorular = [soru_analizi(a, x) for a in SORU]
+    # Denge formüllerinin tek tanımı burada çağrılıyor.
+    grafik = mus_iz.denge_grafigi()
+    c = Calisma(n, TOHUM)
+    sorular = [soru_analizi(a, kayit, c) for a, kayit in grafik.items()]
 
     # Bütün sorular arasında en çok işe yarayan ölçümler
     birikim = {}
     for s in sorular:
         for d in s["duyarlilik"]:
-            b = birikim.setdefault(d["anahtar"], dict(
-                anahtar=d["anahtar"], etiket=d["etiket"], tur=d["tur"],
+            # Gruplama etikete göre: düğüm kimliği her grafik kurulumunda
+            # yeniden üretilir, etiket sabittir.
+            b = birikim.setdefault(d["etiket"], dict(
+                anahtar=d["etiket"], etiket=d["etiket"], tur=d["tur"],
                 yontem=d["yontem"], kim=d["kim"], masa_basi=d["masa_basi"],
-                emek=d["miktar"] * d["zorluk"], gerekce=d["gerekce"],
+                emek=d["emek"], gerekce=d["gerekce"],
                 etkiledigi=[], toplam_kazanc=0.0, en_yuksek_pay=0.0))
             b["etkiledigi"].append(dict(soru=s["baslik"], pay=d["varyans_payi"],
                                         kazanc=d["kazanc_yp"]))
