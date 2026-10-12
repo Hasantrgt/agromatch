@@ -34,11 +34,19 @@ jobs:
       - name: Veri tutarlılığını denetle
         run: python src/mus_profil.py
 
+      # Testler TEMİZ bir klonda çalışır: outputs/ depoda yoktur.
+      # Gerekli çıktıyı tests/conftest.py üretir; önden hazırlık yapılmaz.
+      # Amaç, "benim makinemde geçiyordu" durumunu CI'da yakalamak.
       - name: Testler
         run: pytest -q
 
       - name: Panel üretilebiliyor mu
         run: python src/mus_panel_uret.py --hepsi
+
+      - name: Panel gerçekten yazılmış mı
+        run: |
+          test -f mus_panel.html
+          test "$(stat -c%s mus_panel.html)" -gt 100000
 
   lint:
     runs-on: ubuntu-latest

@@ -318,10 +318,21 @@ def kaldirac_analizi(sorular: list[dict[str, Any]]) -> dict[str, Any] | None:
 
 
 def analiz(n: int = ORNEK, toprak: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Belirsizlik çözümlemesi. toprak verilmezse kendisi üretir.
+
+    Eylem tablosu dengeyi toprak-iklim uygunluğuyla çaprazlar, yani toprak
+    analizine ihtiyaç duyar. Önceden bu, outputs/mus_toprak.json dosyası
+    yoksa SESSİZCE boş bir tablo üretiyordu — temiz bir klonda panel eylem
+    tablosu olmadan çıkıyor ve kimse fark etmiyordu. Artık dosya yoksa
+    analiz yerinde çalıştırılır.
+    """
     if toprak is None:
         yol = CIKTI / "mus_toprak.json"
-        toprak = (json.loads(yol.read_text(encoding="utf-8"))
-                  if yol.exists() else None)
+        if yol.exists():
+            toprak = json.loads(yol.read_text(encoding="utf-8"))
+        else:
+            import mus_toprak
+            toprak = mus_toprak.analiz()
     # Denge formüllerinin tek tanımı burada çağrılıyor.
     grafik = mus_iz.denge_grafigi()
     c = Calisma(n, TOHUM)

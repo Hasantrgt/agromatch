@@ -99,12 +99,8 @@ def test_tema_belirtecleri_tam(sablon):
 
 # ------------------------------------------------------------- çıktı
 @pytest.mark.yavas
-def test_panel_uretiliyor(tmp_path):
-    mus_panel_uret.main()
-    hedef = PANEL.parent.parent / "mus_panel.html"
-    assert hedef.exists()
-
-    html = hedef.read_text(encoding="utf-8")
+def test_panel_uretiliyor(panel):
+    html = panel.read_text(encoding="utf-8")
     assert len(html) > 100_000
     for yer in ("__MUS_JSON__", "__TOPRAK_JSON__", "__HASTALIK_JSON__",
                 "__BELIRSIZLIK_JSON__", "__IZ_JSON__"):
@@ -112,12 +108,12 @@ def test_panel_uretiliyor(tmp_path):
 
 
 @pytest.mark.yavas
-def test_panel_dis_baglanti_kullanmiyor():
+def test_panel_dis_baglanti_kullanmiyor(panel):
     """Panel tek dosya olmalı: yazı tipi dışında dış kaynak yüklememeli.
 
     Bir USB bellekten ya da e-posta ekinden açıldığında çalışması gerekiyor.
     """
-    html = (PANEL.parent.parent / "mus_panel.html").read_text(encoding="utf-8")
+    html = panel.read_text(encoding="utf-8")
     kaynaklar = re.findall(r'(?:src|href)="(https?://[^"]+)"', html)
     izinli = ("fonts.googleapis.com", "fonts.gstatic.com")
     disarida = [k for k in kaynaklar if not any(i in k for i in izinli)]

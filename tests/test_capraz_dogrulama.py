@@ -113,14 +113,13 @@ def test_bugday_ulusal_olcekte_fazla_sorun_degil():
 #  Uçtan uca: bütün hat çalışıyor ve panel üretiliyor
 # =====================================================================
 @pytest.mark.yavas
-def test_tum_analizler_calisir_ve_panel_uretilir(tmp_path, monkeypatch):
+def test_tum_analizler_calisir_ve_panel_uretilir(panel):
     """En temel güvence: hat baştan sona kırılmadan çalışıyor mu?
 
     Bu test bir şeyin DOĞRU olduğunu kanıtlamaz, ÇALIŞTIĞINI kanıtlar.
     İkisi farklıdır ama ikincisi olmadan birincisi anlamsızdır.
     """
     import mus_hastalik
-    import mus_panel_uret
 
     assert mp.denetle() == []
 
@@ -134,14 +133,8 @@ def test_tum_analizler_calisir_ve_panel_uretilir(tmp_path, monkeypatch):
     assert len(veri["karne"]) == 6
     assert hastalik["istatistik"]["hastalik_sayisi"] > 15
 
-    # Panel gerçekten yazılıyor mu
-    hedef = KOK / "mus_panel.html"
-    once = hedef.stat().st_mtime if hedef.exists() else 0
-    mus_panel_uret.main()
-    assert hedef.exists()
-    assert hedef.stat().st_mtime >= once
-
-    html = hedef.read_text(encoding="utf-8")
+    # Panel gerçekten yazılıyor mu (panel fixture'ı üretimi garanti eder)
+    html = panel.read_text(encoding="utf-8")
     assert len(html) > 100_000
     for yer_tutucu in ("__MUS_JSON__", "__TOPRAK_JSON__", "__HASTALIK_JSON__",
                        "__BELIRSIZLIK_JSON__", "__IZ_JSON__"):
@@ -149,9 +142,9 @@ def test_tum_analizler_calisir_ve_panel_uretilir(tmp_path, monkeypatch):
 
 
 @pytest.mark.yavas
-def test_cikti_dosyalari_gecerli_json():
+def test_cikti_dosyalari_gecerli_json(ciktilar):
     """Üretilen JSON'lar panelde okunacak; bozuk olamazlar."""
-    cikti = KOK / "outputs"
+    cikti = ciktilar
     beklenen = ["mus.json", "mus_toprak.json", "mus_hastalik.json",
                 "mus_belirsizlik.json", "mus_iz.json"]
     for ad in beklenen:
