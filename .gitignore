@@ -69,3 +69,5 @@ Thumbs.db
 .env
 *.key
 gizli/
+# --- Pages yayın klasörü (CI üretir)
+yayin/

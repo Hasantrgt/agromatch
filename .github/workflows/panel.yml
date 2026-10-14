@@ -1,0 +1,87 @@
+name: Panel
+
+# Paneli üretir ve GitHub Pages'te yayınlar.
+#
+# Panel depoya GİRMEZ (.gitignore). Kaynaktan her seferinde yeniden üretilir.
+# Bu iş akışı o kuralı bozmadan paneli yayınlar: üretim burada olur, çıktı
+# doğrudan Pages'e gider, depoya hiç yazılmaz.
+#
+# Sonuç: panel ile kod hiçbir zaman birbirinden ayrılmaz. Yayındaki panel
+# daima main dalındaki kodun ürettiği paneldir.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages'e yazma izni. Varsayılan izinler salt okunurdur.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Aynı anda tek yayın. Üst üste gönderim olursa eskisi iptal edilmez,
+# sırayla tamamlanır — yarım kalmış bir yayın canlıya çıkmasın.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  uret:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # Görüntü kümesi de kurulur: Cercospora bölümü boş kalmasın.
+      - name: Bağımlılıkları kur
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-goruntu.txt
+
+      - name: Veri tutarlılığını denetle
+        run: python src/mus_profil.py
+
+      - name: Cercospora görüntü hattı
+        run: |
+          python src/goruntu/sentetik_yaprak.py
+          python src/goruntu/cercospora_panel_veri.py
+
+      - name: Paneli üret
+        run: python src/mus_panel_uret.py --hepsi
+
+      # Üretici yer tutucu kalırsa uyarı basıp yine de çıkar. Yarım bir panel
+      # yayınlanmasın diye burada açıkça durduruyoruz.
+      - name: Panel eksiksiz mi
+        run: |
+          test -f mus_panel.html
+          test "$(stat -c%s mus_panel.html)" -gt 100000
+          if grep -q "__MUS_JSON__\|__TOPRAK_JSON__\|__IZ_JSON__" mus_panel.html; then
+            echo "Doldurulmamış yer tutucu var — yayınlanmıyor."
+            exit 1
+          fi
+
+      # Pages kök dizinde index.html arar.
+      - name: Yayın klasörünü hazırla
+        run: |
+          mkdir -p yayin
+          cp mus_panel.html yayin/index.html
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: yayin
+
+  yayinla:
+    needs: uret
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - id: pages
+        uses: actions/deploy-pages@v4
