@@ -67,13 +67,46 @@ def hepsini_calistir():
 
 
 def oku(ad, varsayilan=None):
+    """Üretilmiş bir JSON çıktısını okur.
+
+    Üç ayrı başarısızlık var ve üçü farklı şey söyler:
+      dosya yok     -> analizler hiç çalışmamış
+      JSON bozuk    -> yazma işlemi yarıda kesilmiş (disk dolu, Ctrl+C)
+      içerik boş    -> analiz çalıştı ama sonuç üretmedi
+
+    Hepsini aynı yığın izine bırakmak, hatayı okuyana "bir şeyler bozuk"
+    demekten başka bir şey söylemez.
+    """
     yol = CIKTI / ad
     if not yol.exists():
         if varsayilan is None:
-            raise SystemExit(f"{ad} yok. Önce analizleri çalıştır: "
-                             f"python src/mus_panel_uret.py --hepsi")
+            raise SystemExit(
+                f"{ad} bulunamadı ({yol}).\n"
+                f"Analizler henüz çalışmamış. Şunu çalıştır:\n"
+                f"  python src/mus_panel_uret.py --hepsi")
         return varsayilan
-    return json.loads(yol.read_text(encoding="utf-8"))
+
+    try:
+        metin = yol.read_text(encoding="utf-8")
+    except OSError as e:
+        raise SystemExit(f"{ad} okunamadı: {e}") from e
+
+    try:
+        veri = json.loads(metin)
+    except json.JSONDecodeError as e:
+        raise SystemExit(
+            f"{ad} bozuk JSON (satır {e.lineno}, sütun {e.colno}): {e.msg}\n"
+            f"Yazma işlemi yarıda kesilmiş olabilir. Dosyayı silip "
+            f"analizleri yeniden çalıştır:\n"
+            f"  rm {yol}\n"
+            f"  python src/mus_panel_uret.py --hepsi") from e
+
+    if not veri:
+        raise SystemExit(
+            f"{ad} boş. Analiz çalıştı ama sonuç üretmedi; "
+            f"veri tutarlılığını denetle:\n"
+            f"  python src/mus_profil.py")
+    return veri
 
 
 def sablonu_birlestir():
@@ -84,9 +117,25 @@ def sablonu_birlestir():
     sekme fonksiyonları da yönlendirmeden önce gelmelidir.
     """
     kaynak = Path(__file__).parent / "panel"
+    if not kaynak.is_dir():
+        raise SystemExit(f"Panel kaynağı yok: {kaynak}")
+
+    for ad in ("bas.html", "stil.css", "govde.html"):
+        if not (kaynak / ad).exists():
+            raise SystemExit(f"Panel parçası eksik: {kaynak / ad}")
+
     js_dosyalari = sorted((kaynak / "js").glob("*.js"))
     if not js_dosyalari:
-        raise SystemExit(f"{kaynak / 'js'} içinde betik yok")
+        raise SystemExit(
+            f"{kaynak / 'js'} içinde betik yok.\n"
+            f"Panel kaynağı parçalı; en az 00_veri.js ve 90_uygulama.js olmalı.")
+
+    numarasiz = [d.name for d in js_dosyalari if not d.name[:2].isdigit()]
+    if numarasiz:
+        raise SystemExit(
+            f"Sıra numarası olmayan betik: {', '.join(numarasiz)}\n"
+            f"Yükleme sırası ada göre belirlenir; her dosya iki haneli bir "
+            f"numarayla başlamalı (00_, 10_, 90_).")
 
     betik = "\n\n".join(
         f"// ===== {d.name} " + "=" * max(0, 60 - len(d.name))

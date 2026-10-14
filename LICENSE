@@ -1,0 +1,35 @@
+MIT License
+
+Copyright (c) 2026 Hasan Turgut
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+VERİ KAYNAKLARI HAKKINDA
+
+Bu lisans YAZILIMI kapsar. Depodaki tarımsal veriler kamuya açık resmî
+kaynaklardan derlenmiştir ve kendi kullanım koşullarına tabidir:
+
+  T.C. Tarım ve Orman Bakanlığı — Muş Tarımsal Yatırım Rehberi 2025
+  (TÜİK 2024 verilerine dayanır)
+
+Paneldeki sayıların bir kısmı ölçüm değil varsayımdır; hangisinin hangisi
+olduğu panelin "Veri künyesi" sekmesinde ve mus_profil.py içinde tek tek
+yazılıdır. Bu çalışma bir yöntem gösterimidir, resmî bir ölçüm raporu değildir.

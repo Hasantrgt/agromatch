@@ -1,5 +1,10 @@
 # AGROMATCH — Muş Tarım Planlama Motoru
 
+<!-- Depoyu GitHub'a gönderdikten sonra <kullanıcı> yerine kendi adını yaz -->
+[![Testler](https://github.com/KULLANICI/agromatch/actions/workflows/test.yml/badge.svg)](https://github.com/KULLANICI/agromatch/actions/workflows/test.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![Lisans: MIT](https://img.shields.io/badge/lisans-MIT-green)](LICENSE)
+
 Talep odaklı ekim planlaması için analiz motoru ve rapor paneli.
 **Pilot il: Muş** · 6 ilçe · 9 ürün
 
@@ -18,7 +23,7 @@ bir sayı verir; bu motor sayının **belirsizlik aralığını**, **türeyişin
 ## Hızlı başlangıç
 
 ```bash
-git clone <depo-adresi>
+git clone https://github.com/KULLANICI/agromatch.git
 cd agromatch
 
 python -m venv .venv
@@ -111,6 +116,11 @@ Ana kaynak: T.C. Tarım ve Orman Bakanlığı — *Muş Tarımsal Yatırım Rehb
 (TÜİK 2024 verileri).
 
 ---
+
+## Ekip çalışması
+
+Dal açma, commit biçimi, test yazma ve neyi değiştirmeden önce sorman
+gerektiği [CONTRIBUTING.md](CONTRIBUTING.md) içinde.
 
 ## Testler
 

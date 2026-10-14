@@ -118,3 +118,65 @@ def test_panel_dis_baglanti_kullanmiyor(panel):
     izinli = ("fonts.googleapis.com", "fonts.gstatic.com")
     disarida = [k for k in kaynaklar if not any(i in k for i in izinli)]
     assert not disarida, f"panel dışarıdan kaynak yüklüyor: {disarida}"
+
+
+# ------------------------------------------------------- hata mesajları
+# Bir hata mesajının işi, okuyana NE YAPACAĞINI söylemektir. "KeyError: 'x'"
+# bunu yapmaz. Aşağıdaki testler mesajların yol gösterdiğini korur.
+
+def test_eksik_dosya_mesaji_yol_gosterir(tmp_path, monkeypatch):
+    monkeypatch.setattr(mus_panel_uret, "CIKTI", tmp_path)
+    with pytest.raises(SystemExit) as e:
+        mus_panel_uret.oku("olmayan.json")
+    mesaj = str(e.value)
+    assert "bulunamadı" in mesaj
+    assert "--hepsi" in mesaj, "ne yapılacağı yazmıyor"
+
+
+def test_bozuk_json_mesaji_konum_verir(tmp_path, monkeypatch):
+    monkeypatch.setattr(mus_panel_uret, "CIKTI", tmp_path)
+    (tmp_path / "bozuk.json").write_text('{"a": 1,,}', encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        mus_panel_uret.oku("bozuk.json")
+    mesaj = str(e.value)
+    assert "bozuk JSON" in mesaj
+    assert "satır" in mesaj and "sütun" in mesaj
+    assert "rm " in mesaj, "kurtarma adımı yazmıyor"
+
+
+def test_bos_json_mesaji_denetime_yonlendirir(tmp_path, monkeypatch):
+    monkeypatch.setattr(mus_panel_uret, "CIKTI", tmp_path)
+    (tmp_path / "bos.json").write_text("{}", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        mus_panel_uret.oku("bos.json")
+    assert "boş" in str(e.value)
+    assert "mus_profil.py" in str(e.value)
+
+
+def test_varsayilan_verilmisse_eksik_dosya_hata_degil(tmp_path, monkeypatch):
+    """cercospora.json isteğe bağlı: yoksa panel yine üretilmeli."""
+    monkeypatch.setattr(mus_panel_uret, "CIKTI", tmp_path)
+    assert mus_panel_uret.oku("yok.json", {"bos": True}) == {"bos": True}
+
+
+def test_eksik_panel_parcasi_hangisi_oldugunu_soyler(tmp_path, monkeypatch):
+    sahte = tmp_path / "panel"
+    (sahte / "js").mkdir(parents=True)
+    (sahte / "bas.html").write_text("x", encoding="utf-8")
+    monkeypatch.setattr(mus_panel_uret, "__file__", str(tmp_path / "sahte.py"))
+    with pytest.raises(SystemExit) as e:
+        mus_panel_uret.sablonu_birlestir()
+    assert "stil.css" in str(e.value), "eksik dosyanın adı yazmıyor"
+
+
+def test_sira_numarasiz_betik_reddedilir(tmp_path, monkeypatch):
+    sahte = tmp_path / "panel"
+    (sahte / "js").mkdir(parents=True)
+    for ad in ("bas.html", "stil.css", "govde.html"):
+        (sahte / ad).write_text("x", encoding="utf-8")
+    (sahte / "js" / "ortak.js").write_text("// x", encoding="utf-8")
+    monkeypatch.setattr(mus_panel_uret, "__file__", str(tmp_path / "sahte.py"))
+    with pytest.raises(SystemExit) as e:
+        mus_panel_uret.sablonu_birlestir()
+    assert "ortak.js" in str(e.value)
+    assert "numara" in str(e.value).lower()
