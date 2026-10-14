@@ -1,0 +1,29 @@
+# Satır sonu yönetimi
+#
+# Depo Linux'ta oluşturuldu (LF). Windows'ta Git varsayılan olarak dosyaları
+# CRLF'e çevirir; o zaman hiçbir şey değiştirmeden "80 dosya değişti" görürsün
+# ve gerçek değişiklik gürültüde kaybolur.
+#
+# Çözüm: depoda her şey LF olarak durur. Düzenleyiciler (VS Code, PyCharm,
+# Notepad++) LF ile sorunsuz çalışır.
+
+* text=auto eol=lf
+
+# Kabuk betikleri LF olmak ZORUNDA — CRLF olursa Linux'ta çalışmaz
+*.sh      text eol=lf
+*.mjs     text eol=lf
+
+# Windows toplu iş dosyaları CRLF olmak zorunda
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+
+# İkili dosyalar hiç dokunulmadan kalsın
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.pdf     binary
+*.zip     binary
+*.pt      binary
+*.tflite  binary
+*.docx    binary
+*.xlsx    binary
