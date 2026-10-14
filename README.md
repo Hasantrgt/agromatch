@@ -1,7 +1,7 @@
 # AGROMATCH — Muş Tarım Planlama Motoru
 
 <!-- Depoyu GitHub'a gönderdikten sonra <kullanıcı> yerine kendi adını yaz -->
-[![Testler](https://github.com/KULLANICI/agromatch/actions/workflows/test.yml/badge.svg)](https://github.com/KULLANICI/agromatch/actions/workflows/test.yml)
+[![Testler](https://github.com/Hasantrgt/agromatch/actions/workflows/test.yml/badge.svg)](https://github.com/Hasantrgt/agromatch/actions/workflows/test.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![Lisans: MIT](https://img.shields.io/badge/lisans-MIT-green)](LICENSE)
 
@@ -23,7 +23,7 @@ bir sayı verir; bu motor sayının **belirsizlik aralığını**, **türeyişin
 ## Hızlı başlangıç
 
 ```bash
-git clone https://github.com/KULLANICI/agromatch.git
+git clone https://github.com/Hasantrgt/agromatch.git
 cd agromatch
 
 python -m venv .venv
