@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 
 const isler = [
+  ['foy/toprak_foyu.html', '/home/claude/AGROMATCH_Toprak_Foyu.pdf', '/tmp/toprak'],
   ['foy/kutu_foyu.html', '/home/claude/AGROMATCH_Kutu_Foyu.pdf', '/tmp/kutu'],
   ['foy/kalibrasyon_karti.html', '/home/claude/AGROMATCH_Kalibrasyon_Karti.pdf', '/tmp/kart'],
 ];
