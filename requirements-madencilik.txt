@@ -1,0 +1,5 @@
+# Veri madenciligi katmani
+# Lezyon ve toprak veri setleri, taban modeller, gurultu deneyi
+-r requirements.txt
+scikit-learn>=1.4,<2
+pandas>=2.0,<4

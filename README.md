@@ -206,6 +206,55 @@ Eğitim/test ayrımı **yaprağa göre** yapılır, satıra göre değil: aynı 
 bileşenleri aynı ışığı ve aynı eşiği paylaşır, satıra göre bölmek başarıyı
 olduğundan yüksek gösterir.
 
+### Toprak uygunluk veri seti
+
+İkinci veri seti aynı mantıkla kurulur, ama farklı bir soruyu sorar.
+
+```bash
+pip install -r requirements-madencilik.txt
+python src/toprak_veri_seti.py --numune 400    # data/madencilik/toprak.csv
+python src/toprak_taban_model.py               # üç hedef, taban modeller
+python src/toprak_gurultu_deneyi.py            # gürültü taraması + grafik
+```
+
+Her satır bir (toprak numunesi, ürün) çiftidir. Öznitelikler bir laboratuvar
+raporunda yazacak **ölçülen** değerler, hedefler ise numunenin **gerçek**
+değerlerinden hesaplanan uygunluk sonucudur. Arada iki katman hata vardır:
+mekânsal değişkenlik (tarlanın bir noktası, kararsa bütün tarla için) ve
+laboratuvar tekrarlanabilirliği.
+
+Bu ayrım şart: öznitelik ile hedef aynı sayılardan hesaplansaydı model kuralı
+ezberler ve hiçbir şey öğretmezdi. Hata katmanı sayesinde sorulabilen soru
+projenin kendi sorusuyla örtüşüyor — **laboratuvar hatası ekim kararını ne
+kadar bozuyor?**
+
+Cevap: varsayılan hata düzeyinde uygunluk sınıfı satırların **%12,6**'sında,
+kısıtlayıcı faktör **%16,5**'inde değişiyor.
+
+**Burada makine öğrenmesi uzman kuralını yenemiyor** — ve bu beklenen bir
+sonuçtur: etiketler zaten o kuralla üretiliyor, model onu yalnızca yaklaşık
+öğrenebilir. Modelin tek üstünlüğü gürültüyü ortalayabilmesidir. İki etki ters
+yönde çalışır ve `toprak_gurultu_deneyi.py` kesişimi ölçer:
+
+| laboratuvar hatası | kuralı ölçüme uygula | rastgele orman |
+|---|---:|---:|
+| ×0,5 | **%90,8** | %81,6 |
+| ×1,0 | **%83,4** | %78,3 |
+| ×1,5 | %74,5 | **%76,4** |
+| ×3,0 | %56,7 | **%67,1** |
+
+Kesişim **×1,37**. Laboratuvar bundan iyiyse formüle güven; kötüyse öğrenmeye
+geç. İki veri seti böylece zıt iki ders veriyor:
+
+| | elle konan kural | öğrenilen model |
+|---|---:|---:|
+| Cercospora lezyon filtresi | %84 | **%99** |
+| Toprak uygunluk (×1 hata) | **%83** | %78 |
+
+Fark, kuralın nereden geldiğidir. Lezyon filtresindeki üç eşik denemeyle
+bulunmuş tahminlerdi; toprak kuralı ise literatürden kurulmuş bir uzman
+modelidir. Makine öğrenmesi, **iyi bir kuralın olmadığı yerde** kazanıyor.
+
 ---
 
 ## Yöntem notları

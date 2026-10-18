@@ -81,7 +81,18 @@ KRITIK = ("drenaj", "tuzluluk", "derinlik")
 
 
 def uygunluk(ilce: str, urun: str) -> dict[str, Any]:
-    t = ilce_toprak(ilce)
+    """Bir ilçenin toprağı bu ürüne ne kadar uyuyor."""
+    return topraktan_uygunluk(ilce_toprak(ilce), urun)
+
+
+def topraktan_uygunluk(t: dict[str, Any], urun: str) -> dict[str, Any]:
+    """Uygunluk puanı, ilçe adı yerine doğrudan toprak değerlerinden.
+
+    uygunluk() bunun ilçe sözlüğünden okuyan sarmalayıcısıdır. Ayrım, kuralın
+    TEK TANIMLI kalması için: laboratuvardan gelen bir numune, sentetik bir
+    profil ya da bir ilçe ortalaması — hepsi aynı puanlayıcıdan geçer. İkinci
+    bir kopya çıkarsa tests/test_altin.py kırılır, bilerek.
+    """
     istek = URUN_ISTEK[urun]
     sinif = bunye_sinifi(t["kil"], t["kum"], t["silt"])
 

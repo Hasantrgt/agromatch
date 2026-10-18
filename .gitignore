@@ -20,10 +20,14 @@ outputs/
 
 # --- Üretilen sentetik görüntüler ve veri setleri
 data/madencilik/
+data/sweep/
 data/sentetik/
 data/goruntu_sentetik/
 data/goruntu_bolunmus/
 data/saha/
+
+# --- Üretilen grafikler ve belgeler
+belgeler/
 
 # --- Üretilen paketler ve föyler
 mobil_paket/
