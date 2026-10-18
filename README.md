@@ -1,10 +1,9 @@
 # AGROMATCH — Muş Tarım Planlama Motoru
 
-[![Testler](https://github.com/Hasantrgt/agromatch/actions/workflows/test.yml/badge.svg)](https://github.com/Hasantrgt/agromatch/actions/workflows/test.yml)
+<!-- Depoyu GitHub'a gönderdikten sonra <kullanıcı> yerine kendi adını yaz -->
+[![Testler](https://github.com/KULLANICI/agromatch/actions/workflows/test.yml/badge.svg)](https://github.com/KULLANICI/agromatch/actions/workflows/test.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![Lisans: MIT](https://img.shields.io/badge/lisans-MIT-green)](LICENSE)
-
-**▶ [Canlı paneli aç](https://hasantrgt.github.io/agromatch/)** — kurulum gerektirmez
 
 Talep odaklı ekim planlaması için analiz motoru ve rapor paneli.
 **Pilot il: Muş** · 6 ilçe · 9 ürün
@@ -24,7 +23,7 @@ bir sayı verir; bu motor sayının **belirsizlik aralığını**, **türeyişin
 ## Hızlı başlangıç
 
 ```bash
-git clone https://github.com/Hasantrgt/agromatch.git
+git clone https://github.com/KULLANICI/agromatch.git
 cd agromatch
 
 python -m venv .venv
@@ -165,6 +164,47 @@ mus_iz (ne hesaplanıyor)  ->  mus_belirsizlik (ne anlama geliyor)
 Bu ayrım bir refactor'la kuruldu; öncesinde iki modül aynı formülleri ayrı
 ayrı tutuyordu. `tests/test_altin.py`, refactor'ın çıktıyı değiştirmediğini
 kaydedilmiş bir altın dosyayla doğrular.
+
+---
+
+## Veri madenciliği veri seti
+
+Görüntü hattı, bir bileşenin leke olup olmadığına elle ayarlanmış üç eşikle
+karar verir (`alan`, `dairesellik`). `lezyon_veri_seti.py` aynı kararı
+**öğrenilebilir** hâle getirir: segmentasyonun bulduğu her bileşen için 17
+öznitelik çıkarır ve sentetik üreticinin bildiği gerçek konumlarla etiketler.
+
+```bash
+pip install -r requirements-goruntu.txt
+pip install scikit-learn pandas
+
+python src/goruntu/lezyon_veri_seti.py --yaprak 300   # data/madencilik/lezyonlar.csv
+python src/goruntu/taban_model.py                     # taban modeller + kural karşılaştırması
+```
+
+Veri seti kurulurken öğrenilen şey, veri setinin kendisinden önemliydi:
+
+**İlk sürüm %100 doğruluk verdi.** Sebebi, sentetik üreticinin lekeleri sabit
+bir renkle çizmesiydi; `kırmızılık > 4.78` tek başına %99,9 doğruluk alıyordu.
+Model Cercospora'yı değil, koddaki renk sabitini öğrenmişti. Üreticiye leke
+rengi değişkenliği, yaprak başına ışık kaymasi ve lekeyle **aynı renkteki**
+yanıltıcılar (kenar kuruması, toprak sıçraması, odunlaşmış damar) eklendi.
+Bunlar `cesitlilik` parametresiyle açılır; panel hattı eski sabit üretimi
+kullanmaya devam eder, böylece doğrulama sayıları sürümler arası
+karşılaştırılabilir kalır.
+
+Düzeltmeden sonra tablo anlamlı hâle geldi:
+
+| | doğruluk | F1 |
+|---|---:|---:|
+| Her zaman çoğunluk | 0,49 | 0,00 |
+| Elle ayarlanmış kural | 0,86 | 0,88 |
+| Karar ağacı (derinlik 3) | 0,99 | 0,99 |
+| Rastgele orman | 0,99 | 0,99 |
+
+Eğitim/test ayrımı **yaprağa göre** yapılır, satıra göre değil: aynı yaprağın
+bileşenleri aynı ışığı ve aynı eşiği paylaşır, satıra göre bölmek başarıyı
+olduğundan yüksek gösterir.
 
 ---
 

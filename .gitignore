@@ -19,6 +19,7 @@ outputs/
 /*.pdf
 
 # --- Üretilen sentetik görüntüler ve veri setleri
+data/madencilik/
 data/sentetik/
 data/goruntu_sentetik/
 data/goruntu_bolunmus/
@@ -28,6 +29,9 @@ data/saha/
 mobil_paket/
 foy/
 *.zip
+
+# --- Pages yayın klasörü (CI üretir)
+yayin/
 
 # --- Model ağırlıkları (büyük ikili dosyalar git'te tutulmaz)
 *.pt
@@ -69,5 +73,3 @@ Thumbs.db
 .env
 *.key
 gizli/
-# --- Pages yayın klasörü (CI üretir)
-yayin/

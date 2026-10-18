@@ -89,19 +89,135 @@ def _yaprak_dokusu(rng, maske):
     return kat
 
 
-def _leke_ciz(gorsel, x, y, r, rng):
-    """Tek bir Cercospora lekesi: gri merkez, kırmızı-kahve halka, siyah noktacıklar."""
+def _sapir(rng, renk, miktar):
+    """Bir RGB rengi, TON AİLESİNİ KORUYARAK rastgele kaydırır.
+
+    Üç kanala bağımsız büyük gürültü eklemek rengi aileden çıkarıyor:
+    kahverengi bir leke pembeye ya da mora dönüyor ve görüntü gerçekçiliğini
+    kaybediyor. Bunun yerine ağırlıklı olarak ortak bir açıklık çarpanı
+    uygulanıyor (lekenin yaşı, gölge, pozlama), üstüne kanal başına küçük bir
+    sapma ekleniyor (çeşit farkı, beslenme durumu).
+    """
+    if miktar <= 0:
+        return tuple(int(k) for k in renk)
+    carpan = 1.0 + float(rng.normal(0, 0.13 * miktar))
+    return tuple(int(np.clip(k * carpan + rng.normal(0, 6 * miktar), 0, 255))
+                 for k in renk)
+
+
+def _leke_ciz(gorsel, x, y, r, rng, cesitlilik=0.0):
+    """Tek bir Cercospora lekesi: gri merkez, kırmızı-kahve halka, siyah noktacıklar.
+
+    cesitlilik > 0 ise lekenin rengi her seferinde kaydırılır. Sabit renkli
+    leke üretmek veri setini işe yaramaz hâle getiriyor: sınıflandırıcı
+    lekeyi biçiminden değil, koddaki renk sabitinden tanıyor ve %100 doğruluk
+    veriyor. Gerçek yaprakta lekenin rengi lekenin yaşına, çeşide, ışığa ve
+    yaprağın beslenme durumuna göre değişir.
+    """
     ciz = ImageDraw.Draw(gorsel, "RGBA")
-    ciz.ellipse([x - r, y - r, x + r, y + r], fill=(132, 62, 46, 235))          # halka
-    ic = max(1.5, r * 0.62)
-    ciz.ellipse([x - ic, y - ic, x + ic, y + ic], fill=(176, 170, 150, 240))    # gri merkez
+    # Lekenin yaşı: genç leke koyu ve küçük merkezli, yaşlı leke soluk ve geniş
+    yas = float(rng.uniform(0, 1)) if cesitlilik > 0 else 0.5
+    halka = _sapir(rng, (132 + 26 * yas, 62 + 18 * yas, 46 + 14 * yas), cesitlilik)
+    merkez = _sapir(rng, (176 - 30 * (1 - yas), 170 - 30 * (1 - yas), 150 - 26 * (1 - yas)),
+                    cesitlilik)
+    # DİKKAT: rastgele sayı yalnızca çeşitlilik açıkken çekilir. Koşulsuz
+    # çekmek, cesitlilik=0 modunda da RNG akışını kaydırıyor ve panelin
+    # doğrulama sayılarını sessizce değiştiriyordu (F1 0,953 -> 0,936).
+    saydam = 235 if cesitlilik <= 0 else int(
+        np.clip(235 - 40 * cesitlilik * rng.random(), 150, 255))
+
+    ciz.ellipse([x - r, y - r, x + r, y + r], fill=(*halka, saydam))
+    ic = max(1.5, r * (0.62 + 0.18 * yas * cesitlilik))
+    ciz.ellipse([x - ic, y - ic, x + ic, y + ic], fill=(*merkez, 240))
     for _ in range(int(rng.integers(2, 6))):                                     # konidi yatakları
         nx = x + rng.uniform(-ic * 0.6, ic * 0.6)
         ny = y + rng.uniform(-ic * 0.6, ic * 0.6)
         ciz.ellipse([nx - 1, ny - 1, nx + 1, ny + 1], fill=(52, 46, 42, 255))
 
 
-def yaprak_uret(tohum, leke_sayisi=None):
+def _zor_yaniltici_ciz(gorsel, ic_maske, rng):
+    """Lekeyle AYNI RENK AİLESİNDE olan, ama leke olmayan şeyler.
+
+    Toz zerresi ve azot sarılığı yetmiyor: ikisi de lekeden renkçe ayrıldığı
+    için sınıflandırıcı sorunu tek bir renk eşiğiyle çözüyor. Gerçek tarlada
+    yaprağın üstünde lekeyle aynı kahverengiyi taşıyan başka şeyler var.
+    Bunları eklemeden öğrenilen model sahada çöker.
+
+    Üç tip:
+      kenar kuruması  — kahverengi, düzensiz, yaprak kenarında (konum ayırır)
+      toprak sıçraması — kahverengi, düzensiz, her yerde (biçim ayırır)
+      odunlaşmış damar — kahverengimsi, çizgisel (uzama ayırır)
+    """
+    ciz = ImageDraw.Draw(gorsel, "RGBA")
+    yuk, gen = ic_maske.shape
+
+    # Kenar kuruması: yaprağın dış hattına yakın kahverengi düzensiz yamalar
+    for _ in range(int(rng.integers(0, 4))):
+        aci = rng.uniform(0, 2 * math.pi)
+        px = int(gen / 2 + math.cos(aci) * rng.uniform(0.74, 0.92) * gen / 2)
+        py = int(yuk / 2 + math.sin(aci) * rng.uniform(0.74, 0.92) * yuk / 2)
+        if not (0 <= px < gen and 0 <= py < yuk) or not ic_maske[py, px]:
+            continue
+        renk = _sapir(rng, (138, 74, 52), 0.8)
+        for _ in range(int(rng.integers(4, 9))):
+            ox, oy = px + rng.integers(-16, 17), py + rng.integers(-12, 13)
+            rr = rng.uniform(3, 9)
+            ciz.ellipse([ox - rr, oy - rr * 0.6, ox + rr, oy + rr * 0.6],
+                        fill=(*renk, 215))
+
+    # Toprak sıçraması: düzensiz kahverengi lekecikler
+    for _ in range(int(rng.integers(3, 11))):
+        px, py = int(rng.integers(70, gen - 70)), int(rng.integers(60, yuk - 60))
+        if not ic_maske[py, px]:
+            continue
+        renk = _sapir(rng, (120, 78, 54), 0.9)
+        noktalar = [(px + rng.integers(-7, 8), py + rng.integers(-6, 7))
+                    for _ in range(int(rng.integers(5, 9)))]
+        ciz.polygon([tuple(int(v) for v in n) for n in noktalar], fill=(*renk, 225))
+
+    # Odunlaşmış / kurumuş damar parçası: çizgisel kahverengi iz
+    for _ in range(int(rng.integers(0, 3))):
+        px, py = int(rng.integers(90, gen - 90)), int(rng.integers(70, yuk - 70))
+        if not ic_maske[py, px]:
+            continue
+        uz = rng.uniform(30, 90)
+        aci = rng.uniform(0, math.pi)
+        renk = _sapir(rng, (126, 84, 58), 0.7)
+        ciz.line([(px, py),
+                  (px + math.cos(aci) * uz, py + math.sin(aci) * uz)],
+                 fill=(*renk, 210), width=int(rng.integers(2, 5)))
+
+
+def _isik_kaydir(gorsel, rng, miktar):
+    """Yaprak başına ışık ve beyaz dengesi değişimi.
+
+    Aynı tarlada çekilen iki fotoğraf bile aynı renk dengesine sahip değildir:
+    bulut geçer, gölge düşer, telefonun beyaz dengesi kayar. Bu kaydırma
+    olmadan model yaprakları mutlak renk değerlerinden tanır; sahada bu
+    değerler tutmaz.
+    """
+    if miktar <= 0:
+        return gorsel
+    dizi = np.asarray(gorsel).astype(np.float32)
+    kazanc = 1.0 + rng.normal(0, 0.09 * miktar, 3)
+    parlaklik = rng.normal(0, 16 * miktar)
+    dizi = dizi * kazanc + parlaklik
+    return Image.fromarray(np.clip(dizi, 0, 255).astype(np.uint8))
+
+
+def yaprak_uret(tohum, leke_sayisi=None, cesitlilik=0.0):
+    """Sentetik yaprak üretir.
+
+    cesitlilik (0–1): 0 varsayılan ve panel hattının kullandığı moddur —
+    sabit renkler, yalnızca toz ve azot sarılığı yanıltıcıları. 1 ise leke
+    renkleri, ışık ve beyaz dengesi her yaprakta değişir ve lekeyle aynı
+    renkteki zor yanıltıcılar (kenar kuruması, toprak sıçraması, odunlaşmış
+    damar) eklenir.
+
+    Ayrım bilinçli: panelin doğrulama sayıları sabit bir üretime dayanır ve
+    sürüm sürüm karşılaştırılabilir olmalıdır. Makine öğrenmesi veri setinin
+    ise tam tersine zor olması gerekir.
+    """
     rng = np.random.default_rng(tohum)
     maske = _yaprak_maskesi()
     zemin = _zemin(rng)
@@ -122,8 +238,11 @@ def yaprak_uret(tohum, leke_sayisi=None):
             continue
         if any((x - gx) ** 2 + (y - gy) ** 2 < (r + gr + 6) ** 2 for gx, gy, gr in gercek):
             continue
-        _leke_ciz(gorsel, x, y, r, rng)
+        _leke_ciz(gorsel, x, y, r, rng, cesitlilik)
         gercek.append((x, y, r))
+
+    if cesitlilik > 0:
+        _zor_yaniltici_ciz(gorsel, ic_maske, rng)
 
     # Yanıltıcılar: toz zerreleri (küçük ve koyu, leke değil)
     ciz = ImageDraw.Draw(gorsel)
@@ -135,6 +254,7 @@ def yaprak_uret(tohum, leke_sayisi=None):
         ciz.ellipse([x - rr, y - rr, x + rr, y + rr], fill=(58, 50, 44))
 
     gorsel = gorsel.filter(ImageFilter.GaussianBlur(0.6))
+    gorsel = _isik_kaydir(gorsel, rng, cesitlilik)
     return gorsel, [dict(x=g[0], y=g[1], r=round(g[2], 2)) for g in gercek]
 
 
