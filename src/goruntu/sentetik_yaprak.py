@@ -195,12 +195,19 @@ def _isik_kaydir(gorsel, rng, miktar):
     bulut geçer, gölge düşer, telefonun beyaz dengesi kayar. Bu kaydırma
     olmadan model yaprakları mutlak renk değerlerinden tanır; sahada bu
     değerler tutmaz.
+
+    Değişim bilerek ölçülü tutuldu. Daha agresif bir kaydırma (kanal kazancı
+    σ=0.09, parlaklık σ=16) yaprak maskesini görüntülerin %17'sinde çökertiyor:
+    HSV yeşil-sarı filtresi ya tüm kareyi yaprak sayıyor ya da hiçbir şeyi.
+    O görüntüler veri setine giremediği için üretilen yaprakların beşte biri
+    çöpe gidiyordu. Buradaki değerler, anlamlı değişkenlik ile kullanılabilir
+    görüntü arasındaki dengeyi tutuyor.
     """
     if miktar <= 0:
         return gorsel
     dizi = np.asarray(gorsel).astype(np.float32)
-    kazanc = 1.0 + rng.normal(0, 0.09 * miktar, 3)
-    parlaklik = rng.normal(0, 16 * miktar)
+    kazanc = 1.0 + rng.normal(0, 0.05 * miktar, 3)
+    parlaklik = rng.normal(0, 9 * miktar)
     dizi = dizi * kazanc + parlaklik
     return Image.fromarray(np.clip(dizi, 0, 255).astype(np.uint8))
 

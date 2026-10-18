@@ -234,11 +234,27 @@ def _leke_sayisi_sec(rng):
 def yapraktan_satirlar(gorsel, gercek, ad):
     """Bir yaprak görüntüsünden etiketli satırları üretir.
 
-    Döner: (satirlar, bulunan_leke_sayisi, toplam_leke_sayisi)
+    Döner: (satirlar, bulunan_leke_sayisi, toplam_leke_sayisi, basarili)
+    basarili False ise yaprak segmentasyonu çökmüştür ve yaprak atlanmıştır.
     """
     rgb = np.array(gorsel.convert("RGB"))
     bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
     yaprak = yaprak_maskesi(bgr)
+
+    # Segmentasyon sağlık kontrolü.
+    # Işık kaydırılmış bazı görüntülerde HSV filtresi ya tüm kareyi yaprak
+    # sayıyor ya da hiçbir şeyi. İlk durumda Otsu, toprak zeminin tamamını tek
+    # bir "aday" olarak veriyor: 147.000 piksellik sahte bir bileşen. Bu satır
+    # veri setinde kalırsa leke-olmayan sınıfının alan ortalamasını 24'ten
+    # 2.870'e çıkarıyor ve bütün istatistikleri bozuyor.
+    #
+    # Böyle bir yaprağı veri setine almak yerine atlıyoruz ve sayıyoruz:
+    # segmentasyonun çöktüğü bir görüntüden öznitelik çıkarmak, çıkan sayıya
+    # anlam yüklemek demektir.
+    oran = float((yaprak > 0).mean())
+    if not (0.05 <= oran <= 0.85):
+        return [], 0, len(gercek), False
+
     maske = aday_maske(bgr, yaprak)
     hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV).astype(np.float32)
     kanal = yesillik(bgr)
@@ -280,7 +296,7 @@ def yapraktan_satirlar(gorsel, gercek, ad):
         satirlar.append(dict(yaprak=ad, bilesen=i, x=round(mx, 1), y=round(my, 1),
                              **oz, lezyon=etiket_degeri))
 
-    return satirlar, len(eslesen_lekeler), len(gercek)
+    return satirlar, len(eslesen_lekeler), len(gercek), True
 
 
 def main():
@@ -296,13 +312,16 @@ def main():
     hedef.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(a.tohum)
 
-    satirlar, bulunan, toplam = [], 0, 0
+    satirlar, bulunan, toplam, atlanan = [], 0, 0, 0
     for i in range(a.yaprak):
         adet = _leke_sayisi_sec(rng)
         tohum = int(a.tohum + i)
         gorsel, gercek = yaprak_uret(tohum, adet, cesitlilik=a.cesitlilik)
         ad = f"yaprak_{i:04d}"
-        s, b, t = yapraktan_satirlar(gorsel, gercek, ad)
+        s, b, t, basarili = yapraktan_satirlar(gorsel, gercek, ad)
+        if not basarili:
+            atlanan += 1
+            continue
         satirlar.extend(s)
         bulunan += b
         toplam += t
@@ -337,6 +356,8 @@ def main():
         "gercek_leke_toplami": toplam,
         "segmentasyonun_buldugu_leke": bulunan,
         "kacirilan_leke_orani": round(kacirilan, 4),
+        "atlanan_yaprak": atlanan,
+        "kullanilan_yaprak": a.yaprak - atlanan,
         "duyarlilik_tavani": round(1 - kacirilan, 4),
         "not": ("kacirilan_leke_orani, segmentasyonun hiç bileşen üretmediği "
                 "lekelerin oranıdır. Hiçbir sınıflandırıcı bu lekeleri "
@@ -350,6 +371,9 @@ def main():
     print(f"  pozitif     : {pozitif} ({pozitif / len(satirlar):.1%})")
     print(f"  negatif     : {negatif}")
     print(f"  öznitelik   : {len(OZNITELIKLER)}")
+    if atlanan:
+        print(f"  atlanan yaprak    : {atlanan} "
+              f"(yaprak segmentasyonu çöktü, veri setine alınmadı)")
     print(f"  duyarlılık tavanı : {1 - kacirilan:.1%} "
           f"(segmentasyon {toplam} lekenin {bulunan} tanesini gördü)")
 
