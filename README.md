@@ -1,9 +1,10 @@
 # AGROMATCH — Muş Tarım Planlama Motoru
 
-<!-- Depoyu GitHub'a gönderdikten sonra <kullanıcı> yerine kendi adını yaz -->
 [![Testler](https://github.com/Hasantrgt/agromatch/actions/workflows/test.yml/badge.svg)](https://github.com/Hasantrgt/agromatch/actions/workflows/test.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![Lisans: MIT](https://img.shields.io/badge/lisans-MIT-green)](LICENSE)
+
+**▶ [Canlı paneli aç](https://hasantrgt.github.io/agromatch/)** — kurulum gerektirmez
 
 Talep odaklı ekim planlaması için analiz motoru ve rapor paneli.
 **Pilot il: Muş** · 6 ilçe · 9 ürün
