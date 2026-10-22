@@ -33,87 +33,26 @@ from typing import Any
 
 import mus_iklim
 import mus_profil as mp
-from hastalik_profil import HASTALIKLAR as ORTAK
+from mus_hastalik_profil import HASTALIKLAR as KATALOG
 
 CIKTI = Path(__file__).resolve().parent.parent / "outputs"
 
-# Ortak katalogdaki ürün adlarını Muş'un ürün setine eşle
-ESLEME: dict[str, str] = {"Mısır (dane)": "Silajlık mısır",
-                          "Yem bitkileri": "Yonca"}
-
-# Muş'un ürün setinde olup ortak katalogda bulunmayan hastalıklar
-EK_HASTALIK = [
-    # --- Yonca
-    dict(urun="Yonca", ad="Yonca pası", patojen="Uromyces striatus", tip="mantar",
-         sicaklik_opt=(18, 25), nem_esik=400, kritik_aylar=[6, 7, 8],
-         belirti="Yaprak alt yüzünde kahverengi toz püstüller",
-         yonetim="Erken biçim, dayanıklı çeşit", pv_sinif=None, goruntuden=True),
-    dict(urun="Yonca", ad="Kök ve kök boğazı çürüklüğü", patojen="Fusarium spp.",
-         tip="mantar", sicaklik_opt=(15, 25), nem_esik=350, kritik_aylar=[5, 6, 9],
-         belirti="Bitkide solgunluk, kök kesitinde kahverengileşme",
-         yonetim="Drenaj, tarla yaşını uzatmama, ekim nöbeti",
-         pv_sinif=None, goruntuden=False),
-
-    # --- Korunga
-    dict(urun="Korunga", ad="Korunga külleme", patojen="Erysiphe trifolii",
-         tip="mantar", sicaklik_opt=(16, 24), nem_esik=300, kritik_aylar=[5, 6, 7],
-         belirti="Yaprak yüzeyinde beyaz unlu örtü",
-         yonetim="Erken biçim, sık ekimden kaçınma", pv_sinif=None, goruntuden=True),
-
-    # --- Fiğ
-    dict(urun="Fiğ", ad="Fiğ antraknozu", patojen="Ascochyta spp.", tip="mantar",
-         sicaklik_opt=(14, 22), nem_esik=420, kritik_aylar=[4, 5, 6],
-         belirti="Gövde ve yaprakta koyu kenarlı çökük lekeler",
-         yonetim="Temiz tohum, ekim nöbeti", pv_sinif=None, goruntuden=True),
-
-    # --- Kuru fasulye
-    dict(urun="Kuru fasulye", ad="Fasulye antraknozu",
-         patojen="Colletotrichum lindemuthianum", tip="mantar",
-         sicaklik_opt=(15, 22), nem_esik=400, kritik_aylar=[6, 7],
-         belirti="Yaprak damarlarında ve baklada koyu çökük yaralar",
-         yonetim="Sertifikalı tohum, ıslakken tarlaya girmeme",
-         pv_sinif=None, goruntuden=True),
-    dict(urun="Kuru fasulye", ad="Bakteriyel yanıklık",
-         patojen="Xanthomonas axonopodis", tip="bakteri",
-         sicaklik_opt=(20, 30), nem_esik=300, kritik_aylar=[6, 7, 8],
-         belirti="Yaprakta sarı haleli kahverengi lekeler",
-         yonetim="Temiz tohum, bakır uygulaması", pv_sinif=None, goruntuden=True),
-
-    # --- Şeker pancarı (Muş için kritik ek)
-    dict(urun="Şeker pancarı", ad="Kök çürüklüğü (Rhizoctonia)",
-         patojen="Rhizoctonia solani", tip="mantar",
-         sicaklik_opt=(20, 28), nem_esik=250, kritik_aylar=[6, 7, 8],
-         belirti="Kökte siyah-kahverengi çürük, bitkide ani solma",
-         yonetim="DRENAJ, ekim nöbeti, dayanıklı çeşit",
-         pv_sinif=None, goruntuden=False),
-    dict(urun="Şeker pancarı", ad="Külleme", patojen="Erysiphe betae",
-         tip="mantar", sicaklik_opt=(20, 30), nem_esik=200, kritik_aylar=[7, 8],
-         belirti="Yaprak yüzeyinde beyaz unlu tabaka",
-         yonetim="Zamanında kükürt/fungisit", pv_sinif=None, goruntuden=True),
-
-    # --- Buğday (Muş rakımında önemli)
-    dict(urun="Buğday", ad="Kar küfü", patojen="Microdochium nivale", tip="mantar",
-         sicaklik_opt=(0, 8), nem_esik=500, kritik_aylar=[2, 3],
-         belirti="Kar eridikten sonra yatık, pembe-gri küflü yamalar",
-         yonetim="Erken ekimden kaçınma, dengeli azot",
-         pv_sinif=None, goruntuden=True),
-]
-
-
 def hastalik_listesi() -> list[dict[str, Any]]:
-    """Muş'ta ekilen ürünlere ait hastalıkların tamamı."""
+    """Muş'ta ekilen ürünlere ait hastalıkların tamamı.
+
+    Liste artık tek bir yerden gelir: mus_hastalik_profil.HASTALIKLAR.
+    Önceden üç parçadan toplanıyordu (bölgesel katalog + Muş eki + ürün adı
+    eşleme sözlüğü) ve "Muş'ta şu ürünün kaç hastalığı var" sorusu üçü birden
+    okunmadan cevaplanamıyordu. Bu bölünme bir kez yanlış cevaplandı; tek
+    dosya o hatayı imkânsız kılıyor.
+    """
     urunler = set(mp.URUN)
-    liste: list[dict[str, Any]] = []
-    for h in ORTAK:
-        kaynak_urun = str(h["urun"])
-        urun = ESLEME.get(kaynak_urun, kaynak_urun)
-        if urun in urunler:
-            kayit = dict(h)
-            kayit["urun"] = urun
-            kayit["kaynak_urun"] = h["urun"]
-            liste.append(kayit)
-    liste.extend(dict(h, kaynak_urun=h["urun"]) for h in EK_HASTALIK)
-    return liste
+    disarida = [h["ad"] for h in KATALOG if h["urun"] not in urunler]
+    if disarida:
+        raise ValueError(
+            "Katalogda Muş ürün setinde olmayan kayıt var: "
+            + ", ".join(disarida))
+    return [dict(h) for h in KATALOG]
 
 
 def sicaklik_uygunlugu(ilce: str, kritik_aylar: list[int],
@@ -172,6 +111,7 @@ def analiz() -> dict[str, Any]:
                     sum(aylik[a - 1] for a in h["kritik_aylar"]) / len(h["kritik_aylar"]), 1),
                 belirti=h["belirti"], yonetim=h["yonetim"],
                 goruntuden=h["goruntuden"], pv_sinif=h.get("pv_sinif"),
+                kaynak=h["kaynak"], karantina=h["karantina"], onem=h["onem"],
                 seviye=("yüksek" if risk >= 60 else "orta" if risk >= 35 else "düşük"),
             ))
 
