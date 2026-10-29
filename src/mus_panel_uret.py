@@ -37,6 +37,15 @@ BOS_DEPO: dict = {"zararlilar": [], "mucadele": [], "kaynaklar": {},
                                         "dis_hava": {}, "pencere": [], "sonumleme": 0},
                   "doz_cevap": {"lc": {}, "noktalar": [], "egri": [], "sentetik": True}}
 
+BOS_BOCEK: dict = {"zararlilar": [], "faydalilar": [], "gruplar": [],
+                   "takvim": [], "ay_yogunlugu": [], "aylar": [],
+                   "koprular": {"vektor_hastalik": [], "depo_koprusu": [],
+                                "katalogda_olmayan": []},
+                   "bosluklar": {"esiksiz": [], "kalintisiz_yolu_yok": [],
+                                 "dogal_dusmani_yazilmamis": [],
+                                 "dogrulanmamis_kayit": 0},
+                   "ozet": {}}
+
 BOS_CERCO = {
     "asamalar": [], "siddet_olcegi": [], "siddet_ornek": [],
     "dogrulama": None, "parametre_taramasi": [], "parametreler": {},
@@ -79,6 +88,10 @@ def hepsini_calistir():
         (CIKTI / "depo.json").write_text(
             json.dumps(dpv.uret(), ensure_ascii=False, indent=1),
             encoding="utf-8")
+    import bocek.bocek_panel_veri as bpv
+    (CIKTI / "bocek.json").write_text(
+        json.dumps(bpv.uret(), ensure_ascii=False, indent=1),
+        encoding="utf-8")
     print("Analizler yeniden çalıştı.")
 
 
@@ -188,6 +201,11 @@ def main():
         print("NOT: Depo verisi yok, o sekme boş kalacak.")
         print("     Üretmek için: python src/depo/depo_panel_veri.py")
 
+    bocek = oku("bocek.json", BOS_BOCEK)
+    if not bocek.get("zararlilar"):
+        print("NOT: Böcek verisi yok, o sekme boş kalacak.")
+        print("     Üretmek için: python src/bocek/bocek_panel_veri.py")
+
     sablon = sablonu_birlestir()
     html = (sablon
             .replace("__MUS_JSON__", json.dumps(mus, ensure_ascii=False))
@@ -196,7 +214,8 @@ def main():
             .replace("__CERCOSPORA_JSON__", json.dumps(cerco, ensure_ascii=False))
             .replace("__BELIRSIZLIK_JSON__", json.dumps(belirsiz, ensure_ascii=False))
             .replace("__IZ_JSON__", json.dumps(izveri, ensure_ascii=False))
-            .replace("__DEPO_JSON__", json.dumps(depo, ensure_ascii=False)))
+            .replace("__DEPO_JSON__", json.dumps(depo, ensure_ascii=False))
+            .replace("__BOCEK_JSON__", json.dumps(bocek, ensure_ascii=False)))
 
     hedef = KOK / "mus_panel.html"
     hedef.write_text(html, encoding="utf-8")
@@ -205,7 +224,8 @@ def main():
     # Hızlı tutarlılık kontrolü: yer tutucu kalmadı mı
     kalan = [p for p in ("__MUS_JSON__", "__TOPRAK_JSON__", "__HASTALIK_JSON__",
                          "__CERCOSPORA_JSON__", "__BELIRSIZLIK_JSON__",
-                         "__IZ_JSON__", "__DEPO_JSON__") if p in html]
+                         "__IZ_JSON__", "__DEPO_JSON__",
+                         "__BOCEK_JSON__") if p in html]
     if kalan:
         print("UYARI — doldurulmamış yer tutucu:", ", ".join(kalan))
 
