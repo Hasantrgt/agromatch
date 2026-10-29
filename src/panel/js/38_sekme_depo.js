@@ -187,8 +187,9 @@ function sekmeDepo() {
     el("p", { class: "note" , text:
       "Yayınlar LC50 vermiyor; yalnızca yüzde ölüm çizelgeleri yayımlamışlar. "
       + "Buradaki LC50 ve LC90 değerleri o çizelgelerden BU ARAÇLA kestirildi. "
-      + "Yedi seride araç kestirim yapmayı reddetti: üç günlük maruziyette doz ile "
-      + "ölüm arasında ilişki yok, dolayısıyla uydurulacak eğri de yok. "
+      + `${n0(dc.seriler.length - kestirilen.length)} seride araç kestirim yapmayı `
+      + "reddetti: kısa maruziyetlerde doz ile ölüm arasında ilişki yok, "
+      + "dolayısıyla uydurulacak eğri de yok. "
       + "İki kademe var: denenen dozların onda biri ile on katı arasını aşan "
       + "kestirimler hiç yazılmaz; bu aralıkta kalıp da denenen dozların (100–1000 "
       + "ppm) dışına düşenler yazılır ama 'aralık dışı' diye işaretlenir — model "
