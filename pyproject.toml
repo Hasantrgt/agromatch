@@ -121,6 +121,11 @@ files = [
     "src/depo/doz_cevap.py",
     "src/depo/depo_panel_veri.py",
     "src/depo/literatur.py",
+    # Üçüncü kısım — böcekler, ilaçlar, kalıntısız yol
+    "src/bulas_kaynagi.py",
+    "src/bocek/tarla_zararli.py",
+    "src/bocek/faydali.py",
+    "src/bocek/pestisit.py",
 ]
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
