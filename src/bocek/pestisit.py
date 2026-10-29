@@ -138,11 +138,13 @@ ETKI_GRUPLARI: tuple[dict[str, Any], ...] = (
         "sistemik": False, "genis_etkili": False,
         "ariya_toksik": "yok", "parazitoite_toksik": "yok",
         "direnc_riski": "yok", "kalinti_suresi_gun": (0, 0),
-        "hedef": ("Mısır kurdu", "Süne"),
+        "hedef": ("Mısır kurdu", "Süne", "Yonca hortumlu böceği"),
         "kaynak": "literatür",
         "not_": ("Trichogramma salımı mısır kurdunda uygulanan bir yöntem. "
                  "Maliyet ve tedarik sorunu var; ama ilaç kullanılan "
-                 "tarlada işe yaramaz — ikisi birlikte olmaz."),
+                 "tarlada işe yaramaz — ikisi birlikte olmaz. Yonca "
+                 "hortumlu böceğinde entomopatojen mantar Beauveria "
+                 "talimatta doğal düşman olarak adı geçen etmendir."),
     },
 )
 

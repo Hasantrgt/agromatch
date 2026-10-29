@@ -87,13 +87,19 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "zarar_sekli": "yaprak_yeme", "hedef_organ": "fide yaprağı",
         "vektor": (), "kritik_aylar": (10, 11, 3, 4),
         "dogal_dusman": (),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": False, "kaynak": "literatür",
+        "esik": ("sonbahardan nisan ortasına: m²'de 1 ve üzeri canlı larva "
+                 "ILE 5 ve üzeri zararlı görmüş bitki → tohum ilaçlama "
+                 "programı. Erken ilkbaharda m²'de 3 ve üzeri canlı larva "
+                 "YA DA 15 ve üzeri zararlı görmüş bitki → yüzey ilaçlaması"),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": ("Larva geceleri fideyi yer, yaprak lif lif ayrılır ve "
                     "deliğe çekilir. Tarlada ocak ocak boşluk görülür."),
-        "not_": ("Sonbahar ve erken ilkbahar zararlısı; buğdayın buğdayı "
-                 "izlediği tarlalarda artar. Ekim nöbeti doğrudan etkiler."),
+        "not_": ("Sayım 1/4 m²'lik çerçeveyle, toprak 15 cm derinliğe "
+                 "kazılarak yapılır. Ekim nöbeti talimatta ilk sırada: "
+                 "buğdayın buğdayı izlediği tarlalarda bulaşma artıyor. "
+                 "Derin sürüm larva ve pupayı kırar; hasadı geciktirmemek "
+                 "tarlaya dökülen daneyi ergine yem olmaktan çıkarır."),
     },
     {
         "ad": "Ekin sap arısı", "latince": "Cephus pygmaeus",
@@ -259,18 +265,26 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
     },
     # ------------------------------------------- Yonca / Korunga / Fiğ
     {
-        "ad": "Yonca hortumlu böceği", "latince": "Hypera postica",
-        "urunler": ("Yonca",), "onem": 3,
+        "ad": "Yonca hortumlu böceği", "latince": "Hypera variabilis",
+        "urunler": ("Yonca", "Fiğ"), "onem": 3,
         "zarar_sekli": "yaprak_yeme", "hedef_organ": "yaprak ve sürgün ucu",
-        "vektor": (), "kritik_aylar": (4, 5, 6),
-        "dogal_dusman": ("Bathyplectes parazitoitleri", "gelin böceği"),
-        "esik": "ilk biçim öncesi sap başına 3 larva",
-        "esik_kaynak": "literatür",
-        "depoda_da": False, "kaynak": "literatür",
+        "vektor": (), "kritik_aylar": (3, 4, 5),
+        "dogal_dusman": ("Bathyplectes parazitoitleri", "gelin böceği",
+                         "Beauveria (entomopatojen mantar)"),
+        "esik": ("ilk biçimden 10–20 gün önce m²'de 25 larva veya ergin; "
+                 "uygulama genellikle nisan başı ile 15 Mayıs arasına, bitki "
+                 "15–30 cm boydayken denk gelir"),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": ("Larva sürgün ucundaki yaprakları kemirir; tarla "
                     "uzaktan ağarmış görünür. Birinci biçim en çok etkilenir."),
-        "not_": ("Erken biçim, ilaç kullanmadan popülasyonu kıran en "
-                 "etkili yöntemdir — kalıntısız yolun yonca ayağı."),
+        "not_": ("Talimat Türkiye'de türü Hypera variabilis olarak veriyor; "
+                 "literatürde H. postica ile yakın/eşanlamlı kullanılır. "
+                 "Yılda tek döl. Kalıntısız paketin tamamı resmî: biçimi "
+                 "10–15 gün erkene almak, biçimden bir hafta önce sulamak "
+                 "(larva gelişimi yavaşlar), biçimden sonra 7–10 gün su "
+                 "vermemek (toprağa düşen larva güneşte ölür) ve biçilen "
+                 "yoncayı tarlada bırakmayıp başka yerde kurutmak."),
     },
     {
         "ad": "Yonca yaprak biti", "latince": "Acyrthosiphon pisum",

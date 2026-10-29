@@ -149,12 +149,14 @@ def test_tozlayici_hicbir_zararliyi_hedeflemiyor():
 def test_kaynak_disiplini_korunuyor():
     """Yalnızca Bakanlık belgesinden DOĞRULANMIŞ kayıtlar ZMTT olabilir.
 
-    Bugün doğrulanmış olanlar: süne ve patates böceği (her ikisinin de
-    eşiği önce yanlış yazılmıştı, resmî kaynakla düzeltildi). Listeye
-    yeni bir ZMTT eklenecekse gerçekten belgeden gelmiş olmalı.
+    Doğrulama taramasında dört kayıt belgeye bağlandı. Üçünde yazdığım
+    eşik YANLIŞ çıktı (süne, patates böceği, yonca hortumlu böceği),
+    birinde eşik hiç yazılmamıştı ve belgede vardı (ekin kambur böceği).
+    Listeye yeni bir ZMTT eklenecekse gerçekten belgeden gelmiş olmalı.
     """
     dogrulanmis = {z["ad"] for z in tz.ZARARLILAR if z["kaynak"] == "ZMTT"}
-    assert dogrulanmis == {"Süne", "Patates böceği"}
+    assert dogrulanmis == {"Süne", "Patates böceği", "Yonca hortumlu böceği",
+                           "Ekin kambur böceği"}
     for kayit in (*fy.FAYDALILAR, *ps.ETKI_GRUPLARI):
         assert kayit["kaynak"] == "literatür", kayit.get("ad", kayit.get("grup"))
 
@@ -221,3 +223,27 @@ def test_patates_bocegi_esigi_yok_diyor():
     z = next(x for x in tz.ZARARLILAR if x["ad"] == "Patates böceği")
     assert "EŞİK YOKTUR" in z["esik"]
     assert "%20" in z["esik"]
+
+
+def test_yonca_hortumlu_esigi_resmi_degerde():
+    """Yazdığım 'sap başına 3 larva' YANLIŞTI; talimat m²'de 25 diyor."""
+    z = next(x for x in tz.ZARARLILAR if x["ad"] == "Yonca hortumlu böceği")
+    assert "25 larva veya ergin" in z["esik"]
+    assert "m²" in z["esik"]
+    assert z["latince"] == "Hypera variabilis"
+
+
+def test_ekin_kambur_esigi_iki_kademeli():
+    """Talimat iki ayrı karar veriyor: tohum ilaçlama ve yüzey ilaçlaması."""
+    z = next(x for x in tz.ZARARLILAR if x["ad"] == "Ekin kambur böceği")
+    assert "tohum ilaçlama" in z["esik"] and "yüzey ilaçlaması" in z["esik"]
+    assert z["esik_kaynak"] == "ZMTT"
+
+
+def test_dogrulanan_esikler_sayi_iceriyor():
+    """ZMTT etiketli her eşik ya somut bir sayı verir ya da eşik
+    olmadığını açıkça söyler — ikisinin arası yok."""
+    import re
+    for z in tz.ZARARLILAR:
+        if z["esik_kaynak"] == "ZMTT":
+            assert re.search(r"\d", z["esik"]), z["ad"]
