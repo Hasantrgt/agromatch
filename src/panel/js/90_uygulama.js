@@ -2,6 +2,7 @@
 
 const SEKMELER = [
   ["cati", "Çatı", sekmeCati],
+  ["uyari", "Erken uyarı", sekmeUyari],
   ["genel", "Genel bakış", sekmeGenel],
   ["denge", "Denge & yem", sekmeDenge],
   ["toprak", "Toprak & iklim", sekmeToprak],

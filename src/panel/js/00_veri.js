@@ -8,3 +8,4 @@ const BELIRSIZ = __BELIRSIZLIK_JSON__;
 const IZ = __IZ_JSON__;
 const DEPO = __DEPO_JSON__;
 const BOCEK = __BOCEK_JSON__;
+const UYARI = __UYARI_JSON__;
