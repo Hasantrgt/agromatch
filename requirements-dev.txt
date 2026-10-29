@@ -1,5 +1,9 @@
 # Geliştirme ve test araçları
 -r requirements.txt
+# Depo katmanının testleri (test_depo, test_doz_cevap) ve panelin depo
+# sekmesi scipy/statsmodels ister; CI bunları gerçekten çalıştırsın diye
+# burada da kuruluyor.
+-r requirements-depo.txt
 pytest>=8,<9
 pytest-cov>=5
 mypy>=1.9

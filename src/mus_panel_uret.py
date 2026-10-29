@@ -32,6 +32,11 @@ from pathlib import Path
 KOK = Path(__file__).resolve().parent.parent
 CIKTI = KOK / "outputs"
 
+BOS_DEPO: dict = {"zararlilar": [], "mucadele": [], "kaynaklar": {},
+                  "ozet": {}, "ambar": {"ilceler": [], "aylar": [], "yigin": {},
+                                        "dis_hava": {}, "pencere": [], "sonumleme": 0},
+                  "doz_cevap": {"lc": {}, "noktalar": [], "egri": [], "sentetik": True}}
+
 BOS_CERCO = {
     "asamalar": [], "siddet_olcegi": [], "siddet_ornek": [],
     "dogrulama": None, "parametre_taramasi": [], "parametreler": {},
@@ -63,6 +68,17 @@ def hepsini_calistir():
     CIKTI.mkdir(exist_ok=True)
     (CIKTI / "mus.json").write_text(
         json.dumps(veri, ensure_ascii=False, indent=1), encoding="utf-8")
+    # Depo katmanı scipy/statsmodels ister. Kurulu değilse panelin tamamı
+    # çökmesin: görüntü hattındaki gibi o sekme boş kalsın, sebebi yazılsın.
+    try:
+        import depo.depo_panel_veri as dpv
+    except ImportError as e:
+        print(f"NOT: Depo katmanı atlandı ({e.name} kurulu değil).")
+        print("     Kurmak için: pip install -r requirements-depo.txt")
+    else:
+        (CIKTI / "depo.json").write_text(
+            json.dumps(dpv.uret(), ensure_ascii=False, indent=1),
+            encoding="utf-8")
     print("Analizler yeniden çalıştı.")
 
 
@@ -167,6 +183,10 @@ def main():
         print("       python src/goruntu/cercospora_panel_veri.py")
     belirsiz = oku("mus_belirsizlik.json")
     izveri = oku("mus_iz.json", {"sorular": []})
+    depo = oku("depo.json", BOS_DEPO)
+    if not depo.get("zararlilar"):
+        print("NOT: Depo verisi yok, o sekme boş kalacak.")
+        print("     Üretmek için: python src/depo/depo_panel_veri.py")
 
     sablon = sablonu_birlestir()
     html = (sablon
@@ -175,7 +195,8 @@ def main():
             .replace("__HASTALIK_JSON__", json.dumps(hastalik, ensure_ascii=False))
             .replace("__CERCOSPORA_JSON__", json.dumps(cerco, ensure_ascii=False))
             .replace("__BELIRSIZLIK_JSON__", json.dumps(belirsiz, ensure_ascii=False))
-            .replace("__IZ_JSON__", json.dumps(izveri, ensure_ascii=False)))
+            .replace("__IZ_JSON__", json.dumps(izveri, ensure_ascii=False))
+            .replace("__DEPO_JSON__", json.dumps(depo, ensure_ascii=False)))
 
     hedef = KOK / "mus_panel.html"
     hedef.write_text(html, encoding="utf-8")
@@ -184,7 +205,7 @@ def main():
     # Hızlı tutarlılık kontrolü: yer tutucu kalmadı mı
     kalan = [p for p in ("__MUS_JSON__", "__TOPRAK_JSON__", "__HASTALIK_JSON__",
                          "__CERCOSPORA_JSON__", "__BELIRSIZLIK_JSON__",
-                         "__IZ_JSON__") if p in html]
+                         "__IZ_JSON__", "__DEPO_JSON__") if p in html]
     if kalan:
         print("UYARI — doldurulmamış yer tutucu:", ", ".join(kalan))
 

@@ -7,6 +7,7 @@ const SEKMELER = [
   ["hastalik", "Hastalık", sekmeHastalik],
   ["belirsizlik", "Belirsizlik", sekmeBelirsizlik],
   ["iz", "Hesap izi", sekmeIz],
+  ["depo", "Depo", sekmeDepo],
   ["karne", "İlçe karnesi", sekmeKarne],
   ["kunye", "Veri künyesi", sekmeKunye],
 ];

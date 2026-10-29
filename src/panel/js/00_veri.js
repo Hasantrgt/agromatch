@@ -6,3 +6,4 @@ const HASTALIK = __HASTALIK_JSON__;
 const CERCO = __CERCOSPORA_JSON__;
 const BELIRSIZ = __BELIRSIZLIK_JSON__;
 const IZ = __IZ_JSON__;
+const DEPO = __DEPO_JSON__;

@@ -119,6 +119,7 @@ files = [
     "src/depo/depo_profil.py",
     "src/depo/ambar_sicaklik.py",
     "src/depo/doz_cevap.py",
+    "src/depo/depo_panel_veri.py",
 ]
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
