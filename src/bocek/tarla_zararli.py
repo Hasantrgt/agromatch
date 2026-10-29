@@ -52,14 +52,22 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "zarar_sekli": "emgi", "hedef_organ": "başak ve dane",
         "vektor": (), "kritik_aylar": (4, 5, 6),
         "dogal_dusman": ("Trissolcus yumurta parazitoitleri",),
-        "esik": "süt olum döneminde 0,5 ergin/m² ya da 10 nimf/m²",
-        "depoda_da": False, "kaynak": "literatür",
+        "esik": ("kışlamış ergin m²'de ortalama 0,8 ve üzerindeyse yumurta "
+                 "parazitlenme sürveyine geçilir; ilaçlama kararı ERGİN "
+                 "YOĞUNLUĞU ile PARAZİTLENME ORANI birlikte değerlendirilerek "
+                 "verilir (bkz. sune_karari)"),
+        "esik_kaynak": "ZMTT",
+        "karar_kurali": "sune_karari",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": ("Emgi yapılan danede şeffaf leke ve nokta; unda gluten "
                     "çöker, ekmeklik değer düşer. Zarar tartıda değil, "
                     "SÜNELİ DANE ORANINDA ölçülür."),
         "not_": ("Türkiye'de süne mücadelesinin belkemiği yumurta "
-                 "parazitoitleridir. Geniş etkili ilaç parazitoiti de "
-                 "öldürdüğü için ertesi yıl sorunu büyütebilir."),
+                 "parazitoitleridir. Teknik talimat tek bir sayıya değil, "
+                 "parazitlenme oranına bağlı bir KARAR TABLOSUNA dayanır: "
+                 "parazitlenme yeterliyse ilaçlama yapılmaz. Projenin savı "
+                 "olan 'faydalı, kararı değiştirir' ilkesinin resmî karşılığı "
+                 "budur."),
     },
     {
         "ad": "Kımıl", "latince": "Aelia spp.",
@@ -68,6 +76,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (4, 5, 6),
         "dogal_dusman": ("yumurta parazitoitleri",),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": "Süneye benzer emgi; genellikle süneyle birlikte bulunur.",
         "not_": "Süne ile birlikte sayılır; ayrı eşik verisi Muş için yok.",
@@ -79,6 +88,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (10, 11, 3, 4),
         "dogal_dusman": (),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": ("Larva geceleri fideyi yer, yaprak lif lif ayrılır ve "
                     "deliğe çekilir. Tarlada ocak ocak boşluk görülür."),
@@ -92,6 +102,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (5, 6),
         "dogal_dusman": ("parazitoit arılar",),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": ("Larva sapın içinde aşağı iner, hasada yakın sapı "
                     "keser; başak devrilir ve hasatta toplanamaz."),
@@ -107,6 +118,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "kritik_aylar": (4, 5, 6),
         "dogal_dusman": ("gelin böceği", "altın gözlü böcek", "Aphidius spp."),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": "Emgi ile zayıflama; ayrıca virüs taşır.",
         "not_": ("Taşıdığı BYDV hastalık kataloğunda YOK — eklenmesi "
@@ -119,12 +131,18 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "zarar_sekli": "yaprak_yeme", "hedef_organ": "yaprak",
         "vektor": (), "kritik_aylar": (5, 6, 7, 8),
         "dogal_dusman": ("avcı tahtakuruları",),
-        "esik": "bitki başına 2 larva kümesi ya da %15 yaprak kaybı",
-        "depoda_da": False, "kaynak": "literatür",
+        "esik": ("kimyasal mücadelede EŞİK YOKTUR. Bitki %20 yaprak zararını "
+                 "verim kaybı olmadan kaldırır; fenolojik döneme göre bu "
+                 "tolerans %40'a çıkabilir. İlaçlama 1. dölde ilk 4. dönem "
+                 "larvalar görüldüğünde yapılır"),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": ("Ergin ve larva yaprağı tamamen yer; ağır bulaşmada "
                     "bitki sapa iner. Yumru iriliği doğrudan düşer."),
         "not_": ("İnsektisit direnci dünyada en hızlı gelişen türlerden; "
-                 "aynı etki grubunun üst üste kullanılmaması kritik."),
+                 "aynı etki grubunun üst üste kullanılmaması kritik. Sürvey "
+                 "günlük ortalama sıcaklık 14–15 °C'yi bulunca haftalık "
+                 "başlar. İkinci dölde ilaçlama çoğu zaman gereksizdir."),
     },
     {
         "ad": "Yeşil şeftali yaprak biti", "latince": "Myzus persicae",
@@ -135,6 +153,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "kritik_aylar": (5, 6, 7, 8),
         "dogal_dusman": ("gelin böceği", "altın gözlü böcek", "Aphidius spp."),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": ("Emgi zararı küçüktür; asıl zarar TAŞIDIĞI VİRÜSTÜR. "
                     "Tohumluk patateste belirleyici zararlıdır."),
@@ -148,6 +167,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (7, 8, 9, 10),
         "dogal_dusman": ("parazitoit arılar",),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": True, "kaynak": "literatür",
         "belirti": ("Larva yaprakta galeri açar, yumruda ise içeri girer. "
                     "Depoda zarar sürer."),
@@ -162,6 +182,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (5, 6, 7),
         "dogal_dusman": ("parazitoit arılar",),
         "esik": "fide döneminde bitki başına 2–3 larva",
+        "esik_kaynak": "literatür",
         "depoda_da": False, "kaynak": "literatür",
         "belirti": ("Larva yaprağın iki zarı arasında galeri açar; yaprak "
                     "kabarır ve kurur. Fide döneminde ölümcül."),
@@ -174,6 +195,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (4, 5),
         "dogal_dusman": (),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": "Yaprakta kalbur gibi küçük delikler; fide dönemi kritik.",
         "not_": "Çıkıştan sonraki ilk iki hafta belirleyicidir.",
@@ -185,6 +207,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (4, 5, 6),
         "dogal_dusman": ("yer böcekleri (Carabidae)",),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": ("Larva geceleri fideyi kök boğazından keser; sabah "
                     "devrilmiş bitkiler görülür. Zarar ocak ocaktır."),
@@ -198,6 +221,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (6, 7, 8),
         "dogal_dusman": ("Trichogramma yumurta parazitoitleri",),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": ("Larva sapın içinde galeri açar; sap kırılır, koçan "
                     "beslenemez. Açtığı yara Fusarium'a kapı olur."),
@@ -213,6 +237,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (8, 9, 10, 11, 12),
         "dogal_dusman": (),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": True, "kaynak": "literatür",
         "belirti": ("Larva tohumun içini yer, çıkış deliği bırakır. "
                     "Çimlenme ve pazar değeri biter."),
@@ -227,6 +252,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "kritik_aylar": (5, 6, 7),
         "dogal_dusman": ("gelin böceği", "altın gözlü böcek", "Aphidius spp."),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": "Sürgün uçlarında koloni; emgi ve virüs taşıma.",
         "not_": "Hastalık kataloğundaki fasulye sarı mozaiğinin vektörü.",
@@ -239,6 +265,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (4, 5, 6),
         "dogal_dusman": ("Bathyplectes parazitoitleri", "gelin böceği"),
         "esik": "ilk biçim öncesi sap başına 3 larva",
+        "esik_kaynak": "literatür",
         "depoda_da": False, "kaynak": "literatür",
         "belirti": ("Larva sürgün ucundaki yaprakları kemirir; tarla "
                     "uzaktan ağarmış görünür. Birinci biçim en çok etkilenir."),
@@ -252,6 +279,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (5, 6, 7),
         "dogal_dusman": ("gelin böceği", "altın gözlü böcek"),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": "Sürgünde koloni, bitki zayıflar, kaba yem kalitesi düşer.",
         "not_": "Doğal düşman baskısı çoğu yıl ilaç gerektirmeden yeterlidir.",
@@ -263,6 +291,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": (), "kritik_aylar": (5, 6, 7),
         "dogal_dusman": ("parazitoit arılar",),
         "esik": None,
+        "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": ("Larva tohum taslağını yer; tohumluk üretiminde verim "
                     "düşer. Kaba yem amaçlı üretimde zarar önemsizdir."),
@@ -270,6 +299,81 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
                  "bu yüzden ekonomik zarar yalnızca tohumluk tarlalarında."),
     },
 )
+
+
+# ------------------------------------------------------- süne karar kuralı
+# Zirai Mücadele Teknik Talimatı süne için TEK BİR SAYI vermiyor. Karar,
+# kışlamış ergin yoğunluğu ile yumurta parazitlenme oranının birlikte
+# okunmasıyla veriliyor. Tablo: (kışlamış ergin/m², o yoğunlukta erken
+# ilaçlamadan vazgeçmek için gereken en düşük parazitlenme oranı %).
+SUNE_PARAZITLENME: tuple[tuple[float, float], ...] = (
+    (0.8, 40.0),
+    (1.0, 50.0),
+    (1.5, 70.0),
+)
+
+# Bu yoğunluğun üstünde, parazitlenme yüksek olsa bile 1.-3. dönem nimfe
+# ilaçlama öngörülüyor: ergin çok olduğunda iyi parazitlenme bile geriye
+# zarar verecek kadar nimf bırakıyor.
+SUNE_ERKEN_ILAC_ERGIN = 2.0
+SUNE_ERKEN_ILAC_PARAZIT = 70.0
+
+# Sürveyin başladığı eşik
+SUNE_SURVEY_ERGIN = 0.8
+
+
+def gereken_parazitlenme(ergin_m2: float) -> float | None:
+    """Bu ergin yoğunluğunda erken ilaçlamadan vazgeçmek için gereken oran."""
+    gerek = None
+    for yogunluk, oran in SUNE_PARAZITLENME:
+        if ergin_m2 >= yogunluk:
+            gerek = oran
+    return gerek
+
+
+def sune_karari(ergin_m2: float, parazitlenme: float | None = None) -> dict[str, Any]:
+    """Süne için ilaçlama kararı — talimatın kendi mantığıyla.
+
+    Projenin savı olan "faydalı, kararı değiştirir" ilkesinin resmî
+    karşılığı budur: aynı ergin yoğunluğunda parazitlenme oranı yüksekse
+    ilaçlama yapılmaz.
+
+    parazitlenme None ise henüz sürvey yapılmamış demektir.
+    """
+    if ergin_m2 < 0:
+        raise ValueError("ergin yoğunluğu negatif olamaz")
+    if ergin_m2 < SUNE_SURVEY_ERGIN:
+        return {"karar": "izle",
+                "gerekce": (f"kışlamış ergin m²'de {ergin_m2:g}; sürvey eşiği "
+                            f"{SUNE_SURVEY_ERGIN:g}'in altında"),
+                "ilac": False, "gereken_parazitlenme": None}
+    if parazitlenme is None:
+        return {"karar": "parazitlenme sürveyi yap",
+                "gerekce": ("ergin yoğunluğu sürvey eşiğini aştı; karar "
+                            "parazitlenme ölçülmeden verilemez (7 gün içinde)"),
+                "ilac": None,
+                "gereken_parazitlenme": gereken_parazitlenme(ergin_m2)}
+    if not 0 <= parazitlenme <= 100:
+        raise ValueError("parazitlenme oranı yüzde olarak 0-100 arasında olmalı")
+
+    gerek = gereken_parazitlenme(ergin_m2)
+    if ergin_m2 >= SUNE_ERKEN_ILAC_ERGIN and parazitlenme >= SUNE_ERKEN_ILAC_PARAZIT:
+        return {"karar": "1.-3. dönem nimfe ilaçlama",
+                "gerekce": (f"ergin m²'de {ergin_m2:g} ({SUNE_ERKEN_ILAC_ERGIN:g} "
+                            f"ve üzeri); parazitlenme yüksek olsa da geriye "
+                            f"zarar verecek kadar nimf kalıyor. Zamanlama: "
+                            f"2. dönem nimfler popülasyonun %40'ına ulaşınca"),
+                "ilac": True, "gereken_parazitlenme": gerek}
+    if gerek is not None and parazitlenme >= gerek:
+        return {"karar": "erken ilaçlama yapma, izle",
+                "gerekce": (f"parazitlenme %{parazitlenme:g}, bu yoğunluk için "
+                            f"gereken %{gerek:g}'in üstünde; 1.-3. döneme "
+                            f"ilaçlama yapılmaz, 4.-5. döneme göre izlenir"),
+                "ilac": False, "gereken_parazitlenme": gerek}
+    return {"karar": "ilaçlama düşünülmeli",
+            "gerekce": (f"parazitlenme %{parazitlenme:g}, gereken "
+                        f"%{gerek:g}'in altında"),
+            "ilac": True, "gereken_parazitlenme": gerek}
 
 
 def urune_gore(urun: str) -> list[dict[str, Any]]:

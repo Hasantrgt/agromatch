@@ -147,7 +147,77 @@ def test_tozlayici_hicbir_zararliyi_hedeflemiyor():
 
 
 def test_kaynak_disiplini_korunuyor():
-    """Böcek tarafı henüz Bakanlık belgesiyle doğrulanmadı; hepsi
-    'literatür' olmalı. Biri 'ZMTT' olduysa gerçekten doğrulanmış mı?"""
-    for kayit in (*tz.ZARARLILAR, *fy.FAYDALILAR, *ps.ETKI_GRUPLARI):
+    """Yalnızca Bakanlık belgesinden DOĞRULANMIŞ kayıtlar ZMTT olabilir.
+
+    Bugün doğrulanmış olanlar: süne ve patates böceği (her ikisinin de
+    eşiği önce yanlış yazılmıştı, resmî kaynakla düzeltildi). Listeye
+    yeni bir ZMTT eklenecekse gerçekten belgeden gelmiş olmalı.
+    """
+    dogrulanmis = {z["ad"] for z in tz.ZARARLILAR if z["kaynak"] == "ZMTT"}
+    assert dogrulanmis == {"Süne", "Patates böceği"}
+    for kayit in (*fy.FAYDALILAR, *ps.ETKI_GRUPLARI):
         assert kayit["kaynak"] == "literatür", kayit.get("ad", kayit.get("grup"))
+
+
+def test_her_esigin_kaynagi_yazili():
+    """Eşik varsa kaynağı da olmalı; yoksa kaynağı da olmamalı."""
+    for z in tz.ZARARLILAR:
+        if z["esik"]:
+            assert z["esik_kaynak"] in ("ZMTT", "literatür"), z["ad"]
+        else:
+            assert z["esik_kaynak"] is None, z["ad"]
+
+
+def test_zmtt_kayitlarin_esigi_de_zmtt():
+    for z in tz.ZARARLILAR:
+        if z["kaynak"] == "ZMTT":
+            assert z["esik_kaynak"] == "ZMTT", z["ad"]
+
+
+# ------------------------------------------- süne karar kuralı (ZMTT)
+
+
+def test_sune_survey_esiginin_altinda_islem_yok():
+    k = tz.sune_karari(0.5)
+    assert k["ilac"] is False and k["karar"] == "izle"
+
+
+def test_sune_survey_esigi_asilinca_parazitlenme_isteniyor():
+    """Karar, parazitlenme ölçülmeden VERİLEMEZ — talimatın özü bu."""
+    k = tz.sune_karari(1.0)
+    assert k["ilac"] is None
+    assert "sürvey" in k["karar"]
+
+
+@pytest.mark.parametrize("ergin,oran", [(0.8, 40.0), (1.0, 50.0), (1.5, 70.0)])
+def test_sune_tablosu_talimattaki_degerleri_veriyor(ergin, oran):
+    assert tz.gereken_parazitlenme(ergin) == oran
+
+
+def test_sune_parazitlenme_yeterliyse_ilaclama_yok():
+    """Projenin savı: faydalı, kararı değiştirir."""
+    az = tz.sune_karari(1.2, 45.0)
+    cok = tz.sune_karari(1.2, 55.0)
+    assert az["ilac"] is True and cok["ilac"] is False
+
+
+def test_sune_cok_yuksek_erginde_parazitlenme_yetmiyor():
+    """2 ergin/m² üstünde iyi parazitlenme bile erken ilaçlamayı
+    engellemiyor — talimat böyle diyor, yumuşatmıyoruz."""
+    k = tz.sune_karari(2.5, 85.0)
+    assert k["ilac"] is True and "1.-3. dönem" in k["karar"]
+
+
+def test_sune_gecersiz_girdi_reddediliyor():
+    with pytest.raises(ValueError):
+        tz.sune_karari(-1)
+    with pytest.raises(ValueError):
+        tz.sune_karari(1.0, 150.0)
+
+
+def test_patates_bocegi_esigi_yok_diyor():
+    """Resmî kaynak 'kimyasal mücadelede eşik bulunmamaktadır' diyor;
+    uydurma bir sayı geri gelmesin."""
+    z = next(x for x in tz.ZARARLILAR if x["ad"] == "Patates böceği")
+    assert "EŞİK YOKTUR" in z["esik"]
+    assert "%20" in z["esik"]
