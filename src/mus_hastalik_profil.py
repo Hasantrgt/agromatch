@@ -142,6 +142,22 @@ HASTALIKLAR: list[dict[str, Any]] = [
          yonetim="Erken ekimden kaçınma, dengeli azot",
          pv_sinif=None, goruntuden=True,
          kaynak="literatür", karantina=False, onem=2),
+    # Böcekle taşınan tek hububat hastalığı. Katalogda yoktu; tarla
+    # zararlısı kataloğu hububat yaprak bitini vektör olarak gösterince
+    # eksikliği ortaya çıktı. Nem eşiği 300 = "nem belirleyici değil"
+    # (virüs kayıtlarında kullanılan değer).
+    dict(urun="Buğday", ad="Arpa sarı cücelik virüsü (BYDV)",
+         patojen="Barley yellow dwarf virus (vektör: hububat yaprak bitleri)",
+         tip="virüs", sicaklik_opt=(15, 25), nem_esik=300,
+         kritik_aylar=[10, 11, 4, 5],
+         belirti="Yaprak uçlarından başlayan sararma ve kızarma, bitkide "
+                 "bodurluk, başak küçük ve cılız kalır; tarlada ocak ocak "
+                 "görülür",
+         yonetim="Erken ekimden kaçınma (sonbahar bulaşması en zararlısıdır), "
+                 "yaprak biti izleme, dayanıklı çeşit, ara konukçu yabancı "
+                 "otların temizlenmesi",
+         pv_sinif=None, goruntuden=False,
+         kaynak="literatür", karantina=False, onem=2),
 
     # ------------------------------------------------------------------- ARPA
     dict(urun="Arpa", ad="Arpa yaprak lekesi (kav)",
@@ -188,6 +204,16 @@ HASTALIKLAR: list[dict[str, Any]] = [
          yonetim="Ekim nöbeti (yulaf dahil), dengeli gübreleme, tohum ilaçlaması",
          pv_sinif=None, goruntuden=False,
          kaynak="ZMTT", karantina=False, onem=2),
+    dict(urun="Arpa", ad="Arpa sarı cücelik virüsü (BYDV)",
+         patojen="Barley yellow dwarf virus (vektör: hububat yaprak bitleri)",
+         tip="virüs", sicaklik_opt=(15, 25), nem_esik=300,
+         kritik_aylar=[10, 11, 4, 5],
+         belirti="Yaprak uçlarından başlayan sararma ve kızarma, bodurluk; "
+                 "arpada buğdaydan daha şiddetli seyreder",
+         yonetim="Erken ekimden kaçınma, yaprak biti izleme, dayanıklı çeşit, "
+                 "ara konukçu yabancı otların temizlenmesi",
+         pv_sinif=None, goruntuden=False,
+         kaynak="literatür", karantina=False, onem=2),
 
     # ---------------------------------------------------------- ŞEKER PANCARI
     dict(urun="Şeker pancarı", ad="Cercospora yaprak lekesi",

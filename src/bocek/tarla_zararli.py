@@ -127,8 +127,10 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": "Emgi ile zayıflama; ayrıca virüs taşır.",
-        "not_": ("Taşıdığı BYDV hastalık kataloğunda YOK — eklenmesi "
-                 "gerekiyor, danışman hocaya sorulacak."),
+        "not_": ("Taşıdığı BYDV artık hastalık kataloğunda (buğday ve arpa "
+                 "kayıtları). Sonbahar bulaşması ilkbahardan çok daha "
+                 "zararlı; bu yüzden erken ekimden kaçınmak ilaçtan önce "
+                 "gelir."),
     },
     # -------------------------------------------------------- Patates
     {

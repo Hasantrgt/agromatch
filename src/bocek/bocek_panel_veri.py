@@ -150,6 +150,9 @@ def uret() -> dict[str, Any]:
         "ay_yogunlugu": ay_yogunlugu(),
         "aylar": list(AY_AD),
         "urunler": list(mp.URUN) if hasattr(mp, "URUN") else [],
+        # Çatı sekmesi bir hastalığın hangi kısma ait olduğunu bilmek
+        # zorunda; sınıflamayı ada göre aranabilir biçimde taşıyoruz.
+        "hastalik_bulas": {h["ad"]: h["bulas"] for h in bk.zenginlestir()},
         "koprular": koprular(),
         "bosluklar": bosluklar(),
         "bulas": {"ozet": bk_ozet["kaynak"],

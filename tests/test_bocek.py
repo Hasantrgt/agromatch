@@ -48,8 +48,6 @@ def test_dokuz_urunun_hepsinde_en_az_bir_zararli_var():
 def test_vektor_zararlilari_gercek_hastaliklara_isaret_ediyor():
     """Üçüncü kısımdan ikinci kısma giden köprü kopmasın."""
     for zararli, hastalik in tz.vektorler():
-        if hastalik == "Arpa sarı cücelik virüsü (BYDV)":
-            continue      # katalogda yok, eklenmesi bekleniyor
         assert hastalik in HASTALIK_ADLARI, f"{zararli} -> {hastalik}"
 
 

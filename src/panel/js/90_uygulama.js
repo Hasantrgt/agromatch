@@ -1,6 +1,7 @@
 // Sekme yönlendirmesi ve açılış.
 
 const SEKMELER = [
+  ["cati", "Çatı", sekmeCati],
   ["genel", "Genel bakış", sekmeGenel],
   ["denge", "Denge & yem", sekmeDenge],
   ["toprak", "Toprak & iklim", sekmeToprak],
@@ -43,4 +44,6 @@ etiket.append(
     text: `${olcumSayisi} alan ölçüm · ${tahminSayisi} alan tahmin` }));
 
 const basla = (location.hash || "").replace("#", "");
-goster(SEKMELER.some(s => s[0] === basla) ? basla : "genel");
+// Varsayılan sekme Çatı: panel açılınca önce projenin üç kısmı
+// görünsün, ayrıntı sonra gelsin.
+goster(SEKMELER.some(s => s[0] === basla) ? basla : "cati");

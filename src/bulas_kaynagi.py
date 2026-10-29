@@ -54,6 +54,7 @@ ATAMA: dict[tuple[str, str], tuple[str, tuple[str, ...]]] = {
     ("Buğday", "Kök ve kökboğazı çürüklüğü"): ("toprak", ("tohum",)),
     ("Buğday", "Külleme"): ("hava", ()),
     ("Buğday", "Kar küfü"): ("toprak", ("tohum",)),
+    ("Buğday", "Arpa sarı cücelik virüsü (BYDV)"): ("bocek", ()),
     # -------------------------------------------------------------- Arpa
     ("Arpa", "Arpa yaprak lekesi (kav)"): ("hava", ("tohum", "toprak")),
     ("Arpa", "Ağ lekesi"): ("hava", ("tohum", "toprak")),
@@ -61,6 +62,7 @@ ATAMA: dict[tuple[str, str], tuple[str, tuple[str, ...]]] = {
     ("Arpa", "Kapalı rastık"): ("tohum", ()),
     ("Arpa", "Yarı açık rastık"): ("tohum", ()),
     ("Arpa", "Kök ve kökboğazı çürüklüğü"): ("toprak", ("tohum",)),
+    ("Arpa", "Arpa sarı cücelik virüsü (BYDV)"): ("bocek", ()),
     # ----------------------------------------------------- Şeker pancarı
     ("Şeker pancarı", "Cercospora yaprak lekesi"): ("hava", ("toprak",)),
     # Rizomani'nin vektörü Polymyxa betae; bir BÖCEK değil, toprakta

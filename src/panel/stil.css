@@ -211,3 +211,20 @@
     .takvim { grid-template-columns: repeat(12, 58px); }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* --- Çatı sekmesi --------------------------------------------------- */
+.cati-secim { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.cati-secim button {
+  font: inherit; font-size: 13px; padding: 6px 14px; cursor: pointer;
+  border: 1px solid var(--cizgi); border-radius: 999px;
+  background: var(--yuzey); color: var(--ink);
+}
+.cati-secim button[aria-pressed="true"] {
+  background: var(--koyu, #3b2f20); color: #fff; border-color: transparent;
+  font-weight: 600;
+}
+.cati-baslik {
+  font-size: 14px; margin: 22px 0 8px; padding-bottom: 5px;
+  border-bottom: 2px solid var(--cizgi);
+}
+.cati-baslik:first-child { margin-top: 0; }
