@@ -78,10 +78,30 @@ def test_depo_koprusu_iki_katalogda_da_var():
 # ------------------------------------------------- pestisit yükü
 
 
-def test_kalintisiz_gruplarda_bekleme_suresi_yok():
+def test_kalintisiz_gruplar_kalinti_birakmiyor():
     for g in ps.ETKI_GRUPLARI:
-        if g["grup"] in ps.KALINTISIZ:
-            assert g["kalinti_suresi_gun"][1] <= 3, g["grup"]
+        assert g["kalinti"] == (g["grup"] not in ps.KALINTISIZ), g["grup"]
+
+
+def test_bekleme_suresi_alani_HIC_OLMAMALI():
+    """İlk sürümde her grup için uydurma gün aralıkları vardı.
+
+    O sayılar kaldırıldı: Türkiye'de son uygulama ile hasat arasındaki
+    süre ürün etiketinde, etkili madde ve kültür bitkisi bazında yazar.
+    Grup düzeyinde bir sayı vermek yanlıştır ve yanlış bir bekleme
+    süresi hiç vermemekten tehlikelidir. Geri gelmesin.
+    """
+    for g in ps.ETKI_GRUPLARI:
+        assert "kalinti_suresi_gun" not in g, g["grup"]
+        assert "bekleme" not in g, g["grup"]
+
+
+def test_irac_kodlari_dogrulanmis_degerlerde():
+    """IRAC Mode of Action brochure (Ed. 6) ile karşılaştırıldı."""
+    beklenen = {"piretroit": "3A", "neonikotinoid": "4A",
+                "organik_fosforlu": "1B", "diamid": "28", "bt": "11A"}
+    for grup, kod in beklenen.items():
+        assert ps.grup(grup)["irac"] == kod, grup
 
 
 def test_genis_etkili_gruplar_daha_cok_faydaliyi_vuruyor():
@@ -97,7 +117,7 @@ def test_diyatomlu_toprakta_direnc_riski_yok():
     """Fiziksel etki — projenin depo kısmındaki temel sav."""
     g = ps.grup("mineral")
     assert g["direnc_riski"] == "yok"
-    assert g["kalinti_suresi_gun"] == (0, 0)
+    assert g["kalinti"] is False
 
 
 def test_siralama_yuku_hafiften_agira_veriyor():

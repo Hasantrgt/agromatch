@@ -24,12 +24,37 @@ PESTİSİT YÜKÜ
 Tek bir sayı değil, üç ayrı eksende ölçülür ve öyle gösterilir:
 
     canliya_zarar   kaç faydalı türü vuruyor
-    kalinti         hasat öncesi bekleme süresi (gün)
+    kalinti         üründe ölçülebilir kalıntı bırakıyor mu (evet/hayır)
     direnc          o grupta direnç gelişme riski
 
 Üçünü tek puana indirmiyoruz; çünkü hangisinin daha önemli olduğu
 üreticinin durumuna göre değişir (ihracat yapan için kalıntı, arıcılık da
 yapan için canlıya zarar belirleyicidir).
+
+NEYİN DOĞRULANDIĞI
+------------------
+Bu modülün alanları aynı güvenilirlikte DEĞİL; karıştırılmaması için:
+
+    irac, etki_sekli     DOĞRULANDI. IRAC Mode of Action brochure
+                         (Ed. 6, 2019) ile karşılaştırıldı; grup kodları
+                         ve etki yeri tanımları birebir tutuyor.
+    kalinti              Nitel ve güvenli: fiziksel/biyolojik yöntemler
+                         üründe ölçülebilir kalıntı bırakmaz.
+    ariya_toksik,        GENELLEME. Toksisite etkili maddeye göre
+    parazitoite_toksik   değişir, gruba göre değil. Buradaki değerler
+                         grubun genel eğilimini gösterir; bir ürün için
+                         bağlayıcı değildir.
+    direnc_riski         GENELLEME. IRAC'ın rotasyon mantığına dayanır.
+
+BEKLEME SÜRESİ NEDEN YOK
+------------------------
+Bu modülün ilk sürümünde her grup için "7–21 gün" gibi bekleme süresi
+aralıkları vardı. O sayılar UYDURMAYDI ve kaldırıldı. Türkiye'de son
+uygulama ile hasat arasındaki süre ürün etiketinde, etkili madde ve
+kültür bitkisi bazında yazar; grup düzeyinde bir sayı vermek mümkün
+değildir. Gerçek süre için Bakanlık BKÜ kaydına ve ürün etiketine
+bakılır. Yanlış bir bekleme süresi, hiç bekleme süresi vermemekten
+daha tehlikelidir.
 """
 
 from __future__ import annotations
@@ -44,7 +69,7 @@ ETKI_GRUPLARI: tuple[dict[str, Any], ...] = (
         "etki_sekli": "sinir sisteminde sodyum kanalını açık bırakır",
         "sistemik": False, "genis_etkili": True,
         "ariya_toksik": "yüksek", "parazitoite_toksik": "yüksek",
-        "direnc_riski": "yüksek", "kalinti_suresi_gun": (7, 21),
+        "direnc_riski": "yüksek", "kalinti": True,
         "hedef": ("Süne", "Kımıl", "Patates böceği", "Pancar piresi",
                   "Yonca hortumlu böceği", "Bozkurt"),
         "kaynak": "literatür",
@@ -57,7 +82,7 @@ ETKI_GRUPLARI: tuple[dict[str, Any], ...] = (
         "etki_sekli": "sinir hücresindeki nikotinik reseptöre bağlanır",
         "sistemik": True, "genis_etkili": True,
         "ariya_toksik": "yüksek", "parazitoite_toksik": "orta",
-        "direnc_riski": "yüksek", "kalinti_suresi_gun": (14, 28),
+        "direnc_riski": "yüksek", "kalinti": True,
         "hedef": ("Yeşil şeftali yaprak biti", "Bakla yaprak biti",
                   "Hububat yaprak bitleri", "Yonca yaprak biti",
                   "Patates böceği"),
@@ -73,7 +98,7 @@ ETKI_GRUPLARI: tuple[dict[str, Any], ...] = (
         "etki_sekli": "asetilkolinesteraz enzimini bloke eder",
         "sistemik": False, "genis_etkili": True,
         "ariya_toksik": "yüksek", "parazitoite_toksik": "yüksek",
-        "direnc_riski": "yüksek", "kalinti_suresi_gun": (14, 30),
+        "direnc_riski": "yüksek", "kalinti": True,
         "hedef": ("Süne", "Kımıl", "Pancar sineği", "Mısır kurdu",
                   "Ekin kambur böceği"),
         "kaynak": "literatür",
@@ -86,7 +111,7 @@ ETKI_GRUPLARI: tuple[dict[str, Any], ...] = (
         "etki_sekli": "kas hücresinde kalsiyum salınımını bozar",
         "sistemik": True, "genis_etkili": False,
         "ariya_toksik": "düşük", "parazitoite_toksik": "düşük",
-        "direnc_riski": "orta", "kalinti_suresi_gun": (3, 14),
+        "direnc_riski": "orta", "kalinti": True,
         "hedef": ("Mısır kurdu", "Patates güvesi"),
         "kaynak": "literatür",
         "not_": ("Kelebek larvalarına seçici; arı ve parazitoite nispeten "
@@ -98,7 +123,7 @@ ETKI_GRUPLARI: tuple[dict[str, Any], ...] = (
         "etki_sekli": "larvanın bağırsak çeperini delen protein kristali",
         "sistemik": False, "genis_etkili": False,
         "ariya_toksik": "yok", "parazitoite_toksik": "düşük",
-        "direnc_riski": "orta", "kalinti_suresi_gun": (0, 3),
+        "direnc_riski": "orta", "kalinti": False,
         "hedef": ("Mısır kurdu", "Patates böceği", "Patates güvesi"),
         "kaynak": "literatür",
         "not_": ("Biyolojik kökenli, organik üretimde kullanılabilir. "
@@ -110,7 +135,7 @@ ETKI_GRUPLARI: tuple[dict[str, Any], ...] = (
         "etki_sekli": "kütikuladaki mum tabakasını aşındırır, böcek kurur",
         "sistemik": False, "genis_etkili": False,
         "ariya_toksik": "düşük", "parazitoite_toksik": "düşük",
-        "direnc_riski": "yok", "kalinti_suresi_gun": (0, 0),
+        "direnc_riski": "yok", "kalinti": False,
         "hedef": ("Fasulye tohum böceği", "Patates güvesi"),
         "kaynak": "literatür",
         "not_": ("Zehirleme yok, fiziksel etki var — bu yüzden DİRENÇ "
@@ -123,7 +148,7 @@ ETKI_GRUPLARI: tuple[dict[str, Any], ...] = (
         "etki_sekli": "zararlının barınma, üreme ya da beslenme koşulunu bozar",
         "sistemik": False, "genis_etkili": False,
         "ariya_toksik": "yok", "parazitoite_toksik": "yok",
-        "direnc_riski": "yok", "kalinti_suresi_gun": (0, 0),
+        "direnc_riski": "yok", "kalinti": False,
         "hedef": ("Ekin sap arısı", "Ekin kambur böceği", "Mısır kurdu",
                   "Bozkurt", "Yonca hortumlu böceği", "Baklagil tohum "
                   "hortumluları", "Fasulye tohum böceği"),
@@ -137,7 +162,7 @@ ETKI_GRUPLARI: tuple[dict[str, Any], ...] = (
         "etki_sekli": "doğal düşmanı çoğaltıp tarlaya bırakma",
         "sistemik": False, "genis_etkili": False,
         "ariya_toksik": "yok", "parazitoite_toksik": "yok",
-        "direnc_riski": "yok", "kalinti_suresi_gun": (0, 0),
+        "direnc_riski": "yok", "kalinti": False,
         "hedef": ("Mısır kurdu", "Süne", "Yonca hortumlu böceği"),
         "kaynak": "literatür",
         "not_": ("Trichogramma salımı mısır kurdunda uygulanan bir yöntem. "
@@ -164,7 +189,7 @@ def zararliya_gore(zararli: str) -> list[dict[str, Any]]:
     uygun = [g for g in ETKI_GRUPLARI if zararli in g["hedef"]]
     return sorted(uygun, key=lambda g: (
         SEVIYE[g["ariya_toksik"]] + SEVIYE[g["parazitoite_toksik"]],
-        g["kalinti_suresi_gun"][1], SEVIYE[g["direnc_riski"]]))
+        int(g["kalinti"]), SEVIYE[g["direnc_riski"]]))
 
 
 def yuk(grup_adi: str, faydalilar: tuple[dict[str, Any], ...]) -> dict[str, Any]:
@@ -175,7 +200,7 @@ def yuk(grup_adi: str, faydalilar: tuple[dict[str, Any], ...]) -> dict[str, Any]
         "grup": grup_adi, "ad": g["ad"], "irac": g["irac"],
         "canliya_zarar": len(vurulan),
         "vurulan": vurulan,
-        "kalinti_gun": g["kalinti_suresi_gun"],
+        "kalinti": g["kalinti"],
         "direnc": g["direnc_riski"],
         "kimyasal": grup_adi in KIMYASAL,
     }
@@ -218,11 +243,12 @@ def denetle(zararli_adlari: set[str] | None = None) -> list[str]:
         for alan in ("ariya_toksik", "parazitoite_toksik", "direnc_riski"):
             if g[alan] not in SEVIYE:
                 hata.append(f'{g["grup"]}: {alan} geçersiz ({g[alan]})')
-        alt, ust = g["kalinti_suresi_gun"]
-        if alt > ust or alt < 0:
-            hata.append(f'{g["grup"]}: kalıntı süresi aralığı bozuk')
-        if g["grup"] in KALINTISIZ and ust > 3:
-            hata.append(f'{g["grup"]}: kalıntısız sayıldı ama bekleme {ust} gün')
+        if not isinstance(g["kalinti"], bool):
+            hata.append(f'{g["grup"]}: kalıntı alanı doğru/yanlış olmalı')
+        if g["grup"] in KALINTISIZ and g["kalinti"]:
+            hata.append(f'{g["grup"]}: kalıntısız sayıldı ama kalıntı bırakıyor')
+        if g["grup"] not in KALINTISIZ and not g["kalinti"]:
+            hata.append(f'{g["grup"]}: kalıntı bırakmıyorsa kalıntısız listesinde olmalı')
         if not g["hedef"]:
             hata.append(f'{g["grup"]}: hedef listesi boş')
         if zararli_adlari is not None:
@@ -252,7 +278,7 @@ if __name__ == "__main__":
     for g in ETKI_GRUPLARI:
         y = yuk(g["grup"], fy.FAYDALILAR)
         print(f"  {y['ad']:38s} faydalı vurulan {y['canliya_zarar']}  "
-              f"bekleme {y['kalinti_gun'][0]}-{y['kalinti_gun'][1]} gün  "
+              f"kalıntı {'var' if y['kalinti'] else 'yok'}  "
               f"direnç {y['direnc']}")
 
     print("\nKalıntısız yolu OLMAYAN zararlılar:")

@@ -66,7 +66,7 @@ def grup_kaydi(g: dict[str, Any]) -> dict[str, Any]:
         "ariya_toksik": g["ariya_toksik"],
         "parazitoite_toksik": g["parazitoite_toksik"],
         "direnc_riski": g["direnc_riski"],
-        "kalinti_gun": list(g["kalinti_suresi_gun"]),
+        "kalinti": g["kalinti"],
         "hedef": list(g["hedef"]),
         "vurulan": y["vurulan"],
         "canliya_zarar": y["canliya_zarar"],

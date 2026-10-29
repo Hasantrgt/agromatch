@@ -76,12 +76,11 @@ function sekmeBocek() {
 
   // --- 02 pestisit yükü ---------------------------------------------
   const enCokVurulan = Math.max(...BOCEK.gruplar.map(g => g.canliya_zarar));
-  const enUzunBekleme = Math.max(...BOCEK.gruplar.map(g => g.kalinti_gun[1]));
   const dirence = { "yüksek": 3, "orta": 2, "düşük": 1, "yok": 0 };
 
   const grupTablo = el("div", { class: "kaydir" },
     tablo([{ ad: "etki grubu" }, { ad: "IRAC" }, { ad: "nasıl etki eder" },
-           { ad: "faydalıya zarar" }, { ad: "bekleme" }, { ad: "direnç" }],
+           { ad: "faydalıya zarar" }, { ad: "kalıntı" }, { ad: "direnç" }],
       BOCEK.gruplar.map(g => [
         el("span", {},
           el("strong", { text: g.ad }),
@@ -92,9 +91,9 @@ function sekmeBocek() {
         yukCubugu(g.canliya_zarar, enCokVurulan,
           g.canliya_zarar ? BOCEK_RENK.agir : BOCEK_RENK.temiz,
           g.canliya_zarar ? `${g.canliya_zarar} tür` : "yok"),
-        yukCubugu(g.kalinti_gun[1], enUzunBekleme,
-          g.kalinti_gun[1] ? BOCEK_RENK.orta : BOCEK_RENK.temiz,
-          g.kalinti_gun[1] ? `${g.kalinti_gun[0]}–${g.kalinti_gun[1]} gün` : "yok"),
+        yukCubugu(g.kalinti ? 1 : 0, 1,
+          g.kalinti ? BOCEK_RENK.orta : BOCEK_RENK.temiz,
+          g.kalinti ? "bırakır" : "bırakmaz"),
         yukCubugu(dirence[g.direnc_riski], 3,
           dirence[g.direnc_riski] ? BOCEK_RENK.agir : BOCEK_RENK.temiz,
           g.direnc_riski),
@@ -198,8 +197,13 @@ function sekmeBocek() {
       + "yazılım ilaç tavsiye edemez, ruhsatlı ürün listesi de Bakanlık'ın "
       + "BKÜ kayıtlarından gelir. Burada tutulan şey etki mekanizması "
       + "grubudur. Yük tek puana indirilmiyor: canlıya zarar, bekleme "
-      + "süresi ve direnç riski ayrı duruyor, çünkü hangisinin ağır bastığı "
-      + "üreticinin durumuna göre değişir.",
+      + "durumu ve direnç riski ayrı duruyor, çünkü hangisinin ağır bastığı "
+      + "üreticinin durumuna göre değişir. Hasat öncesi bekleme süresi "
+      + "BİLEREK YOK: o süre etkili madde ve kültür bitkisi bazında ürün "
+      + "etiketinde yazar, grup düzeyinde bir sayı verilemez. IRAC grup "
+      + "kodları ve etki yeri tanımları IRAC Mode of Action brochure "
+      + "(Ed. 6) ile doğrulanmıştır; toksisite değerleri grubun genel "
+      + "eğilimidir, bir ürün için bağlayıcı değildir.",
       grupTablo, vurulanKart),
     bolum("03", "Faydalılar: yolu asıl yürüyen canlılar",
       `${n0(o.faydali)} tür. Bir tarlada böcek demek zararlı demek değildir; `
