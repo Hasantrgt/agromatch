@@ -45,7 +45,7 @@ def zararli_kaydi(z: dict[str, Any]) -> dict[str, Any]:
         "hedef_organ": z["hedef_organ"],
         "kritik_aylar": list(z["kritik_aylar"]),
         "vektor": list(z["vektor"]),
-        "esik": z["esik"],
+        "esik": z["esik"], "esik_kaynak": z["esik_kaynak"],
         "depoda_da": z["depoda_da"],
         "belirti": z["belirti"], "not_": z["not_"],
         "kaynak": z["kaynak"],
