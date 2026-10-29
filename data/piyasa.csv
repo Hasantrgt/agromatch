@@ -1,0 +1,10 @@
+urun;fiyat_tl_ton;maliyet_tl_dekar;destek_tl_dekar;satiliyor;tur;kaynak;tarih
+Buğday;13000;2800;400;evet;varsayım;TMO alım fiyatı açıklandığında güncellenecek;2026-01-01
+Arpa;11000;2500;350;evet;varsayım;TMO alım fiyatı açıklandığında güncellenecek;2026-01-01
+Şeker pancarı;3400;12000;400;evet;varsayım;Muş Şeker Fabrikası sözleşme fiyatı;2026-01-01
+Patates;15000;14000;300;evet;varsayım;hal/tüccar fiyatı, İl Müdürlüğü kaydı;2026-01-01
+Kuru fasulye;;;;evet;eksik;fiyat ve maliyet verisi YOK;
+Yonca;;4000;900;hayır;eksik;yem — satılmıyor, ikame değeriyle hesaplanmalı;2026-01-01
+Korunga;;4000;900;hayır;eksik;yem — satılmıyor, ikame değeriyle hesaplanmalı;2026-01-01
+Fiğ;;4000;900;hayır;eksik;yem — satılmıyor, ikame değeriyle hesaplanmalı;2026-01-01
+Silajlık mısır;;9000;500;hayır;eksik;yem — satılmıyor, ikame değeriyle hesaplanmalı;2026-01-01

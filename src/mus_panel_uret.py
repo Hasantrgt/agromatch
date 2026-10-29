@@ -50,6 +50,9 @@ BOS_UYARI: dict = {"uyarilar": {}, "ilceler": [], "aylar": [], "turler": [],
                    "aylik_sayi": {}, "gunluk_veri": False, "cozunurluk": "ay",
                    "ozet": {}}
 
+BOS_KARLILIK: dict = {"satirlar": [], "piyasa": [], "ayirt_edilebilirlik": [],
+                      "parametre": {}, "veri_yasi": {}, "ozet": {}}
+
 BOS_CERCO = {
     "asamalar": [], "siddet_olcegi": [], "siddet_ornek": [],
     "dogrulama": None, "parametre_taramasi": [], "parametreler": {},
@@ -92,6 +95,9 @@ def hepsini_calistir():
         (CIKTI / "depo.json").write_text(
             json.dumps(dpv.uret(), ensure_ascii=False, indent=1),
             encoding="utf-8")
+    import piyasa.karlilik as pkr
+    (CIKTI / "karlilik.json").write_text(
+        json.dumps(pkr.uret(), ensure_ascii=False, indent=1), encoding="utf-8")
     import uyari.takvim as utk
     (CIKTI / "uyari.json").write_text(
         json.dumps(utk.uret(), ensure_ascii=False, indent=1), encoding="utf-8")
@@ -218,6 +224,11 @@ def main():
         print("NOT: Uyarı verisi yok, o sekme boş kalacak.")
         print("     Üretmek için: python src/uyari/takvim.py")
 
+    karlilik = oku("karlilik.json", BOS_KARLILIK)
+    if not karlilik.get("satirlar"):
+        print("NOT: Karlılık verisi yok, o sekme boş kalacak.")
+        print("     Üretmek için: python src/piyasa/karlilik.py")
+
     sablon = sablonu_birlestir()
     html = (sablon
             .replace("__MUS_JSON__", json.dumps(mus, ensure_ascii=False))
@@ -228,7 +239,8 @@ def main():
             .replace("__IZ_JSON__", json.dumps(izveri, ensure_ascii=False))
             .replace("__DEPO_JSON__", json.dumps(depo, ensure_ascii=False))
             .replace("__BOCEK_JSON__", json.dumps(bocek, ensure_ascii=False))
-            .replace("__UYARI_JSON__", json.dumps(uyari, ensure_ascii=False)))
+            .replace("__UYARI_JSON__", json.dumps(uyari, ensure_ascii=False))
+            .replace("__KARLILIK_JSON__", json.dumps(karlilik, ensure_ascii=False)))
 
     hedef = KOK / "mus_panel.html"
     hedef.write_text(html, encoding="utf-8")
@@ -238,7 +250,7 @@ def main():
     kalan = [p for p in ("__MUS_JSON__", "__TOPRAK_JSON__", "__HASTALIK_JSON__",
                          "__CERCOSPORA_JSON__", "__BELIRSIZLIK_JSON__",
                          "__IZ_JSON__", "__DEPO_JSON__",
-                         "__BOCEK_JSON__", "__UYARI_JSON__") if p in html]
+                         "__BOCEK_JSON__", "__UYARI_JSON__", "__KARLILIK_JSON__") if p in html]
     if kalan:
         print("UYARI — doldurulmamış yer tutucu:", ", ".join(kalan))
 

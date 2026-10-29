@@ -9,3 +9,4 @@ const IZ = __IZ_JSON__;
 const DEPO = __DEPO_JSON__;
 const BOCEK = __BOCEK_JSON__;
 const UYARI = __UYARI_JSON__;
+const KARLILIK = __KARLILIK_JSON__;
