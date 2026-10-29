@@ -1,0 +1,5 @@
+# Depo katmani — hasat sonrasi
+# Doz-cevap analizi ve ambar modeli
+-r requirements.txt
+scipy>=1.11,<2
+statsmodels>=0.14,<1

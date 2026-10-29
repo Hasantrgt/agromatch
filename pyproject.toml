@@ -103,7 +103,7 @@ ignore_missing_imports = true
 warn_unused_ignores = true
 warn_redundant_casts = true
 
-# Kademeli tipleme. Çekirdek sekiz modül tam tipli ve mypy'den temiz geçiyor;
+# Kademeli tipleme. Çekirdek modüller tam tipli ve mypy'den temiz geçiyor;
 # CI yalnızca onları denetler. Eski bölgesel modüller ve görüntü işleme hattı
 # henüz tiplenmedi — sırayla eklenecek, her eklemede bu liste büyüyecek.
 files = [
@@ -115,6 +115,10 @@ files = [
     "src/mus_analiz.py",
     "src/mus_iz.py",
     "src/mus_belirsizlik.py",
+    # Depo katmanı — baştan tipli yazıldı
+    "src/depo/depo_profil.py",
+    "src/depo/ambar_sicaklik.py",
+    "src/depo/doz_cevap.py",
 ]
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
