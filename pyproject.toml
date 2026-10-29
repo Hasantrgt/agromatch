@@ -120,6 +120,7 @@ files = [
     "src/depo/ambar_sicaklik.py",
     "src/depo/doz_cevap.py",
     "src/depo/depo_panel_veri.py",
+    "src/depo/literatur.py",
 ]
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

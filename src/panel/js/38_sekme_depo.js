@@ -1,7 +1,11 @@
-// Depo sekmesi: hasat sonrası. Doz–cevap eğrisi, ambar sıcaklığı,
-// gelişme penceresi ve mücadele karşılaştırması.
+// Depo sekmesi: hasat sonrası. Yayınlanmış doz–cevap verisinden LC50
+// kestirimi, Muş sıcaklık uyarısı, ambar sıcaklığı, gelişme penceresi ve
+// mücadele karşılaştırması.
 
-const DEPO_RENK = { egri: "#2a78d6", nokta: "#eb6834", yigin: "#eb6834", dis: "#2a78d6" };
+const DEPO_RENK = { nokta: "#eb6834", yigin: "#eb6834", dis: "#2a78d6" };
+// Maruz kalma süresi arttıkça koyulaşan bir dizi; eğrinin sola kayışı
+// renkten de okunsun diye.
+const SURE_RENK = ["#a9c9e8", "#6aa3da", "#2a78d6", "#143f78"];
 
 // --- küçük bir SVG çizim yardımcısı (panelin başka yerinde kullanılmıyor)
 function svgEl(tag, attrs = {}) {
@@ -10,34 +14,36 @@ function svgEl(tag, attrs = {}) {
   return e;
 }
 
-function dozCevapGrafik(dc) {
-  const G = 680, Y = 320, sol = 54, sag = 18, ust = 16, alt = 46;
+// Birden çok süreyi aynı eksende çizer. Tek bir eğri yerine dördünü üst
+// üste koymanın sebebi: LC50'nin süreyle sola kayışı bu sekmenin anlattığı
+// asıl şey ve tek grafikte görünüyor.
+function dozCevapGrafik(seriler) {
+  const G = 680, Y = 330, sol = 54, sag = 86, ust = 14, alt = 46;
   const gw = G - sol - sag, gh = Y - ust - alt;
-  const dozlar = dc.egri.map(p => p.doz);
-  const x0 = Math.log10(Math.min(...dozlar)), x1 = Math.log10(Math.max(...dozlar));
+  const hepsi = seriler.flatMap(s => (s.egri || []).map(p => p.doz));
+  const x0 = Math.log10(Math.min(...hepsi)), x1 = Math.log10(Math.max(...hepsi));
   const px = d => sol + (Math.log10(d) - x0) / (x1 - x0) * gw;
   const py = o => ust + (1 - o) * gh;
 
   const svg = svgEl("svg", {
     viewBox: `0 0 ${G} ${Y}`, width: "100%", role: "img",
-    "aria-label": "Doz–cevap eğrisi",
+    "aria-label": "Doz–cevap eğrileri, maruz kalma süresine göre",
   });
 
-  // ızgara ve eksen etiketleri
   for (let i = 0; i <= 4; i++) {
     const o = i / 4;
     svg.appendChild(svgEl("line", {
       x1: sol, y1: py(o), x2: sol + gw, y2: py(o),
-      stroke: "var(--cizgi)", "stroke-width": 1 }));
+      stroke: "var(--cizgi)", "stroke-width": o === 0.5 ? 1.4 : 1,
+      "stroke-dasharray": o === 0.5 ? "5 4" : null }));
     const t = svgEl("text", {
       x: sol - 8, y: py(o) + 4, "text-anchor": "end",
       "font-size": 11, fill: "var(--muted)" });
     t.textContent = "%" + Math.round(o * 100);
     svg.appendChild(t);
   }
-  const tikDoz = [100, 200, 400, 800, 1600].filter(d =>
-    Math.log10(d) >= x0 && Math.log10(d) <= x1);
-  for (const d of tikDoz) {
+  for (const d of [100, 200, 400, 800, 1600]) {
+    if (Math.log10(d) < x0 || Math.log10(d) > x1) continue;
     const t = svgEl("text", {
       x: px(d), y: ust + gh + 18, "text-anchor": "middle",
       "font-size": 11, fill: "var(--muted)" });
@@ -50,46 +56,58 @@ function dozCevapGrafik(dc) {
   eksenAd.textContent = "doz (ppm, logaritmik eksen)";
   svg.appendChild(eksenAd);
 
-  // LC50 / LC90 kılavuz çizgileri
-  for (const [ad, k] of Object.entries(dc.lc)) {
-    if (!k.deger || !(Math.log10(k.deger) >= x0 && Math.log10(k.deger) <= x1)) continue;
-    if (ad === "LC95") continue;
-    const hedef = ad === "LC50" ? 0.5 : 0.9;
-    if (k.alt && k.ust) {
-      svg.appendChild(svgEl("rect", {
-        x: px(k.alt), y: py(hedef) - 5, width: Math.max(px(k.ust) - px(k.alt), 1),
-        height: 10, fill: DEPO_RENK.egri, opacity: 0.16 }));
+  seriler.forEach((s, i) => {
+    const renk = SURE_RENK[i % SURE_RENK.length];
+    if (s.egri) {
+      svg.appendChild(svgEl("path", {
+        d: s.egri.map((p, j) => `${j ? "L" : "M"}${px(p.doz).toFixed(1)},${py(p.olum).toFixed(1)}`).join(" "),
+        fill: "none", stroke: renk, "stroke-width": 2, "stroke-linejoin": "round" }));
     }
-    svg.appendChild(svgEl("line", {
-      x1: px(k.deger), y1: py(hedef), x2: px(k.deger), y2: ust + gh,
-      stroke: "var(--muted)", "stroke-width": 1, "stroke-dasharray": "4 3" }));
-    // Etiket normalde çizginin sağına yazılır; sağ kenara yakınsa sola
-    // çevrilir, yoksa grafiğin dışına taşıp kırpılıyor.
-    const yazi = `${ad} ${n0(k.deger)}`;
-    const sagaSigar = px(k.deger) + yazi.length * 7 < sol + gw;
-    // Etiket eğrinin üstüne denk gelebiliyor; zemin rengiyle ince bir
-    // kontur çizip üstüne yazıyoruz ki eğri metni yutmasın.
-    const t = svgEl("text", {
-      x: px(k.deger) + (sagaSigar ? 6 : -6), y: py(hedef) - 9,
-      "text-anchor": sagaSigar ? "start" : "end",
-      "font-size": 11, fill: "var(--ink)", "font-weight": 600,
-      stroke: "var(--yuzey)", "stroke-width": 3.5, "paint-order": "stroke" });
-    t.textContent = yazi;
-    svg.appendChild(t);
-  }
-
-  // uydurulan eğri
-  svg.appendChild(svgEl("path", {
-    d: dc.egri.map((p, i) => `${i ? "L" : "M"}${px(p.doz).toFixed(1)},${py(p.olum).toFixed(1)}`).join(" "),
-    fill: "none", stroke: DEPO_RENK.egri, "stroke-width": 2, "stroke-linejoin": "round" }));
-
-  // gözlenen noktalar
-  for (const p of dc.noktalar) {
-    svg.appendChild(svgEl("circle", {
-      cx: px(p.doz), cy: py(p.olum), r: 4.5,
-      fill: DEPO_RENK.nokta, stroke: "var(--yuzey)", "stroke-width": 1.6 }));
-  }
+    for (const p of s.noktalar) {
+      svg.appendChild(svgEl("circle", {
+        cx: px(p.doz), cy: py(p.olum), r: 4,
+        fill: renk, stroke: "var(--yuzey)", "stroke-width": 1.5 }));
+    }
+    // LC50 yalnızca ÖLÇÜLEN doz aralığına düşüyorsa işaretleniyor.
+    // Dışarı düşenler çizelgede ayrıca belirtiliyor; grafikte göstermek,
+    // ölçülmemiş bir yeri ölçülmüş gibi sunmak olurdu.
+    const k = s.lc && s.lc.LC50;
+    if (k && k.deger && !k.disinda) {
+      svg.appendChild(svgEl("line", {
+        x1: px(k.deger), y1: py(0.5), x2: px(k.deger), y2: ust + gh,
+        stroke: renk, "stroke-width": 1, "stroke-dasharray": "3 3", opacity: 0.8 }));
+      svg.appendChild(svgEl("circle", {
+        cx: px(k.deger), cy: py(0.5), r: 3.5, fill: "var(--yuzey)",
+        stroke: renk, "stroke-width": 2 }));
+    }
+    // sağ kenarda süre etiketi, eğrinin bittiği yükseklikte
+    const son = s.egri ? s.egri[s.egri.length - 1] : null;
+    if (son) {
+      const t = svgEl("text", {
+        x: sol + gw + 8, y: py(son.olum) + 4, "font-size": 11.5,
+        fill: renk, "font-weight": 600 });
+      t.textContent = `${n0(s.sure)} gün`;
+      svg.appendChild(t);
+    }
+  });
   return svg;
+}
+
+// İki yayının çakıştığı tek noktayı iki çubukla gösterir.
+function karsitlikGrafik(k) {
+  const satir = (y, renk) => el("div", {
+    style: "display:flex;align-items:center;gap:12px;margin:8px 0" },
+    el("div", { style: "min-width:150px;font-size:12.5px",
+      text: `${n0(y.sicaklik)} °C · %${n0(y.nem)} nem` }),
+    el("div", { style: "flex:1;background:var(--cizgi);height:22px;border-radius:4px;overflow:hidden" },
+      el("div", { style: `width:${y.olum}%;height:100%;background:${renk}` })),
+    el("div", { class: "mono", style: "min-width:54px;text-align:right;font-weight:600",
+      text: "%" + n1(y.olum) }));
+  // Mavi = serin koşul, turuncu = sıcak koşul. Yeşil/kırmızı kullanılmıyor:
+  // düşük ölüm çiftçi için iyi haber değil, mücadelenin işlememesi demek.
+  return el("div", { class: "cerceve" },
+    satir(k.dusuk, DEPO_RENK.dis),
+    satir(k.yuksek, DEPO_RENK.nokta));
 }
 
 function sekmeDepo() {
@@ -104,34 +122,101 @@ function sekmeDepo() {
 
   const dc = DEPO.doz_cevap;
   const amb = DEPO.ambar;
+  const o = dc.ozet;
 
-  // --- 01 doz–cevap
-  const lcSatir = Object.entries(dc.lc).map(([ad, k]) => k.deger
-    ? [ad, n0(k.deger) + " ppm", k.alt ? `${n0(k.alt)} – ${n0(k.ust)}` : "—"]
-    : [ad, "—", k.kestirilemedi || "kestirilemedi"]);
+  // --- 01 doz–cevap -------------------------------------------------
+  const kestirilen = dc.seriler.filter(s => s.lc.LC50 && s.lc.LC50.deger);
+  const enIyi = kestirilen.reduce((a, b) =>
+    (!a || b.lc.LC50.deger < a.lc.LC50.deger) ? b : a, null);
 
-  const uyariKutu = dc.sentetik ? el("div", { class: "kutu" },
-    el("strong", { text: "Bu grafik SENTETİK veriyle çizildi." }),
-    el("p", { text: "Aracın çalıştığını göstermek için bilinen bir eğriden üretilmiş "
-      + `sayılar kullanıldı. Üretimde kullanılan gerçek LC50 ${n0(dc.gercek_lc50)} ppm; `
-      + `araç ${n0(dc.lc.LC50.deger)} ppm buldu. Danışman hocanın ham sayımları `
-      + "geldiğinde aynı grafik gerçek veriyle çizilecek." })) : null;
+  const lcHucre = (s, ad) => {
+    const k = s.lc[ad];
+    if (!k || !k.deger) {
+      return el("span", { style: "color:var(--muted)",
+        text: k && k.kestirilemedi ? k.kestirilemedi : "—" });
+    }
+    return el("span", {},
+      el("span", { class: "mono", style: "font-weight:600", text: n0(k.deger) }),
+      el("span", { class: "mono", style: "color:var(--muted)",
+        text: k.alt ? ` [${n0(k.alt)}–${n0(k.ust)}]` : "" }),
+      k.disinda ? rozet("aralık dışı", "r-varsayim") : null);
+  };
+
+  const seriTablo = el("div", { class: "kaydir" },
+    tablo([{ ad: "ürün" }, { ad: "süre", num: true }, { ad: "eğim", num: true },
+           { ad: "LC50 ppm [%95]" }, { ad: "LC90 ppm [%95]" }, { ad: "yayın" }],
+      dc.seriler.map(s => [
+        el("strong", { text: s.etiket }),
+        el("span", { class: "mono", text: n0(s.sure) + " g" }),
+        el("span", { class: "mono", text: s.egim > 0 ? n2(s.egim) : "—" }),
+        lcHucre(s, "LC50"),
+        lcHucre(s, "LC90"),
+        el("span", { style: "font-size:12px;color:var(--muted)", text: s.kaynak }),
+      ])));
+
+  const kaynakKart = el("div", { class: "bulgu" },
+    Object.entries(dc.calismalar).map(([kod, c]) => el("div", { class: "kart" },
+      el("div", { class: "ust", style: "justify-content:space-between" },
+        el("h3", { text: kod }),
+        rozet(`${n0(c.sicaklik)} °C · %${n0(c.nem)}`, "r-olcum")),
+      el("p", { style: "font-size:12.5px", text: `${c.yazarlar} (${c.yil}). ${c.dergi}.` }),
+      el("p", { class: "mono", style: "font-size:12px;color:var(--muted)",
+        text: "doi:" + c.doi }),
+      el("p", { style: "font-size:12.5px",
+        text: `${c.urun} · hücre başına ${n0(c.n_hucre)} birey · ${c.kontrol_notu}` }),
+      el("p", { style: "font-size:12.5px;color:var(--muted)", text: c.not_ }))));
 
   const dozBolum = el("div", {},
-    uyariKutu,
-    el("div", { class: "cerceve" }, dozCevapGrafik(dc)),
+    el("div", { class: "cerceve" }, dozCevapGrafik(dc.vitrin.seriler)),
+    el("p", { class: "note", style: "margin-top:4px",
+      text: `Grafik ${dc.vitrin.urun} ürününü gösteriyor: dört maruz kalma süresi `
+        + "aynı eksende. Halkalar LC50'nin yerini işaretler — süre uzadıkça eğri "
+        + "sola kayıyor, yani aynı ölümü daha az dozla elde ediyorsunuz. Ölçülen "
+        + "doz aralığının dışına düşen LC50'ler grafikte gösterilmez." }),
     el("div", { class: "tiles" },
-      ...[["Eğim", n2(dc.egim), "doz iki katına çıkınca ölüm bahsi ×" + dc.iki_kat_etkisi],
-          ["Kontrol ölümü", yuzde(dc.kontrol_olumu), "Abbott ile düzeltildi"],
-          ["Gözlem", n0(dc.n_gozlem) + " kap", n0(dc.n_birey) + " birey"]]
+      ...[["Veri", n0(o.olcum) + " ölçüm", `${n0(o.yayin)} yayın · ${n0(o.birey)} birey`],
+          ["Uydurulan", n0(dc.seriler.length) + " seri",
+            `${n0(kestirilen.length)} tanesinde LC50 kestirilebildi`],
+          ["En düşük LC50", enIyi ? n0(enIyi.lc.LC50.deger) + " ppm" : "—",
+            enIyi ? `${enIyi.etiket} · ${n0(enIyi.sure)} gün` : ""]]
         .map(([b, d, a]) => el("div", { class: "tile" },
           el("div", { class: "k", text: b }),
           el("div", { class: "v", text: d }),
           el("div", { class: "u", text: a })))),
-    tablo([{ ad: "" }, { ad: "kestirim" }, { ad: "%95 güven aralığı" }], lcSatir),
-    ...(dc.uyari || []).map(u => el("p", { class: "uyari", text: "Uyarı: " + u })));
+    seriTablo,
+    el("p", { class: "note" , text:
+      "Yayınlar LC50 vermiyor; yalnızca yüzde ölüm çizelgeleri yayımlamışlar. "
+      + "Buradaki LC50 ve LC90 değerleri o çizelgelerden BU ARAÇLA kestirildi. "
+      + "Yedi seride araç kestirim yapmayı reddetti: üç günlük maruziyette doz ile "
+      + "ölüm arasında ilişki yok, dolayısıyla uydurulacak eğri de yok. "
+      + "İki kademe var: denenen dozların onda biri ile on katı arasını aşan "
+      + "kestirimler hiç yazılmaz; bu aralıkta kalıp da denenen dozların (100–1000 "
+      + "ppm) dışına düşenler yazılır ama 'aralık dışı' diye işaretlenir — model "
+      + "orada ölçüm görmemiştir, yalnızca uzatılmıştır." }),
+    kaynakKart);
 
-  // --- 02 ambar sıcaklığı
+  // --- 02 Muş uyarısı ------------------------------------------------
+  const k = dc.karsitlik;
+  const acik = DEPO.acik;
+  const karsitlikBolum = el("div", {},
+    karsitlikGrafik(k),
+    el("p", { class: "note", style: "margin-top:4px",
+      text: `Aynı ürün (${k.urun}), aynı tür, aynı doz (${n0(k.doz)} ppm), aynı süre `
+        + `(${n0(k.sure)} gün). Değişen tek şey ortam. Ölüm %${n1(k.dusuk.olum)}'den `
+        + `%${n1(k.yuksek.olum)}'e çıkıyor — ${n1(k.kat)} kat. Nem de değiştiği için `
+        + "farkın tamamı sıcaklığa yazılamaz, ama yönü tartışmasız." }),
+    el("div", { class: "tiles" },
+      ...[["Denemeler", acik.deneme_sicakliklari.map(t => n0(t)).join(" ve ") + " °C",
+            "literatürdeki koşullar"],
+          ["Muş'ta yığın", n1(acik.yigin_en_sicak) + " °C",
+            "en sıcak ayda, en sıcak ilçede"],
+          ["Fark", n1(acik.fark) + " °C", "kestirimin taşınamadığı aralık"]]
+        .map(([b, d, a]) => el("div", { class: "tile vurgu" },
+          el("div", { class: "k", text: b }),
+          el("div", { class: "v", text: d }),
+          el("div", { class: "u", text: a })))));
+
+  // --- 03 ambar sıcaklığı
   // -0,04 bir ondalığa yuvarlanınca "-0" yazılıyor; sıfıra yapıştır.
   const derece = t => n1(Math.abs(t) < 0.05 ? 0 : t);
   const sicaklikTablo = el("div", { class: "kaydir" },
@@ -143,7 +228,7 @@ function sekmeDepo() {
           ...amb.yigin[i].map(t => el("span", { class: "mono", text: derece(t) }))],
       ])));
 
-  // --- 03 gelişme penceresi: ilçe × zararlı ızgarası
+  // --- 04 gelişme penceresi: ilçe × zararlı ızgarası
   const turler = DEPO.zararlilar.map(z => z.ad);
   const bul = (ilce, zararli) =>
     amb.pencere.find(p => p.ilce === ilce && p.zararli === zararli);
@@ -167,7 +252,7 @@ function sekmeDepo() {
           })];
       })));
 
-  // --- 04 mücadele karşılaştırması
+  // --- 05 mücadele karşılaştırması
   const evetHayir = (v, iyiEvet) => el("span", {
     style: `color:${v === iyiEvet ? "var(--good)" : "var(--critical)"};font-weight:600`,
     text: v ? "evet" : "hayır" });
@@ -198,33 +283,37 @@ function sekmeDepo() {
     el("p", { style: "font-size:12.5px;color:var(--muted)", text: "Bedeli: " + m.bedel }))));
 
   return [
-    bolum("01", "Doz–cevap: öldürücü doz kestirimi",
-      "Bir mücadele denemesinin ham sayımlarından LC50 ve LC90 kestirilir. Yöntem "
-      + "probit — hocanın literatürde okuduğu LC50 değerleri bu yöntemle üretilmiştir. "
-      + "Kontrol grubundaki ölüm Abbott formülüyle ayıklanır. Güven aralıkları "
-      + "parametrik önyüklemeyle hesaplanır; turuncu noktalar gözlenen tekrarlar, "
-      + "mavi eğri uydurulan model, açık mavi bant LC'nin güven aralığıdır.",
+    bolum("01", "Doz–cevap: yayınlanmış denemelerden LC50 kestirimi",
+      "Buradaki sayıların hiçbiri üretilmemiştir. İki açık erişimli yayından alınan "
+      + `${n0(o.olcum)} ölçüm (toplam ${n0(o.birey)} birey) probit modele uyduruldu ve `
+      + "öldürücü doz kestirildi. Kaynaklar bölümün altında künyeleriyle duruyor.",
       dozBolum),
-    bolum("02", "Ambar sıcaklığı: yığın dışarıyı gecikmeli takip eder",
+    bolum("02", "Bu kestirimler Muş'a doğrudan taşınmaz",
+      "Diyatomlu toprak böceği zehirlemez, kurutur. Bu yüzden etkisi sıcaklığa ve "
+      + "neme bağlıdır — ve iki yayın bunu aynı ürün üzerinde ölçmüş. Aşağıdaki "
+      + "karşıtlık, bu projenin depo için verebileceği en dürüst cevabın neden "
+      + "'önce ölçün' olduğunu gösteriyor.",
+      karsitlikBolum),
+    bolum("03", "Ambar sıcaklığı: yığın dışarıyı gecikmeli takip eder",
       `Tahıl yığını büyük bir ısı deposudur. Dış hava −5 °C'ye inerken yığının içi `
       + `haftalarca ılık kalır; bu yüzden "Muş soğuk, depoda sorun olmaz" sanısı `
       + `yanlıştır. Model, aylık yığın sıcaklığını dış havanın sönümlenmiş hâli olarak `
       + `hesaplar (sönümleme ${amb.sonumleme} — bir VARSAYIMDIR, ambara veri kaydedici `
       + `konarak ölçülmelidir).`,
       sicaklikTablo),
-    bolum("03", "Gelişme penceresi: hangi zararlı kaç ay gelişebiliyor",
+    bolum("04", "Gelişme penceresi: hangi zararlı kaç ay gelişebiliyor",
       "Her türün bir gelişme eşiği var. Isıtılmamış ambarda yığın sıcaklığı o eşiği "
       + "kaç ay aşıyorsa zararlı o kadar süre üreyebilir. Sıfır ay demek, soğuk tek "
       + "başına o türü durduruyor demektir — kalıntısız, dirençsiz, bedava. "
       + "Eşik değerleri literatürden alınmıştır ve danışman hocanın teyidini bekler.",
       pencereTablo),
-    bolum("04", "Mücadele seçenekleri: kalıntı, direnç ve faydalıya etki",
+    bolum("05", "Mücadele seçenekleri: kalıntı, direnç ve faydalıya etki",
       "Bu tablo ilaç TAVSİYE ETMEZ — ürün ve doz seçimi reçete yazma yetkisi olan "
       + "kişilerin kararıdır. Yaptığı iş yöntemleri aynı ölçütlerle yan yana koymak. "
       + "'İç larvaya' sütunu kritik: buğday biti larvası tanenin içinde geliştiği için "
       + "yalnızca ergine etkili bir yöntem gizli bulaşmayı temizlemez.",
       mucadeleTablo),
-    bolum("05", "Kalıntı bırakmayan yol",
+    bolum("06", "Kalıntı bırakmayan yol",
       `Sekiz yöntemin ${kalintisiz.length} tanesi üründe ölçülebilir kalıntı bırakmıyor. `
       + "\"Pestisitten arındırılmış yol\" bu seçeneklerin birleşiminden çıkar; hiçbiri "
       + "tek başına yeterli değildir.",
