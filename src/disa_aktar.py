@@ -283,7 +283,8 @@ def _denge() -> int:
     return _sozlukten("urun_denge", d["denge"] if d else [])
 
 
-@kaydet("ilce_profili", "İlçe temel bilgileri", "resmî")
+@kaydet("ilce_profili", "İlçe temel bilgileri: rakım, nüfus, "
+        "hayvan varlığı, mera, iklim", "resmî")
 def _ilce() -> int:
     d = _json_oku("mus.json")
     return _sozlukten("ilce_profili", d["ilceler"] if d else [])
@@ -309,6 +310,258 @@ def _lezyon() -> int:
     with open(kaynak, encoding="utf-8") as f:
         r = list(csv.reader(f))
     return _yaz("cercospora_lezyon", r[0], r[1:])
+
+
+@kaydet("00_veri_kunyesi", "Projedeki her girdinin kaynağı, türü ve güven "
+        "derecesi — paketin en önemli ikinci dosyası", "resmî")
+def _proje_kunye() -> int:
+    d = _json_oku("mus.json")
+    return _sozlukten("00_veri_kunyesi", d["kunye"] if d else [])
+
+
+@kaydet("toprak_uygunluk_modeli",
+        "İlçe × ürün toprak+iklim uygunluk puanı, darboğaz ve kısıtla "
+        "birlikte (GERÇEK model çıktısı; sentetik madencilik setiyle "
+        "karıştırılmamalı)", "model")
+def _toprak_model() -> int:
+    d = _json_oku("mus_toprak.json")
+    if not d:
+        return _yaz("toprak_uygunluk_modeli", ["(veri yok)"], [])
+    kayit = []
+    for u in d["urun_karsilastirma"]:
+        for i in u["ilceler"]:
+            kayit.append({"urun": u["urun"], **i})
+    return _sozlukten("toprak_uygunluk_modeli", kayit)
+
+
+@kaydet("ilce_toprak_profili", "İlçe toprak analizi değerleri ve sağlık "
+        "puanı", "model")
+def _ilce_toprak() -> int:
+    d = _json_oku("mus_toprak.json")
+    if not d:
+        return _yaz("ilce_toprak_profili", ["(veri yok)"], [])
+    kayit = []
+    for i in d["ilceler"]:
+        s = {"ilce": i["ilce"], "bunye": i.get("bunye")}
+        s.update({f"toprak_{k}": v for k, v in i["toprak"].items()})
+        sag = i.get("saglik", {})
+        s["saglik_puan"] = sag.get("puan")
+        s["saglik_harf"] = sag.get("harf")
+        kayit.append(s)
+    return _sozlukten("ilce_toprak_profili", kayit)
+
+
+@kaydet("olcum_oncelikleri",
+        "Hangi ölçüm belirsizliği en çok azaltır — bilgi değeri sıralaması",
+        "model")
+def _oncelik() -> int:
+    d = _json_oku("mus_belirsizlik.json")
+    if not d:
+        return _yaz("olcum_oncelikleri", ["(veri yok)"], [])
+    return _sozlukten("olcum_oncelikleri", [
+        {"girdi": o["etiket"], "tur": o["tur"], "yontem": o["yontem"],
+         "kim": o["kim"], "masa_basi": o["masa_basi"], "emek": o["emek"],
+         "toplam_kazanc": o["toplam_kazanc"],
+         "en_yuksek_pay": o["en_yuksek_pay"],
+         "etkiledigi_sorular": [e["soru"] for e in o["etkiledigi"]]}
+        for o in d["genel_oncelik"]])
+
+
+@kaydet("denge_karari", "Ürün × soru: fazla mı açık mı, karar belirsiz mi",
+        "model")
+def _karar() -> int:
+    d = _json_oku("mus_belirsizlik.json")
+    return _sozlukten("denge_karari", d["karar"] if d else [])
+
+
+@kaydet("olcum_duyarliligi",
+        "Laboratuvar hatasının ürün bazında uygunluk kararını ne kadar "
+        "bozduğu", "model")
+def _duyarlilik() -> int:
+    d = _json_oku("toprak_urun_duyarlilik.json")
+    return _sozlukten("olcum_duyarliligi", d["urunler"] if d else [])
+
+
+@kaydet("yem_dengesi", "İlçe kaba yem arz-talep dengesi", "model")
+def _yem() -> int:
+    d = _json_oku("mus.json")
+    return _sozlukten("yem_dengesi", d["yem"] if d else [])
+
+
+@kaydet("su_ve_karbon", "İlçe × ürün su tüketimi, enerji ve karbon",
+        "model")
+def _su() -> int:
+    d = _json_oku("mus.json")
+    return _sozlukten("su_ve_karbon", d["kaynak"] if d else [])
+
+
+@kaydet("ilce_karnesi", "Dört başlıkta ilçe puanlaması", "model")
+def _karne() -> int:
+    d = _json_oku("mus.json")
+    if not d:
+        return _yaz("ilce_karnesi", ["(veri yok)"], [])
+    return _sozlukten("ilce_karnesi", [
+        {"sira": r["sira"], "ilce": r["ilce"], "toplam": r["toplam"],
+         **{f"puan_{k}": v for k, v in r["puan"].items()},
+         "etkin_urun": r["etkin_urun"], "yem_acik_ton": r["yem_acik_ton"],
+         "not": r["not_"]}
+        for r in d["karne"]])
+
+
+@kaydet("ilce_onerileri", "İlçe bazında öncelik sıralı öneriler", "model")
+def _oneri() -> int:
+    d = _json_oku("mus.json")
+    if not d:
+        return _yaz("ilce_onerileri", ["(veri yok)"], [])
+    kayit = [{"ilce": o["ilce"], **m} for o in d["oneri"] for m in o["maddeler"]]
+    return _sozlukten("ilce_onerileri", kayit)
+
+
+@kaydet("il_uretim", "İl toplamı üretim, alan ve verim", "resmî")
+def _uretim() -> int:
+    d = _json_oku("mus.json")
+    return _sozlukten("il_uretim", d["uretim"] if d else [])
+
+
+@kaydet("alan_olcumleri", "İl düzeyinde ölçülmüş temel büyüklükler",
+        "resmî")
+def _olcum() -> int:
+    d = _json_oku("mus.json")
+    return _sozlukten("alan_olcumleri", d["olcum"] if d else [])
+
+
+@kaydet("hastalik_ilce_ozeti", "İlçe başına hastalık sayısı ve en riskli "
+        "üçlü", "model")
+def _hast_ilce() -> int:
+    d = _json_oku("mus_hastalik.json")
+    if not d:
+        return _yaz("hastalik_ilce_ozeti", ["(veri yok)"], [])
+    return _sozlukten("hastalik_ilce_ozeti", [
+        {"ilce": i["ilce"], "hastalik_sayisi": i["hastalik_sayisi"],
+         "yuksek_riskli": i["yuksek_riskli"],
+         "ortalama_risk": i["ortalama_risk"],
+         "en_riskli": [f"{x['ad']} ({x['urun']}) {x['risk']}"
+                       for x in i["en_riskli"]]}
+        for i in d["ilce_ozet"]])
+
+
+@kaydet("goruntuden_tespit_onceligi",
+        "Görüntü işlemeyle tespit edilebilecek hastalıkların önceliği",
+        "model")
+def _goruntu() -> int:
+    d = _json_oku("mus_hastalik.json")
+    return _sozlukten("goruntuden_tespit_onceligi",
+                      d["goruntu_oncelik"] if d else [])
+
+
+@kaydet("zararli_takvimi", "Zararlı × ay ızgarası (1 = etkin)", "literatür")
+def _z_takvim() -> int:
+    d = _json_oku("bocek.json")
+    if not d:
+        return _yaz("zararli_takvimi", ["(veri yok)"], [])
+    aylar = d["aylar"]
+    return _sozlukten("zararli_takvimi", [
+        {"zararli": t["ad"], "urunler": t["urunler"], "onem": t["onem"],
+         **{aylar[i]: v for i, v in enumerate(t["aylar"])}}
+        for t in d["takvim"]])
+
+
+@kaydet("yayin_kunyeleri", "Doz–cevap verisinin alındığı yayınların tam "
+        "künyeleri ve deneme koşulları", "literatür")
+def _yayin() -> int:
+    from depo import literatur as lit
+    return _sozlukten("yayin_kunyeleri", [
+        {"kod": c.kod, "yazarlar": c.yazarlar, "yil": c.yil,
+         "baslik": c.baslik, "dergi": c.dergi, "doi": c.doi,
+         "sicaklik_c": c.sicaklik, "nem_yuzde": c.nem, "tahil": c.urun,
+         "birey_basina_kap": c.birey_basina_kap, "tekrar": c.tekrar,
+         "hucre_basina_birey": c.n_hucre, "abbott": c.abbott,
+         "kontrol_notu": c.kontrol_notu, "not": c.not_}
+        for c in lit.CALISMALAR.values()])
+
+
+@kaydet("deneme_sablonu", "Hocanın kendi ham sayımlarını girmesi için boş "
+        "şablon — doldurulup --veri ile verilince aynı grafik gerçek "
+        "veriyle çizilir", "ölçüm")
+def _sablon() -> int:
+    kaynak = KOK / "data" / "deneme_sablonu.csv"
+    if not kaynak.exists():
+        return _yaz("deneme_sablonu", ["(yok)"], [])
+    metin = kaynak.read_text(encoding="utf-8-sig")
+    ayrac = ";" if metin.splitlines()[0].count(";") else ","
+    r = list(csv.reader(metin.splitlines(), delimiter=ayrac))
+    return _yaz("deneme_sablonu", r[0], r[1:])
+
+
+
+@kaydet("hesap_izi_belirsiz_girdiler",
+        "Hesap ağacındaki belirsiz girdiler: aralıkları, gerekçeleri ve "
+        "nasıl ölçüleceği", "model")
+def _iz() -> int:
+    d = _json_oku("mus_iz.json")
+    if not d:
+        return _yaz("hesap_izi_belirsiz_girdiler", ["(veri yok)"], [])
+    kayit = []
+    for s in d["sorular"]:
+        for g in s.get("duyarlilik", []):
+            y = g.get("olcum_yolu") or {}
+            kayit.append({
+                "soru": s["baslik"], "olcek": s["olcek"],
+                "girdi": g["ad"], "birim": g.get("birim"),
+                "alt": g["aralik"][0] if g.get("aralik") else None,
+                "orta": g["aralik"][1] if len(g.get("aralik", [])) > 1 else None,
+                "ust": g["aralik"][-1] if g.get("aralik") else None,
+                "gerekce": g.get("gerekce"),
+                "olcum_yontemi": y.get("yontem"),
+                "olcum_miktari": y.get("miktar"),
+                "olcum_birimi": y.get("birim"),
+            })
+    return _sozlukten("hesap_izi_belirsiz_girdiler", kayit)
+
+
+@kaydet("urun_toprak_istegi", "Ürünlerin toprak istekleri (modelin "
+        "kalibrasyon tablosu)", "literatür")
+def _istek() -> int:
+    d = _json_oku("mus_toprak.json")
+    if not d:
+        return _yaz("urun_toprak_istegi", ["(veri yok)"], [])
+    return _sozlukten("urun_toprak_istegi",
+                      [{"urun": u, **v} for u, v in d["urun_istek"].items()])
+
+
+@kaydet("puan_agirliklari", "Toprak uygunluk puanının bileşen ağırlıkları",
+        "model")
+def _agirlik() -> int:
+    d = _json_oku("mus_toprak.json")
+    if not d:
+        return _yaz("puan_agirliklari", ["(veri yok)"], [])
+    return _sozlukten("puan_agirliklari",
+                      [{"bilesen": k, "agirlik": v}
+                       for k, v in d["agirlik"].items()])
+
+
+@kaydet("hastalik_aylik_takvim", "Ay × sıcaklık × o ay kritik olan "
+        "hastalıklar", "model")
+def _h_takvim() -> int:
+    d = _json_oku("mus_hastalik.json")
+    if not d:
+        return _yaz("hastalik_aylik_takvim", ["(veri yok)"], [])
+    return _sozlukten("hastalik_aylik_takvim", [
+        {"ay_no": a["ay"], "ay": a["ad"], "sicaklik_c": a["sicaklik"],
+         "hastalik_sayisi": len(a["hastaliklar"]),
+         "hastaliklar": [h if isinstance(h, str) else h.get("ad", "")
+                         for h in a["hastaliklar"]]}
+        for a in d["takvim"]])
+
+
+@kaydet("seker_kotasi", "Muş Şeker Fabrikası kapasite ve doluluk "
+        "(TEYİT EDİLMEDİ)", "model")
+def _kota() -> int:
+    d = _json_oku("mus.json")
+    if not d:
+        return _yaz("seker_kotasi", ["(veri yok)"], [])
+    return _sozlukten("seker_kotasi", [d["kota"]])
+
 
 
 # ----------------------------------------------------------------- paket
