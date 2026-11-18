@@ -564,6 +564,70 @@ def _kota() -> int:
 
 
 
+@kaydet("toprak_olcum_ilce", "Laboratuvar ölçümlerinin ilçe özeti ve "
+        "varsayımla karşılaştırması (2011-2015, 2.622 örnek)", "ölçüm")
+def _tol_ilce() -> int:
+    d = _json_oku("toprak_olcum.json")
+    if not d or not d.get("var"):
+        return _yaz("toprak_olcum_ilce", ["(ölçüm bağlı değil)"], [])
+    kayit = []
+    for ilce, v in d["ilce"].items():
+        for alan, o in v["alanlar"].items():
+            kayit.append({"ilce": ilce, "olcum": alan, "n": o["n"],
+                          "medyan": o["medyan"], "ortalama": o["ortalama"],
+                          "q1": o["q1"], "q3": o["q3"],
+                          "min": o["min"], "maks": o["maks"],
+                          "varsayim": o["varsayim"], "fark": o["fark"],
+                          "varsayim_aralikta": o["aralikta"],
+                          "guvenilir": o["guvenilir"]})
+    return _sozlukten("toprak_olcum_ilce", kayit)
+
+
+@kaydet("toprak_bunye_dagilimi", "İlçe başına ölçülen bünye sınıfı dağılımı",
+        "ölçüm")
+def _bunye() -> int:
+    d = _json_oku("toprak_olcum.json")
+    if not d or not d.get("var"):
+        return _yaz("toprak_bunye_dagilimi", ["(ölçüm bağlı değil)"], [])
+    return _sozlukten("toprak_bunye_dagilimi", [
+        {"ilce": i, "bunye": b["sinif"], "n": b["n"], "pay": b["pay"]}
+        for i, v in d["ilce"].items() for b in v["bunye"]])
+
+
+@kaydet("olcum_etkisi", "Ölçüm varsayımın yerine geçince ilçe × ürün "
+        "uygunluk puanı nasıl değişti", "model")
+def _olcum_etki() -> int:
+    d = _json_oku("olcum_etkisi.json")
+    return _sozlukten("olcum_etkisi", d["satirlar"] if d else [])
+
+
+@kaydet("collesme_dsi", "İlçe çölleşme duyarlılık endeksi ve alt endeksleri",
+        "model")
+def _dsi() -> int:
+    d = _json_oku("collesme.json")
+    if not d:
+        return _yaz("collesme_dsi", ["(veri yok)"], [])
+    return _sozlukten("collesme_dsi", [
+        {"ilce": s["ilce"], "sqi": s["sqi"], "cqi": s["cqi"], "vqi": s["vqi"],
+         "hqi": s["hqi"], "dsi": s["dsi"], "sinif": s["sinif"],
+         "yagis_mm": s["yagis_mm"], "tarim_payi": s["tarim_payi"],
+         "mera_payi": s["mera_payi"],
+         "olculen_girdi": f"{s['olculen_girdi']}/{s['girdi_sayisi']}",
+         **{f"sqi_{a}": p["deger"] for a, p in s["sqi_parca"].items()}}
+        for s in d["satirlar"]])
+
+
+@kaydet("collesme_kaldiraclari", "Hangi müdahale çölleşme endeksini ne "
+        "kadar düşürür", "model")
+def _kaldirac() -> int:
+    d = _json_oku("collesme.json")
+    if not d or "senaryo" not in d:
+        return _yaz("collesme_kaldiraclari", ["(veri yok)"], [])
+    return _sozlukten("collesme_kaldiraclari", [
+        {"ilce": i, **k} for i, liste in d["senaryo"].items() for k in liste])
+
+
+
 # ----------------------------------------------------------------- paket
 
 

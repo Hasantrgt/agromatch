@@ -32,6 +32,9 @@ BEKLENEN = {
     "puan_agirliklari", "olcum_duyarliligi",
     "olcum_oncelikleri", "denge_karari", "hesap_izi_belirsiz_girdiler",
     "toprak_uygunluk", "cercospora_lezyon",
+    # Kasım 2026 — laboratuvar ölçümleri ve çölleşme katmanı
+    "toprak_olcum_ilce", "toprak_bunye_dagilimi", "olcum_etkisi",
+    "collesme_dsi", "collesme_kaldiraclari",
 }
 
 

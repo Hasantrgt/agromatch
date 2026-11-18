@@ -10,3 +10,6 @@ const DEPO = __DEPO_JSON__;
 const BOCEK = __BOCEK_JSON__;
 const UYARI = __UYARI_JSON__;
 const KARLILIK = __KARLILIK_JSON__;
+const OLCUM = __OLCUM_JSON__;
+const ETKI = __ETKI_JSON__;
+const COLLESME = __COLLESME_JSON__;

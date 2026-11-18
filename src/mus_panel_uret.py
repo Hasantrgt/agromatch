@@ -53,6 +53,11 @@ BOS_UYARI: dict = {"uyarilar": {}, "ilceler": [], "aylar": [], "turler": [],
 BOS_KARLILIK: dict = {"satirlar": [], "piyasa": [], "ayirt_edilebilirlik": [],
                       "parametre": {}, "veri_yasi": {}, "ozet": {}}
 
+BOS_OLCUM: dict = {"var": False}
+BOS_ETKI: dict = {"satirlar": [], "ozet": {}, "sinif_degisenler": []}
+BOS_COLLESME: dict = {"satirlar": [], "siniflar": [], "ozet": {}, "resmi": {},
+                      "ayrim": []}
+
 BOS_CERCO = {
     "asamalar": [], "siddet_olcegi": [], "siddet_ornek": [],
     "dogrulama": None, "parametre_taramasi": [], "parametreler": {},
@@ -95,6 +100,16 @@ def hepsini_calistir():
         (CIKTI / "depo.json").write_text(
             json.dumps(dpv.uret(), ensure_ascii=False, indent=1),
             encoding="utf-8")
+    import collesme.dsi as cds
+    import toprak_olcum.analiz as tol
+    import toprak_olcum.etki as tet
+    (CIKTI / "toprak_olcum.json").write_text(
+        json.dumps(tol.uret(), ensure_ascii=False, indent=1), encoding="utf-8")
+    (CIKTI / "olcum_etkisi.json").write_text(
+        json.dumps(tet.karsilastir(), ensure_ascii=False, indent=1),
+        encoding="utf-8")
+    (CIKTI / "collesme.json").write_text(
+        json.dumps(cds.uret(), ensure_ascii=False, indent=1), encoding="utf-8")
     import piyasa.karlilik as pkr
     (CIKTI / "karlilik.json").write_text(
         json.dumps(pkr.uret(), ensure_ascii=False, indent=1), encoding="utf-8")
@@ -229,6 +244,13 @@ def main():
         print("NOT: Karlılık verisi yok, o sekme boş kalacak.")
         print("     Üretmek için: python src/piyasa/karlilik.py")
 
+    olcum = oku("toprak_olcum.json", BOS_OLCUM)
+    etki = oku("olcum_etkisi.json", BOS_ETKI)
+    collesme = oku("collesme.json", BOS_COLLESME)
+    if not olcum.get("var"):
+        print("NOT: Toprak ölçüm verisi yok, o sekme boş kalacak.")
+        print("     Üretmek için: python src/toprak_olcum/analiz.py")
+
     sablon = sablonu_birlestir()
     html = (sablon
             .replace("__MUS_JSON__", json.dumps(mus, ensure_ascii=False))
@@ -240,7 +262,10 @@ def main():
             .replace("__DEPO_JSON__", json.dumps(depo, ensure_ascii=False))
             .replace("__BOCEK_JSON__", json.dumps(bocek, ensure_ascii=False))
             .replace("__UYARI_JSON__", json.dumps(uyari, ensure_ascii=False))
-            .replace("__KARLILIK_JSON__", json.dumps(karlilik, ensure_ascii=False)))
+            .replace("__KARLILIK_JSON__", json.dumps(karlilik, ensure_ascii=False))
+            .replace("__OLCUM_JSON__", json.dumps(olcum, ensure_ascii=False))
+            .replace("__ETKI_JSON__", json.dumps(etki, ensure_ascii=False))
+            .replace("__COLLESME_JSON__", json.dumps(collesme, ensure_ascii=False)))
 
     hedef = KOK / "mus_panel.html"
     hedef.write_text(html, encoding="utf-8")
@@ -250,7 +275,8 @@ def main():
     kalan = [p for p in ("__MUS_JSON__", "__TOPRAK_JSON__", "__HASTALIK_JSON__",
                          "__CERCOSPORA_JSON__", "__BELIRSIZLIK_JSON__",
                          "__IZ_JSON__", "__DEPO_JSON__",
-                         "__BOCEK_JSON__", "__UYARI_JSON__", "__KARLILIK_JSON__") if p in html]
+                         "__BOCEK_JSON__", "__UYARI_JSON__", "__KARLILIK_JSON__", "__OLCUM_JSON__",
+                         "__ETKI_JSON__", "__COLLESME_JSON__") if p in html]
     if kalan:
         print("UYARI — doldurulmamış yer tutucu:", ", ".join(kalan))
 
