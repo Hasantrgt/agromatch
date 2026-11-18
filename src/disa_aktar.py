@@ -628,6 +628,32 @@ def _kaldirac() -> int:
 
 
 
+@kaydet("veri_kalitesi_denetimi", "Laboratuvar verisine uygulanan yedi "
+        "kalite denetimi: bulgu, ağırlık ve ne yapıldığı", "ölçüm")
+def _kalite() -> int:
+    d = _json_oku("veri_kalitesi.json")
+    if not d or not d.get("var"):
+        return _yaz("veri_kalitesi_denetimi", ["(ham veri yok)"], [])
+    return _sozlukten("veri_kalitesi_denetimi", [
+        {"denetim": k["ad"], "soru": k["soru"], "bulgu": k["bulgu"],
+         "incelenen": k["toplam"], "oran_yuzde": k["oran"],
+         "agirlik": k["agirlik"], "ne_yapildi": k["ne_yapildi"]}
+        for k in d["denetim"]])
+
+
+@kaydet("veri_kalitesi_yer_kirilimi", "Yer sütunu dolu olan kayıtların "
+        "nereye düştüğü: Muş ilçesi, Muş dışı, belirsiz", "ölçüm")
+def _kalite_yer() -> int:
+    d = _json_oku("veri_kalitesi.json")
+    if not d or not d.get("var"):
+        return _yaz("veri_kalitesi_yer_kirilimi", ["(ham veri yok)"], [])
+    y = next(k for k in d["denetim"] if k["ad"] == "Yer sütunu")
+    return _sozlukten("veri_kalitesi_yer_kirilimi", [
+        {"kategori": ad, "kayit": n,
+         "pay_yuzde": round(n / d["n_satir"] * 100, 2)}
+        for ad, n in y["ayrinti"]["kirilim"].items()])
+
+
 # ----------------------------------------------------------------- paket
 
 

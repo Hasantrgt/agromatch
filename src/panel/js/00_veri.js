@@ -13,3 +13,4 @@ const KARLILIK = __KARLILIK_JSON__;
 const OLCUM = __OLCUM_JSON__;
 const ETKI = __ETKI_JSON__;
 const COLLESME = __COLLESME_JSON__;
+const KALITE = __KALITE_JSON__;
