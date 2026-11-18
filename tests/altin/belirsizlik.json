@@ -192,12 +192,12 @@
   },
   {
    "urun": "Patates",
-   "eylem": "fırsat",
+   "eylem": "gerek yok",
    "olcek": "ulusal",
    "oran": 0.12,
    "en_iyi_ilce": "Varto",
-   "makas": 16.9,
-   "yeri_onemli": true
+   "makas": 11.3,
+   "yeri_onemli": false
   },
   {
    "urun": "Kuru fasulye",
@@ -205,7 +205,7 @@
    "olcek": "ulusal",
    "oran": 0.329,
    "en_iyi_ilce": "Hasköy",
-   "makas": 15.0,
+   "makas": 17.1,
    "yeri_onemli": true
   },
   {

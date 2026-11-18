@@ -26,10 +26,55 @@ import mus_toprak
 # puanlamaya geçildi.
 
 def test_urun_puanlari_birbirinden_farkli():
-    """Aynı ilçede dokuz ürün aynı puanı almamalı."""
+    """Aynı ilçede dokuz ürün aynı puanı almamalı.
+
+    EŞİK NEDEN DÜŞTÜ (Kasım 2026): Bu test yazıldığında Merkez'in
+    toprağı VARSAYIMDI (pH 7,6 · kireç %10 · kil %46) ve dokuz ürünün
+    puan aralığı 18,0'di. 2011-2015 laboratuvar ölçümleri bağlanınca
+    Merkez'in gerçek toprağı daha ılımlı çıktı (pH 7,43 · kireç %1,99 ·
+    kil %26) ve aralık 9,1'e indi.
+
+    Daralma bir hata değil, BULGUDUR: ölçülen Muş toprakları ürünler
+    arasında varsaydığımız kadar ayrım yapmıyor. Yani ürün seçimini
+    toprak değil, iklim ve diğer etkenler belirliyor. Aynı daralma
+    Hasköy (21,3 → 15,8) ve Korkut'ta (26,7 → 18,0) da var.
+
+    Testin amacı değişmedi: model ürünleri ayırt edebilmeli. Eşik, o
+    amacı ölçümle uyumlu hâle getirmek için düşürüldü — başka bir
+    sebeple düşürülmemeli.
+    """
     puanlar = [mus_toprak.uygunluk("Merkez", u)["puan"] for u in mus_toprak.URUN_ISTEK]
     assert len(set(puanlar)) > 3, f"puanlar fazla benzer: {sorted(set(puanlar))}"
-    assert max(puanlar) - min(puanlar) > 10, "puan aralığı çok dar"
+    assert max(puanlar) - min(puanlar) > 8, "puan aralığı çok dar"
+
+
+def test_il_genelinde_ayirt_etme_korunuyor():
+    """Bir ilçede daralma olabilir ama il genelinde model ayırt etmeli."""
+    araliklar = []
+    for ilce in ("Merkez", "Bulanık", "Malazgirt", "Varto", "Hasköy", "Korkut"):
+        p = [mus_toprak.uygunluk(ilce, u)["puan"] for u in mus_toprak.URUN_ISTEK]
+        araliklar.append(max(p) - min(p))
+    assert max(araliklar) > 20, f"hiçbir ilçede ayrım yok: {araliklar}"
+
+
+def test_olcum_katmani_varsayimin_yerine_geciyor():
+    """Laboratuvar ölçümü bağlıysa o alanlar 'ölçüm' diye işaretlenmeli.
+
+    Ölçüm dosyaları yoksa model varsayımla çalışmaya devam eder; bu
+    testin kırılmaması gerekir, çünkü ölçüm bir iyileştirmedir, önkoşul
+    değil.
+    """
+    katman = mus_toprak.olcum_katmani()
+    if not katman:
+        return          # ölçüm dosyası yok; varsayımla çalışmak geçerli
+    ilce = next(iter(katman))
+    t = mus_toprak.ilce_toprak(ilce)
+    kaynak = t["_kaynak"]
+    assert any(v == "ölçüm" for v in kaynak.values())
+    # Bünye payından türetilen alanlar ölçümle aynı kefeye konmamalı
+    if "kil" in katman[ilce]:
+        assert kaynak["kil"] == "türetildi"
+        assert round(t["kil"] + t["kum"] + t["silt"]) == 100
 
 
 def test_ph_puani_aralik_icinde_de_degisir():

@@ -126,6 +126,8 @@ files = [
     "src/bocek/tarla_zararli.py",
     "src/bocek/faydali.py",
     "src/bocek/pestisit.py",
+    "src/toprak_olcum/analiz.py",
+    "src/toprak_olcum/etki.py",
 ]
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

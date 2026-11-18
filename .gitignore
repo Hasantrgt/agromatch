@@ -79,3 +79,7 @@ Thumbs.db
 gizli/
 # Dışa aktarılan veri paketi — koddan üretilir, depoda durmaz
 veri/
+# Laboratuvar ham kayitlari — baskasinin verisi, yayimlama izni
+# sorulmadan kamuya acik depoya konmaz. Yalnizca ozet istatistikler
+# (outputs/toprak_olcum.json) yayimlanir.
+data/toprak_analizi/

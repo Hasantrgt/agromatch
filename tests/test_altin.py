@@ -14,6 +14,29 @@ ALTIN DOSYA NE ZAMAN GÜNCELLENİR
 Yalnızca bir MODEL değişikliği bilerek yapıldığında ve yeni sayının neden
 doğru olduğu gerekçelendirildiğinde. Test kırıldı diye altın dosyayı
 yenilemek, testin varlık sebebini ortadan kaldırır.
+
+GÜNCELLEME KAYDI
+----------------
+Kasım 2026 — laboratuvar ölçümlerinin bağlanması. Muş İl Tarım ve Orman
+Müdürlüğü'nün 2011-2015 analiz kayıtları (2.622 örnek) modele bağlandı ve
+ilçe toprak değerleri varsayım olmaktan çıktı. Dört sayı değişti:
+
+    Patates      eylem        fırsat   -> gerek yok
+    Patates      yeri_onemli  True     -> False
+    Patates      makas        16,9     -> 11,3
+    Kuru fasulye makas        15,0     -> 17,1
+
+NEDEN DOĞRU: makas, en iyi ilçe ile ikincisi arasındaki uygunluk farkıdır
+ve "nerede ektiğin önemli mi" sorusunu o belirler. Ölçülen Muş toprakları
+varsaydığımızdan daha TEKDÜZE çıktı (özellikle kireç: varsayım %9-13,
+ölçüm %1,3-2,7). Toprak ilçeler arasında daha az ayrım yapınca patatesin
+Varto'daki üstünlüğü 16,9 puandan 11,3'e indi ve eşiğin altına düştü.
+Sistem artık "patates için yer seçimi fırsatı var" demiyor.
+
+Bu bir bozulma değil, DÜZELTMEDİR: eski tavsiye varsayılmış bir toprak
+farkına dayanıyordu. Değişikliğin tamamı src/toprak_olcum/etki.py ile
+ölçülebilir; ilçe×ürün puanlarında ortalama mutlak fark 1,63 puan, ama 45
+satırın 7'sinde uygunluk SINIFI değişti.
 """
 
 import json

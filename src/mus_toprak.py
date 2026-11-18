@@ -68,10 +68,60 @@ URUN_ISTEK: dict[str, dict[str, Any]] = {
     for u in mp.URUN}
 
 
+# Laboratuvar ölçümleri bindirilsin mi. False yapılırsa model eski
+# varsayımlarla çalışır — ölçümün neyi değiştirdiğini görmek için
+# toprak_olcum/etki.py bu bayrağı iki yönde de çalıştırır.
+OLCUM_KULLAN = True
+
+_katman_onbellek: dict[str, dict[str, Any]] | None = None
+
+
+def olcum_katmani() -> dict[str, dict[str, Any]]:
+    """Muş İl Tarım laboratuvar ölçümleri; yoksa boş sözlük.
+
+    Ölçüm dosyaları yoksa ya da openpyxl kurulu değilse model eskisi
+    gibi varsayımla çalışır — ölçüm bir İYİLEŞTİRMEDİR, önkoşul değil.
+    """
+    global _katman_onbellek
+    if _katman_onbellek is None:
+        try:
+            from toprak_olcum import analiz
+            _katman_onbellek = analiz.olcum_katmani()
+        except Exception:
+            _katman_onbellek = {}
+    return _katman_onbellek
+
+
 def ilce_toprak(ilce: str) -> dict[str, Any]:
+    """İlçenin toprak değerleri; güvenilir ölçüm varsa varsayımın yerine.
+
+    Her alan kendi kaynağını da taşır (``_kaynak`` sözlüğü): hangi
+    sayının laboratuvardan, hangisinin varsayımdan geldiği panelde
+    gösterilebilsin diye.
+    """
     ph, om, kirec, ec, kil, kum, silt, p, k, drenaj, erozyon, derinlik = mp.TOPRAK[ilce]
-    return dict(ph=ph, om=om, kirec=kirec, ec=ec, kil=kil, kum=kum, silt=silt,
-                p2o5=p, k2o=k, drenaj=drenaj, erozyon=erozyon, derinlik=derinlik)
+    t: dict[str, Any] = dict(
+        ph=ph, om=om, kirec=kirec, ec=ec, kil=kil, kum=kum, silt=silt,
+        p2o5=p, k2o=k, drenaj=drenaj, erozyon=erozyon, derinlik=derinlik)
+    kaynak = dict.fromkeys(t, "varsayım")
+
+    if OLCUM_KULLAN:
+        for alan, olcum in olcum_katmani().get(ilce, {}).items():
+            if alan not in t:
+                continue
+            t[alan] = olcum["deger"]
+            kaynak[alan] = olcum["tur"]
+        # Kil değişince kum ve silt de kaymalı; aradaki farkı ikisine
+        # paylaştırıyoruz ki toplam 100'de kalsın.
+        if kaynak["kil"] != "varsayım":
+            fark = float(kil) - float(t["kil"])
+            toplam = float(kum) + float(silt)
+            if toplam > 0:
+                t["kum"] = round(float(kum) + fark * float(kum) / toplam, 1)
+                t["silt"] = round(float(silt) + fark * float(silt) / toplam, 1)
+                kaynak["kum"] = kaynak["silt"] = "türetildi"
+    t["_kaynak"] = kaynak
+    return t
 
 
 # Liebig'in minimum yasası: bu üç özellik telafi edilemez.
