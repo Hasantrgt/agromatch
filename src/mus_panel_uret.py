@@ -111,9 +111,19 @@ def hepsini_calistir():
         encoding="utf-8")
     (CIKTI / "collesme.json").write_text(
         json.dumps(cds.uret(), ensure_ascii=False, indent=1), encoding="utf-8")
+    # Kalite raporu YALNIZCA ham dosyalardan üretilebilir; özetten
+    # yeniden kurulamaz. Ham veri yoksa depodaki rapor OLDUĞU GİBİ
+    # bırakılır — boş bir raporla üzerine yazmak, yayındaki panelde
+    # denetimin tamamını silerdi.
     import toprak_olcum.kalite as tkl
-    (CIKTI / "veri_kalitesi.json").write_text(
-        json.dumps(tkl.rapor(), ensure_ascii=False, indent=1), encoding="utf-8")
+    kalite_raporu = tkl.rapor()
+    if kalite_raporu.get("var"):
+        (CIKTI / "veri_kalitesi.json").write_text(
+            json.dumps(kalite_raporu, ensure_ascii=False, indent=1),
+            encoding="utf-8")
+    else:
+        print("NOT: Ham laboratuvar dosyası yok; depodaki veri kalitesi "
+              "raporu korundu.")
     import piyasa.karlilik as pkr
     (CIKTI / "karlilik.json").write_text(
         json.dumps(pkr.uret(), ensure_ascii=False, indent=1), encoding="utf-8")

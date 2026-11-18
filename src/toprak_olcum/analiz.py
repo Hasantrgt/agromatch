@@ -266,9 +266,41 @@ def il_ozeti(kayit: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def yayimlanmis_ozet() -> dict[str, Any] | None:
+    """Ham dosyalar yokken depodaki özetten devam eder.
+
+    NEDEN VAR: Ham laboratuvar kayıtları depoya konmuyor (başkasının
+    verisi). Panel ise GitHub Pages'te her gönderimde TEMİZ bir klondan
+    üretiliyor. Geri düşüş olmasaydı yayındaki panelde ölçüm ve veri
+    kalitesi sekmeleri boş çıkardı — denetimin tamamı, paneli açan
+    kişiye görünmez olurdu.
+
+    Depoya giren özet bunun için yeterli: ilçe medyanları, çeyrekler,
+    güvenilirlik bayrağı ve bünye dağılımı modelin ihtiyacı olan her
+    şeyi taşıyor. Ham kayıt, Lab No ya da köy-ölçüm bağı içermiyor.
+
+    Dönen sözlük ``yeniden_uretildi: False`` ile işaretlenir; panel ve
+    çıktılar bunun ham veriden değil özetten geldiğini söyleyebilsin.
+    """
+    yol = CIKTI / "toprak_olcum.json"
+    if not yol.exists():
+        return None
+    try:
+        d = json.loads(yol.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not d.get("var") or not d.get("ilce"):
+        return None
+    d["yeniden_uretildi"] = False
+    return d
+
+
 def uret(klasor: Path = VARSAYILAN_KLASOR) -> dict[str, Any]:
     kayit, ayiklanan = oku(klasor)
     if not kayit:
+        ozet = yayimlanmis_ozet()
+        if ozet is not None:
+            return ozet
         return {"var": False, "sebep": f"{klasor} içinde xlsx bulunamadı"}
 
     ilceli = [k for k in kayit if k["ilce"]]
@@ -299,6 +331,7 @@ def uret(klasor: Path = VARSAYILAN_KLASOR) -> dict[str, Any]:
 
     return {
         "var": True,
+        "yeniden_uretildi": True,
         "kaynak": "Muş İl Tarım ve Orman Müdürlüğü laboratuvar kayıtları",
         "yillar": yillar,
         "yil_ozet": yil_ozet,
