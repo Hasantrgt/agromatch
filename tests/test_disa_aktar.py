@@ -107,10 +107,36 @@ def test_excel_surumu_noktali_virgul_ve_bom(paket):
     assert not duz.startswith(b"\xef\xbb\xbf"), "düz sürümde BOM olmamalı"
 
 
+# Temiz bir klonda kaynağı bulunmadığı için boş çıkabilen veri setleri.
+# Her biri SENTETİK veri madenciliği kümesi: depoda durmaz (büyük ve
+# istendiğinde yeniden üretilebilir), üretmek için ayrı bir komut ve
+# opencv gerekir. Boş kalmaları bir kusur değil, bilinen bir durum —
+# ama listeye yeni bir ad eklemek bilinçli bir karar olmalı, sessizce
+# olmamalı. Bu yüzden test bunları yok saymıyor: boş çıkmalarına izin
+# veriyor, LİSTE DIŞI her boşluğu hata sayıyor.
+URETILMEDEN_BOS_KALABILIR = {
+    "toprak_uygunluk": "data/madencilik/toprak.csv — "
+                       "python src/toprak_veri_seti.py ile üretilir",
+    "cercospora_lezyon": "data/madencilik/lezyonlar.csv — opencv ister, "
+                         "python src/goruntu/lezyon_veri_seti.py",
+}
+
+
 def test_bos_veri_seti_yok(paket):
     _gecici, sayilar = paket
-    bos = [ad for ad, n in sayilar.items() if n == 0]
-    assert not bos, f"boş veri seti: {bos}"
+    bos = {ad for ad, n in sayilar.items() if n == 0}
+    beklenmeyen = sorted(bos - set(URETILMEDEN_BOS_KALABILIR))
+    assert not beklenmeyen, (
+        f"boş veri seti: {beklenmeyen}. Bunlar her zaman dolu olmalı; "
+        "boşsa ya üretim zinciri kırılmış ya da bir kaynak eksik.")
+
+
+def test_bos_kalabilenler_sebebini_yaziyor():
+    """Listedeki her ad gerçekten var olmalı ve sebebi yazılı olmalı."""
+    adlar = {ad for ad, *_ in da.KAYIT}
+    for ad, sebep in URETILMEDEN_BOS_KALABILIR.items():
+        assert ad in adlar, f"{ad} artık bir veri seti değil; listeden çıkar"
+        assert sebep.strip(), f"{ad} için sebep yazılmamış"
 
 
 def test_kunye_butun_veri_setlerini_listeliyor(paket):

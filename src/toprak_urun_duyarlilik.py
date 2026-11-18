@@ -39,11 +39,18 @@ KOK = Path(__file__).resolve().parent.parent
 CIKTI = KOK / "outputs"
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    """argv açıkça verilebilir.
+
+    Varsayılan None komut satırından çalıştırmak içindir. Başka bir
+    betikten çağrılırken MUTLAKA liste geçilmeli: parse_args() argüman
+    almazsa sys.argv'ı okur ve çağıran programın (örneğin pytest'in)
+    kendi argümanlarını ayrıştırmaya kalkar.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("--numune", type=int, default=600)
     ap.add_argument("--tohum", type=int, default=20261022)
-    a = ap.parse_args()
+    a = ap.parse_args(argv)
 
     rng = np.random.default_rng(a.tohum)
     kayit: dict[str, dict[str, Any]] = {

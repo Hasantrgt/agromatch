@@ -28,8 +28,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import statistics as st
 import random
+import statistics as st
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any

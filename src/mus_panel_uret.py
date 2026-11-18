@@ -124,6 +124,11 @@ def hepsini_calistir():
     else:
         print("NOT: Ham laboratuvar dosyası yok; depodaki veri kalitesi "
               "raporu korundu.")
+    # Toprak ölçüm hatasının ürün kararını ne kadar bozduğu. Panelde
+    # doğrudan görünmüyor ama dışa aktarma paketine giriyor; zincirde
+    # olmazsa temiz klonda o veri seti boş kalır.
+    import toprak_urun_duyarlilik as tud
+    tud.main([])
     import piyasa.karlilik as pkr
     (CIKTI / "karlilik.json").write_text(
         json.dumps(pkr.uret(), ensure_ascii=False, indent=1), encoding="utf-8")
