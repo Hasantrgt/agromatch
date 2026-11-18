@@ -79,25 +79,71 @@ BASLIK = {
 #                           p2o5, k2o, drenaj, erozyon, derinlik
 VARSAYIM_SIRA = {"ph": 0, "om": 1, "kirec": 2, "ec": 3}
 
-ES_AD = {"Muş": "Merkez", "Mus": "Merkez", "Merkez": "Merkez"}
+# Yer adının son parçası bunlardan biriyse il Muş'tur
+IL_ADI = {"Muş", "Mus", "MUŞ"}
 
 # Laboratuvarın bünye sınıfları, kil oranına göre kabaca sıralı
 BUNYE_SIRA = ("Kumlu", "Tınlı", "Killi-Tınlı", "Killi", "Ağır Killi")
 
 
 def ilce_bul(yer: Any) -> str | None:
-    """'Güneyik - Korkut' gibi bir yer adından ilçeyi çıkarır."""
+    """'Güneyik - Korkut' gibi bir yer adından Muş ilçesini çıkarır.
+
+    DİKKAT — burada bir hata yapıldı ve düzeltildi. İlk sürüm, adın
+    HERHANGİ bir parçasında Muş ilçesi arıyordu. Laboratuvar bölgeye
+    hizmet verdiği için komşu illerden de örnek kabul ediyor ve
+    "Merkez - Bingöl" kaydı Muş MERKEZ'e yazılıyordu. Eski kural 130
+    kaydı yanlış yerleştirmişti:
+
+        93  Muş dışı kayıt Muş'a girdi (89'u 'Merkez - Bingöl')
+        34  gerçek Muş kaydı asıl ilçesinden alınıp Merkez'e yazıldı
+            ('Merkez - Varto' 16, 'Merkez - Korkut' 9, 'Merkez - Hasköy' 6,
+             'Merkez - Bulanık' 2, 'Merkez - Malazgirt' 1)
+
+    Doğru kural: yer adının SON parçası ilçeyi belirler. Son parça bir
+    Muş ilçesi ya da "Muş" değilse kayıt ELENİR; öncesindeki parçalara
+    bakılmaz.
+
+    YER SÜTUNUNUN SIRASI SABİT DEĞİL — bu bir varsayım değil, veride
+    görülen bir durum. Baskın kalıp "köy - ilçe" ("Güneyik - Korkut"),
+    ama üç kayıtta sıra ters: "Bulanık - Sarıpınar" (2) ve
+    "Hasköy - Umurca" (1) ilçe-köy sırasında yazılmış. Köy kütüğü
+    olmadan hangisinin köy hangisinin ilçe olduğu ayırt edilemez.
+
+    Bu yüzden KATI kural seçildi ve bedeli yazıldı: 93 yabancı kayıt
+    girmiyor, karşılığında 3 gerçek Muş kaydı düşüyor. İl Tarım'dan köy
+    listesi gelirse o üç kayıt geri kazanılır. Düşenler sessizce
+    kaybolmaz; kalite raporunda "belirsiz sıralama" başlığında sayılır.
+
+    Yer sütunu dolu olan 1.440 kaydın dağılımı:
+        1.223  Muş ilçesine bağlandı
+          211  Muş dışı (Bingöl 133, Bitlis 67, Solhan 8, Güroymak 2,
+                Osmaniye 1)
+            3  ters sıralama — gerçek Muş, ayırt edilemediği için düştü
+            3  yalnızca köy adı, ilçe eki yok
+    """
     if not yer:
         return None
-    metin = str(yer).strip()
-    # İlçe genelde en sonda yazılı
-    for parca in reversed(re.split(r"[-/,]", metin)):
-        ad = ES_AD.get(parca.strip(), parca.strip())
-        if ad in mp.ILCE:
-            return ad
-    for ad in mp.ILCE:
-        if ad.lower() in metin.lower():
-            return ad
+    parcalar = [p.strip() for p in re.split(r"[-/,]", str(yer)) if p.strip()]
+    if not parcalar:
+        return None
+    son = parcalar[-1]
+
+    # Son parça doğrudan bir Muş ilçesiyse iş bitti: "Güneyik - Korkut",
+    # "Merkez - Varto".
+    if son in mp.ILCE:
+        return son
+
+    # Son parça "Muş" ise il Muş'tur; ilçeyi bir önceki parça söyler.
+    # "Merkez - Muş" -> Merkez. "Bağlar - Muş" -> köy adı, demek ki
+    # il merkezi.
+    if son in IL_ADI:
+        if len(parcalar) >= 2 and parcalar[-2] in mp.ILCE:
+            return parcalar[-2]
+        return "Merkez"
+
+    # Geriye kalan her şey Muş dışı ya da belirsiz: "Merkez - Bingöl",
+    # "Güroymak - Bitlis", tek parçalı adlar.
     return None
 
 

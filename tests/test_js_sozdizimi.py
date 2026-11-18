@@ -54,7 +54,8 @@ def test_birlestirilmis_betik_de_gecerli(tmp_path: Path):
     # Veri yer tutucuları henüz JSON ile dolmadığı için geçerli birer
     # değişmez hâline getiriliyor; amaç sözdizimi, değer değil.
     for ad in ("MUS", "HASTALIK", "CERCO", "BELIRSIZ", "IZ", "DEPO",
-               "BOCEK", "UYARI", "KARLILIK", "OLCUM", "ETKI", "COLLESME"):
+               "BOCEK", "UYARI", "KARLILIK", "OLCUM", "ETKI", "COLLESME",
+               "KALITE", "CERCOSPORA", "TOPRAK", "BELIRSIZLIK"):
         birlesik = birlesik.replace(f"__{ad}_JSON__", "null")
     yol = tmp_path / "birlesik.js"
     yol.write_text(birlesik, encoding="utf-8")
