@@ -1,0 +1,619 @@
+{
+ "var": true,
+ "kaynak": "Muş İl Tarım ve Orman Müdürlüğü laboratuvar kayıtları",
+ "yillar": [
+  2011,
+  2012,
+  2013,
+  2014,
+  2015
+ ],
+ "yil_ozet": [
+  {
+   "yil": 2011,
+   "n": 796,
+   "ilceli": 650
+  },
+  {
+   "yil": 2012,
+   "n": 645,
+   "ilceli": 573
+  },
+  {
+   "yil": 2013,
+   "n": 470,
+   "ilceli": 0
+  },
+  {
+   "yil": 2014,
+   "n": 551,
+   "ilceli": 0
+  },
+  {
+   "yil": 2015,
+   "n": 160,
+   "ilceli": 0
+  }
+ ],
+ "n_toplam": 2622,
+ "n_ilceli": 1223,
+ "ayiklanan": {
+  "ph": 12
+ },
+ "guven_esigi": 30,
+ "ilce": {
+  "Merkez": {
+   "n_ornek": 610,
+   "alanlar": {
+    "ph": {
+     "n": 607,
+     "medyan": 7.48,
+     "ortalama": 7.468,
+     "q1": 7.29,
+     "q3": 7.65,
+     "min": 6.31,
+     "maks": 8.86,
+     "varsayim": 7.6,
+     "fark": -0.12,
+     "oran": 0.98,
+     "guvenilir": true,
+     "aralikta": true
+    },
+    "om": {
+     "n": 549,
+     "medyan": 1.85,
+     "ortalama": 1.939,
+     "q1": 1.37,
+     "q3": 2.49,
+     "min": 0.06,
+     "maks": 6.58,
+     "varsayim": 2.0,
+     "fark": -0.15,
+     "oran": 0.93,
+     "guvenilir": true,
+     "aralikta": true
+    },
+    "kirec": {
+     "n": 565,
+     "medyan": 2.23,
+     "ortalama": 4.172,
+     "q1": 1.31,
+     "q3": 5.88,
+     "min": 0.34,
+     "maks": 28.87,
+     "varsayim": 10,
+     "fark": -7.77,
+     "oran": 0.22,
+     "guvenilir": true,
+     "aralikta": false
+    },
+    "ec": {
+     "n": 610,
+     "medyan": 0.355,
+     "ortalama": 0.399,
+     "q1": 0.322,
+     "q3": 0.407,
+     "min": 0.196,
+     "maks": 6.301,
+     "varsayim": 0.6,
+     "fark": -0.245,
+     "oran": 0.59,
+     "guvenilir": true,
+     "aralikta": false
+    }
+   },
+   "bunye": [
+    {
+     "sinif": "Killi-Tınlı",
+     "n": 322,
+     "pay": 0.571
+    },
+    {
+     "sinif": "Tınlı",
+     "n": 240,
+     "pay": 0.426
+    },
+    {
+     "sinif": "Killi",
+     "n": 2,
+     "pay": 0.004
+    }
+   ],
+   "guvenilir": true
+  },
+  "Bulanık": {
+   "n_ornek": 45,
+   "alanlar": {
+    "ph": {
+     "n": 44,
+     "medyan": 7.61,
+     "ortalama": 7.452,
+     "q1": 7.098,
+     "q3": 7.757,
+     "min": 6.5,
+     "maks": 7.93,
+     "varsayim": 7.5,
+     "fark": 0.11,
+     "oran": 1.01,
+     "guvenilir": true,
+     "aralikta": true
+    },
+    "om": {
+     "n": 34,
+     "medyan": 1.33,
+     "ortalama": 1.192,
+     "q1": 0.38,
+     "q3": 1.708,
+     "min": 0.06,
+     "maks": 2.77,
+     "varsayim": 2.2,
+     "fark": -0.87,
+     "oran": 0.6,
+     "guvenilir": true,
+     "aralikta": false
+    },
+    "kirec": {
+     "n": 34,
+     "medyan": 1.32,
+     "ortalama": 3.792,
+     "q1": 0.69,
+     "q3": 5.282,
+     "min": 0.67,
+     "maks": 23.51,
+     "varsayim": 9,
+     "fark": -7.68,
+     "oran": 0.15,
+     "guvenilir": true,
+     "aralikta": false
+    },
+    "ec": {
+     "n": 45,
+     "medyan": 0.387,
+     "ortalama": 0.446,
+     "q1": 0.314,
+     "q3": 0.539,
+     "min": 0.027,
+     "maks": 1.415,
+     "varsayim": 0.5,
+     "fark": -0.113,
+     "oran": 0.77,
+     "guvenilir": true,
+     "aralikta": true
+    }
+   },
+   "bunye": [
+    {
+     "sinif": "Tınlı",
+     "n": 21,
+     "pay": 0.583
+    },
+    {
+     "sinif": "Killi-Tınlı",
+     "n": 15,
+     "pay": 0.417
+    }
+   ],
+   "guvenilir": true
+  },
+  "Malazgirt": {
+   "n_ornek": 24,
+   "alanlar": {
+    "ph": {
+     "n": 23,
+     "medyan": 7.63,
+     "ortalama": 7.572,
+     "q1": 7.52,
+     "q3": 7.67,
+     "min": 6.88,
+     "maks": 7.92,
+     "varsayim": 7.8,
+     "fark": -0.17,
+     "oran": 0.98,
+     "guvenilir": false,
+     "aralikta": false
+    },
+    "om": {
+     "n": 4,
+     "medyan": 1.435,
+     "ortalama": 1.41,
+     "q1": 0.623,
+     "q3": 2.172,
+     "min": 0.56,
+     "maks": 2.21,
+     "varsayim": 1.7,
+     "fark": -0.265,
+     "oran": 0.84,
+     "guvenilir": false,
+     "aralikta": true
+    },
+    "kirec": {
+     "n": 4,
+     "medyan": 2.7,
+     "ortalama": 2.79,
+     "q1": 1.943,
+     "q3": 3.728,
+     "min": 1.69,
+     "maks": 4.07,
+     "varsayim": 13,
+     "fark": -10.3,
+     "oran": 0.21,
+     "guvenilir": false,
+     "aralikta": false
+    },
+    "ec": {
+     "n": 24,
+     "medyan": 0.355,
+     "ortalama": 0.406,
+     "q1": 0.34,
+     "q3": 0.501,
+     "min": 0.25,
+     "maks": 0.81,
+     "varsayim": 0.6,
+     "fark": -0.245,
+     "oran": 0.59,
+     "guvenilir": false,
+     "aralikta": false
+    }
+   },
+   "bunye": [
+    {
+     "sinif": "Tınlı",
+     "n": 2,
+     "pay": 0.5
+    },
+    {
+     "sinif": "Killi-Tınlı",
+     "n": 2,
+     "pay": 0.5
+    }
+   ],
+   "guvenilir": false
+  },
+  "Varto": {
+   "n_ornek": 277,
+   "alanlar": {
+    "ph": {
+     "n": 277,
+     "medyan": 7.38,
+     "ortalama": 7.273,
+     "q1": 6.965,
+     "q3": 7.57,
+     "min": 6.05,
+     "maks": 8.28,
+     "varsayim": 6.9,
+     "fark": 0.48,
+     "oran": 1.07,
+     "guvenilir": true,
+     "aralikta": false
+    },
+    "om": {
+     "n": 264,
+     "medyan": 2.01,
+     "ortalama": 2.065,
+     "q1": 1.37,
+     "q3": 2.67,
+     "min": 0.06,
+     "maks": 6.58,
+     "varsayim": 2.8,
+     "fark": -0.79,
+     "oran": 0.72,
+     "guvenilir": true,
+     "aralikta": false
+    },
+    "kirec": {
+     "n": 276,
+     "medyan": 1.37,
+     "ortalama": 2.892,
+     "q1": 1.013,
+     "q3": 3.205,
+     "min": 0.34,
+     "maks": 21.04,
+     "varsayim": 4,
+     "fark": -2.63,
+     "oran": 0.34,
+     "guvenilir": true,
+     "aralikta": false
+    },
+    "ec": {
+     "n": 277,
+     "medyan": 0.351,
+     "ortalama": 0.45,
+     "q1": 0.31,
+     "q3": 0.405,
+     "min": 0.196,
+     "maks": 6.386,
+     "varsayim": 0.3,
+     "fark": 0.051,
+     "oran": 1.17,
+     "guvenilir": true,
+     "aralikta": false
+    }
+   },
+   "bunye": [
+    {
+     "sinif": "Killi-Tınlı",
+     "n": 183,
+     "pay": 0.668
+    },
+    {
+     "sinif": "Tınlı",
+     "n": 71,
+     "pay": 0.259
+    },
+    {
+     "sinif": "Killi",
+     "n": 20,
+     "pay": 0.073
+    }
+   ],
+   "guvenilir": true
+  },
+  "Hasköy": {
+   "n_ornek": 105,
+   "alanlar": {
+    "ph": {
+     "n": 105,
+     "medyan": 7.41,
+     "ortalama": 7.35,
+     "q1": 7.15,
+     "q3": 7.555,
+     "min": 6.08,
+     "maks": 8.2,
+     "varsayim": 7.5,
+     "fark": -0.09,
+     "oran": 0.99,
+     "guvenilir": true,
+     "aralikta": true
+    },
+    "om": {
+     "n": 98,
+     "medyan": 1.94,
+     "ortalama": 2.149,
+     "q1": 1.27,
+     "q3": 2.91,
+     "min": 0.29,
+     "maks": 6.89,
+     "varsayim": 2.1,
+     "fark": -0.16,
+     "oran": 0.92,
+     "guvenilir": true,
+     "aralikta": true
+    },
+    "kirec": {
+     "n": 98,
+     "medyan": 1.36,
+     "ortalama": 2.248,
+     "q1": 1.0,
+     "q3": 2.795,
+     "min": 0.33,
+     "maks": 10.18,
+     "varsayim": 9,
+     "fark": -7.64,
+     "oran": 0.15,
+     "guvenilir": true,
+     "aralikta": false
+    },
+    "ec": {
+     "n": 105,
+     "medyan": 0.339,
+     "ortalama": 0.388,
+     "q1": 0.307,
+     "q3": 0.401,
+     "min": 0.245,
+     "maks": 1.69,
+     "varsayim": 0.5,
+     "fark": -0.161,
+     "oran": 0.68,
+     "guvenilir": true,
+     "aralikta": false
+    }
+   },
+   "bunye": [
+    {
+     "sinif": "Killi-Tınlı",
+     "n": 52,
+     "pay": 0.531
+    },
+    {
+     "sinif": "Tınlı",
+     "n": 46,
+     "pay": 0.469
+    }
+   ],
+   "guvenilir": true
+  },
+  "Korkut": {
+   "n_ornek": 162,
+   "alanlar": {
+    "ph": {
+     "n": 162,
+     "medyan": 7.52,
+     "ortalama": 7.485,
+     "q1": 7.33,
+     "q3": 7.662,
+     "min": 6.31,
+     "maks": 8.9,
+     "varsayim": 7.7,
+     "fark": -0.18,
+     "oran": 0.98,
+     "guvenilir": true,
+     "aralikta": false
+    },
+    "om": {
+     "n": 158,
+     "medyan": 2.01,
+     "ortalama": 2.173,
+     "q1": 1.37,
+     "q3": 2.735,
+     "min": 0.06,
+     "maks": 6.58,
+     "varsayim": 1.9,
+     "fark": 0.11,
+     "oran": 1.06,
+     "guvenilir": true,
+     "aralikta": true
+    },
+    "kirec": {
+     "n": 159,
+     "medyan": 2.61,
+     "ortalama": 4.186,
+     "q1": 1.32,
+     "q3": 5.96,
+     "min": 0.65,
+     "maks": 24.91,
+     "varsayim": 11,
+     "fark": -8.39,
+     "oran": 0.24,
+     "guvenilir": true,
+     "aralikta": false
+    },
+    "ec": {
+     "n": 162,
+     "medyan": 0.342,
+     "ortalama": 0.438,
+     "q1": 0.317,
+     "q3": 0.387,
+     "min": 0.228,
+     "maks": 6.327,
+     "varsayim": 0.5,
+     "fark": -0.158,
+     "oran": 0.68,
+     "guvenilir": true,
+     "aralikta": false
+    }
+   },
+   "bunye": [
+    {
+     "sinif": "Killi-Tınlı",
+     "n": 99,
+     "pay": 0.623
+    },
+    {
+     "sinif": "Tınlı",
+     "n": 60,
+     "pay": 0.377
+    }
+   ],
+   "guvenilir": true
+  }
+ },
+ "il": {
+  "n_ornek": 2622,
+  "alanlar": {
+   "ph": {
+    "n": 2576,
+    "medyan": 7.4,
+    "ortalama": 7.332,
+    "q1": 7.1,
+    "q3": 7.61,
+    "min": 4.91,
+    "maks": 9.81
+   },
+   "om": {
+    "n": 2429,
+    "medyan": 1.94,
+    "ortalama": 2.127,
+    "q1": 1.37,
+    "q3": 2.64,
+    "min": 0.0,
+    "maks": 11.63
+   },
+   "kirec": {
+    "n": 1997,
+    "medyan": 1.96,
+    "ortalama": 3.492,
+    "q1": 1.02,
+    "q3": 4.07,
+    "min": 0.33,
+    "maks": 34.413
+   },
+   "ec": {
+    "n": 2357,
+    "medyan": 0.348,
+    "ortalama": 0.413,
+    "q1": 0.309,
+    "q3": 0.414,
+    "min": 0.027,
+    "maks": 9.59
+   }
+  },
+  "bunye": [
+   {
+    "sinif": "Killi-Tınlı",
+    "n": 1397,
+    "pay": 0.575
+   },
+   {
+    "sinif": "Tınlı",
+    "n": 818,
+    "pay": 0.337
+   },
+   {
+    "sinif": "Killi",
+    "n": 196,
+    "pay": 0.081
+   },
+   {
+    "sinif": "Ağır Killi",
+    "n": 14,
+    "pay": 0.006
+   },
+   {
+    "sinif": "Kumlu",
+    "n": 4,
+    "pay": 0.002
+   }
+  ]
+ },
+ "sapma": [
+  {
+   "alan": "ph",
+   "guvenilir_ilce": 5,
+   "ortalama_mutlak_fark": 0.196,
+   "en_buyuk_fark": 0.48,
+   "en_buyuk_ilce": "Varto",
+   "aralikta_kalan": 3
+  },
+  {
+   "alan": "om",
+   "guvenilir_ilce": 5,
+   "ortalama_mutlak_fark": 0.416,
+   "en_buyuk_fark": 0.87,
+   "en_buyuk_ilce": "Bulanık",
+   "aralikta_kalan": 3
+  },
+  {
+   "alan": "kirec",
+   "guvenilir_ilce": 5,
+   "ortalama_mutlak_fark": 6.822,
+   "en_buyuk_fark": 8.39,
+   "en_buyuk_ilce": "Korkut",
+   "aralikta_kalan": 0
+  },
+  {
+   "alan": "ec",
+   "guvenilir_ilce": 5,
+   "ortalama_mutlak_fark": 0.146,
+   "en_buyuk_fark": 0.245,
+   "en_buyuk_ilce": "Merkez",
+   "aralikta_kalan": 1
+  }
+ ],
+ "kullanilmayan_sutunlar": {
+  "P / P2O5": "birim tutarsız (medyan 0,12–0,16 ppm); laboratuvara sorulmadan kullanılmıyor",
+  "K2O": "kg/da etiketli ama medyan 242; değerler ppm'e benziyor"
+ },
+ "kil_kestirimi": {
+  "Merkez": 26.7,
+  "Bulanık": 24.2,
+  "Malazgirt": 25.5,
+  "Varto": 30.4,
+  "Hasköy": 26.0,
+  "Korkut": 27.3
+ },
+ "uyari": [
+  "İlçe bilgisi yalnızca 2011 ve 2012 kayıtlarında var.",
+  "Örnekler rastgele değil: çiftçinin analiz yaptırdığı tarlalardan geliyor, dolayısıyla ilçenin ortalama toprağını temsil etmez.",
+  "Ham kayıtlar depoda tutulmaz; yalnızca bu özet yayımlanır."
+ ]
+}

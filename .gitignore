@@ -12,7 +12,17 @@
 # ---------------------------------------------------------------------------
 
 # --- Üretilen analiz çıktıları
-outputs/
+# Dizinin tamamı dışarıda, ÜÇ ÖZET dosyası hariç. Sebep: panel GitHub
+# Pages'te ham laboratuvar verisi olmadan üretiliyor; bu üç dosya
+# depoda olmazsa yayındaki panelde "Toprak ölçümü" ve "Veri kalitesi"
+# sekmeleri BOŞ çıkar — yani denetimin tamamı görünmez olur.
+# Üçü de yalnızca toplam istatistik içerir: n, medyan, çeyrekler,
+# denetim sayıları. Tek bir ham kayıt, Lab No ya da köy-ölçüm bağı yok.
+# (Negatif kural işlesin diye dizin değil içeriği dışlanıyor: outputs/*)
+outputs/*
+!outputs/toprak_olcum.json
+!outputs/olcum_etkisi.json
+!outputs/veri_kalitesi.json
 
 # --- Üretilen paneller ve belgeler (kök dizindeki HTML/PDF'ler)
 /*.html

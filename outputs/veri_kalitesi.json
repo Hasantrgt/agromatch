@@ -1,0 +1,218 @@
+{
+ "var": true,
+ "n_satir": 2622,
+ "yillar": [
+  2011,
+  2012,
+  2013,
+  2014,
+  2015
+ ],
+ "kaynak": "Muş İl Tarım ve Orman Müdürlüğü laboratuvar defteri",
+ "denetim": [
+  {
+   "ad": "Yer sütunu",
+   "soru": "Örnek hangi ilçeden alındı — ve gerçekten Muş'tan mı?",
+   "bulgu": 1399,
+   "toplam": 2622,
+   "oran": 53.36,
+   "agirlik": "ölçümü etkiler",
+   "ne_yapildi": "Son parça kuralı uygulanıyor; Muş dışı kayıt ELENİR. Eski sürüm 130 kaydı yanlış ilçeye yazmıştı, düzeltildi.",
+   "ayrinti": {
+    "kirilim": {
+     "yer sütunu boş": 1182,
+     "Muş ilçesine bağlandı": 1223,
+     "Muş dışı": 211,
+     "belirsiz sıralama": 3,
+     "tanınmayan yer": 3
+    },
+    "yil": {
+     "2011": {
+      "n": 796,
+      "bos": 1,
+      "dolu": 795
+     },
+     "2012": {
+      "n": 645,
+      "dolu": 645
+     },
+     "2013": {
+      "n": 470,
+      "bos": 470
+     },
+     "2014": {
+      "n": 551,
+      "bos": 551
+     },
+     "2015": {
+      "n": 160,
+      "bos": 160
+     }
+    },
+    "dis_iller": {
+     "Bingöl": 133,
+     "Bitlis": 67,
+     "Solhan": 8,
+     "Sarıpınar": 2,
+     "Güroymak": 2,
+     "Osmaniye": 1,
+     "Umurca": 1,
+     "Nuş": 1
+    }
+   }
+  },
+  {
+   "ad": "Fiziksel olarak imkânsız değerler",
+   "soru": "pH 2,06 olan bir tarım toprağı yoktur — bu ölçüm değil yazım hatası.",
+   "bulgu": 12,
+   "toplam": 2622,
+   "oran": 0.46,
+   "agirlik": "ölçümü etkiler",
+   "ne_yapildi": "Her biri ayıklanıyor (analiz.GECERLI aralıkları). Ayıklanan sayısı panelde ve analiz çıktısında yazar.",
+   "ayrinti": {
+    "ph": {
+     "n": 12,
+     "aralik": [
+      3.5,
+      10.0
+     ],
+     "gorulen": [
+      2.06,
+      2.27,
+      2.29,
+      2.35,
+      2.36,
+      2.38
+     ]
+    }
+   }
+  },
+  {
+   "ad": "Yinelenen satırlar",
+   "soru": "Beş ölçümün tamamı aynı olan satırlar — gerçek iki örnek mi, kopyalanmış tek örnek mi?",
+   "bulgu": 176,
+   "toplam": 2622,
+   "oran": 6.71,
+   "agirlik": "yalnızca kayıt",
+   "ne_yapildi": "AYIKLANMIYOR. Hangi satırın kopya olduğu tek tek bilinemez ve silmek veri uydurmak olurdu. Medyan kullanıldığı için etkisi sınırlı. Ama tekrarın GERÇEK olduğu permütasyon sınamasıyla gösterildi: laboratuvara sorulacaklar listesinde.",
+   "ayrinti": {
+    "yila_gore": {
+     "2011": {
+      "n": 796,
+      "gozlenen": 120,
+      "sans_beklentisi": 0.01,
+      "sapma": 0.1
+     },
+     "2012": {
+      "n": 645,
+      "gozlenen": 34,
+      "sans_beklentisi": 0.0,
+      "sapma": 0.0
+     },
+     "2013": {
+      "n": 470,
+      "gozlenen": 1,
+      "sans_beklentisi": 0.01,
+      "sapma": 0.07
+     },
+     "2014": {
+      "n": 551,
+      "gozlenen": 21,
+      "sans_beklentisi": 0.07,
+      "sapma": 0.27
+     },
+     "2015": {
+      "n": 160,
+      "gozlenen": 0,
+      "sans_beklentisi": 0.0,
+      "sapma": 0.0
+     }
+    },
+    "ayni_lab_no": 1826,
+    "sans_beklentisi_toplam": 0.09,
+    "sans_kati": 2070.6,
+    "yorum": "Şans beklentisi 0,1, gözlenen 176. Yuvarlanmış beş değerin tesadüfen çakışması bu sayıyı açıklamıyor; tekrar gerçektir. 2011 dosyası tek başına 120 tanesini taşıyor — kusur yıla göre dağılmıyor, bir dosyada yoğunlaşıyor."
+   }
+  },
+  {
+   "ad": "Kopyala-yapıştır izleri",
+   "soru": "İki farklı ölçümün aynı satırda birebir eşit olması, birinin diğerinden kopyalandığını düşündürür.",
+   "bulgu": 1,
+   "toplam": 2622,
+   "oran": 0.04,
+   "agirlik": "sütun kullanılmıyor",
+   "ne_yapildi": "Etkilenen sütunlar (fosfor, potasyum) birim belirsizliği yüzünden zaten modele girmiyor. Bulgu, dosyanın elle düzenlendiğinin kanıtı olarak kayda geçer.",
+   "ayrinti": {
+    "P2O5 (kg/da) = K2O (kg/da)": 1
+   }
+  },
+  {
+   "ad": "EC - tuz tutarlılığı",
+   "soru": "Elektrik iletkenliği ile toplam tuz aynı şeyi ölçer; oranı medyandan on kat sapan satırda biri yanlış yazılmış.",
+   "bulgu": 8,
+   "toplam": 900,
+   "oran": 0.89,
+   "agirlik": "ölçümü etkiler",
+   "ne_yapildi": "Modele EC giriyor, tuz girmiyor. Sapan satırlar tek tek ayıklanmıyor; aralık süzgeci ve medyan birlikte etkisini sınırlıyor. Laboratuvara sorulacaklar listesinde.",
+   "ayrinti": {
+    "medyan_oran": 0.05212,
+    "sapan": 8,
+    "en_uc": [
+     0.5593,
+     0.0049,
+     0.0048,
+     0.0033,
+     0.003
+    ]
+   }
+  },
+  {
+   "ad": "Fosfor ve potasyum birimi",
+   "soru": "P2O5'in kg/da ve ppm sütunları aynı ölçümün iki birimi olmalı; oranları 0.26 civarı çıkmalı.",
+   "bulgu": 1090,
+   "toplam": 1109,
+   "oran": 98.29,
+   "agirlik": "sütun kullanılmıyor",
+   "ne_yapildi": "BU İKİ SÜTUN MODELE SOKULMUYOR. Birimi şüpheli bir sayıyı modele koymak, hiç koymamaktan kötüdür. İl Tarım'a sorulacak ilk teknik soru bu.",
+   "ayrinti": {
+    "beklenen_oran": 0.26,
+    "karsilastirilabilir_satir": 1109,
+    "olculen_oran_medyan": 22.9,
+    "kat_fark": 88.1,
+    "sutun_medyanlari": {
+     "P(ppm)": 0.125,
+     "P2O5 (ppm)": 0.156,
+     "P2O5 (kg/da)": 3.0,
+     "K2O (kg/da)": 242.0
+    }
+   }
+  },
+  {
+   "ad": "Boş ve eksik ölçümler",
+   "soru": "Satır var ama ölçüm yok ya da bir sütun o satırda boş.",
+   "bulgu": 0,
+   "toplam": 2622,
+   "oran": 0.0,
+   "agirlik": "yalnızca kayıt",
+   "ne_yapildi": "Boş satır istatistiğe girmez. Eksik sütun o alanın n'sini düşürür; her alanın kendi n'si ayrı hesaplanıyor.",
+   "ayrinti": {
+    "tamamen_bos": 0,
+    "sutun_basina_eksik": {
+     "Toplam Tuz (%)": 1491,
+     "CaCO3": 625,
+     "EC(dS/m)": 265,
+     "Organik Madde (%)": 193,
+     "pH": 34
+    }
+   }
+  }
+ ],
+ "ozet": {
+  "denetim_sayisi": 7,
+  "kusur_bulunan": 6,
+  "olcumu_etkileyen": 3,
+  "ayiklanan_deger": 12,
+  "modele_giren_satir": 1223
+ },
+ "yargi": "Bu veri kusurludur ve kusurları yukarıda tek tek sayılıdır. Kullanılabilir olmasının sebebi kusursuz olması değil, her kusurun nereye dokunduğunun bilinmesidir: ölçümü etkileyen kusurlar ayıklanıyor, birimi şüpheli sütunlar modele hiç sokulmuyor, kalanı yalnızca kayda geçiyor. Veriyi veren kurumun kendisi de ona temkinli yaklaşıyor; bu rapor o temkinin yerini tutmak için değil, onu ölçülebilir kılmak için var."
+}
