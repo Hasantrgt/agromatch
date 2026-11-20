@@ -157,15 +157,31 @@ def _sayi(v: Any) -> float | None:
 
 
 def oku(klasor: Path) -> tuple[list[dict[str, Any]], dict[str, int]]:
-    """Beş yılın defterini tek listeye çevirir, ayıklananları sayar."""
+    """Beş yılın defterini tek listeye çevirir, ayıklananları sayar.
+
+    OKUNACAK DOSYA YOKSA openpyxl DE GEREKMEZ. Bu sıralama önemli:
+    ham laboratuvar kayıtları depoda durmaz, dolayısıyla temiz bir
+    klonda (ve GitHub Actions'ta) bu klasör boştur. Kütüphaneyi dosya
+    var mı diye bakmadan istemek, ölçüm verisi olmayan her ortamda
+    panelin tamamını çökertiyordu — nitekim çökertti: Pages'teki panel
+    bu yüzden haftalarca eski sürümde kaldı.
+
+    Ölçüm bir İYİLEŞTİRMEDİR, önkoşul değil. Kod da öyle davranmalı.
+    """
+    dosyalar = sorted(klasor.glob("*.xlsx")) if klasor.exists() else []
+    if not dosyalar:
+        return [], {}
+
     try:
         import openpyxl
     except ImportError as e:
-        raise SystemExit("openpyxl gerekiyor: pip install openpyxl") from e
+        raise SystemExit(
+            f"{len(dosyalar)} laboratuvar dosyası var ama openpyxl kurulu "
+            "değil: pip install openpyxl") from e
 
     kayit: list[dict[str, Any]] = []
     ayiklanan: Counter[str] = Counter()
-    for yol in sorted(klasor.glob("*.xlsx")):
+    for yol in dosyalar:
         eslesme = re.search(r"(20\d\d)", yol.name)
         if not eslesme:
             continue

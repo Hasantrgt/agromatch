@@ -37,11 +37,15 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      # Görüntü kümesi de kurulur: Cercospora bölümü boş kalmasın.
+      # Yayınlanan panel EKSİKSİZ olmalı. Görüntü kümesi Cercospora
+      # bölümü için, depo kümesi (scipy/statsmodels) Depo sekmesi için
+      # gerekir; kurulmazsa o sekmeler sessizce boş yayınlanır.
+      # openpyxl bilerek YOK: ham laboratuvar kayıtları depoda durmaz,
+      # ölçüm katmanı outputs/toprak_olcum.json özetinden beslenir.
       - name: Bağımlılıkları kur
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-goruntu.txt
+          pip install -r requirements-goruntu.txt -r requirements-depo.txt
 
       - name: Veri tutarlılığını denetle
         run: python src/mus_profil.py

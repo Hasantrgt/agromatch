@@ -81,15 +81,24 @@ EC_TUZ_SAPMA_KAT = 10.0
 
 
 def _ham(klasor: Path) -> list[dict[str, Any]]:
-    """Beş dosyayı başlık adlarıyla okur. analiz.py'nin süzgeçleri YOK."""
+    """Beş dosyayı başlık adlarıyla okur. analiz.py'nin süzgeçleri YOK.
+
+    analiz.oku() ile aynı kural: dosya yoksa openpyxl de gerekmez.
+    """
+    dosyalar = sorted(klasor.glob("*.xlsx")) if klasor.exists() else []
+    if not dosyalar:
+        return []
+
     try:
         import openpyxl
     except ImportError as e:  # pragma: no cover
-        raise SystemExit("openpyxl gerekiyor: pip install openpyxl") from e
+        raise SystemExit(
+            f"{len(dosyalar)} laboratuvar dosyası var ama openpyxl kurulu "
+            "değil: pip install openpyxl") from e
 
     import re
     satirlar: list[dict[str, Any]] = []
-    for yol in sorted(klasor.glob("*.xlsx")):
+    for yol in dosyalar:
         es = re.search(r"(20\d\d)", yol.name)
         if not es:
             continue
