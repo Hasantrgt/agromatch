@@ -469,7 +469,11 @@ KUNYE: list[KunyeSatiri] = [
     ("Yağış / sıcaklık", "varsayım", "MGM uzun yıllar mertebesi, rakımla düzeltildi",
      "1991-2020", "orta", "Open-Meteo arşivinden ilçe bazında çekilebilir."),
     ("Fabrika kapasitesi", "varsayım", "Teyit edilmedi", "—",
-     "düşük", "Resmî kaynakta bulunamadı. Fabrika müdürlüğünden teyit alınacak."),
+     "düşük", "Resmî kaynakta bulunamadı. SIRADAKİ EN DEĞERLİ İŞ: Muş Şeker "
+              "Fabrikası'na tek bir telefon, kapasite ve kampanya süresini "
+              "birlikte kapatıyor ve belirsizlikte 9,19 kazanç sağlıyor — "
+              "en büyük saha ölçümünün (mera verimi, 4,00) iki katından "
+              "fazlası, 80 saat yerine 1 saatte."),
     ("Fiyat ve maliyet", "varsayım", "2025 sezonu mertebesi", "2025",
      "düşük", "TMO ve ziraat odası maliyet cetveliyle değişecek."),
     ("Hastalık eşikleri", "varsayım", "Fitopatoloji literatürü", "—",

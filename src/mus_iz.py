@@ -131,9 +131,13 @@ def yapraklar() -> dict[str, iz.Dugum]:
 
     # Üretim: bir ölçümün kendisi de belirsiz olabilir
     y["u_bugday"] = olcum(
-        "Buğday üretimi", 368297, "ton", aralik=(244000, 368297, 380000),
-        kaynak=KAYNAK + " — KAYNAK KENDİSİYLE ÇELİŞİYOR: Tablo 3'te 368.297 ton, "
-               "Bölüm 2.2'de '115 bin ha'da ~244 bin ton'")
+        "Buğday üretimi", 368297, "ton", aralik=(350000, 368297, 386000),
+        kaynak=KAYNAK + " — ÇELİŞKİ ÇÖZÜLDÜ (Kasım 2026). Alt sınır 244.000 "
+               "ton, belgenin '115 bin ha' ifadesinden türetilmişti. O ifade "
+               "hiçbir yılı tutmuyor: Muş İl Tarım 2025 faaliyet raporu "
+               "buğday alanını 2023'te 141.467 ha, 2024'te 135.197 ha "
+               "veriyor. Dayanaksız kalan alt sınır kaldırıldı; geriye "
+               "resmî istatistiğin olağan payı (±%5) kaldı.")
     for ad, anahtar in (("Arpa", "u_arpa"), ("Yonca", "u_yonca"),
                         ("Korunga", "u_korunga"),
                         ("Silajlık mısır", "u_silaj"), ("Patates", "u_patates")):
@@ -143,17 +147,26 @@ def yapraklar() -> dict[str, iz.Dugum]:
 
     y["u_fig"] = varsayim(
         "Fiğ üretimi", mp.URETIM["Fiğ"][0], "ton",
-        (mp.URETIM["Fiğ"][0] * 0.6, mp.URETIM["Fiğ"][0] * 1.5),
-        gerekce="Resmî tabloda ayrı kalem değil; tamamen tahmin.",
-        olcum_yolu=yol("İl Müdürlüğü ürün bazlı üretim kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
+        (mp.URETIM["Fiğ"][0] * 0.85, mp.URETIM["Fiğ"][0] * 1.15),
+        gerekce="ARTIK TAHMİN DEĞİL: Muş İl Tarım 2025 faaliyet raporunda "
+                "ayrı kalem (2024: 1.839 ton). Eskiden 25.000 ton tahmin "
+                "ediliyordu. Kalan pay ölçümün olağan payı DEĞİL, yıllar "
+                "arası oynaklık: 2023'te 41.648 ton, 2024'te 1.839. Tek "
+                "yılın rakamı bu üründe kırılgan.",
+        olcum_yolu=yol("Birkaç yıllık üretim serisi", "resmî yazı", 1, 1, "Danışman hoca"))
     y["u_fasulye"] = varsayim(
         "Kuru fasulye üretimi", mp.URETIM["Kuru fasulye"][0], "ton",
-        (mp.URETIM["Kuru fasulye"][0] * 0.6, mp.URETIM["Kuru fasulye"][0] * 1.5),
-        gerekce="Resmî tabloda ayrı kalem değil; tamamen tahmin.",
-        olcum_yolu=yol("İl Müdürlüğü ürün bazlı üretim kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
+        (mp.URETIM["Kuru fasulye"][0] * 0.85, mp.URETIM["Kuru fasulye"][0] * 1.15),
+        gerekce="ARTIK TAHMİN DEĞİL: faaliyet raporunda ayrı kalem "
+                "(2024: 396 ton). Eskiden 1.200 ton tahmin ediliyordu. "
+                "Bu üründe de yıllar arası oynaklık yüksek.",
+        olcum_yolu=yol("Birkaç yıllık üretim serisi", "resmî yazı", 1, 1, "Danışman hoca"))
     y["yem_carpan"] = varsayim(
-        "Yem bitkisi üretimi çarpanı", 1.00, "çarpan", (0.85, 1.15),
-        gerekce="Belgenin kendi içinde çelişkisi var (494.853 / 1.515.000 ton).",
+        "Yem bitkisi üretimi çarpanı", 1.00, "çarpan", (0.93, 1.07),
+        gerekce="Eskiden belgenin kendi çelişkisine dayanıyordu "
+                "(494.853 / 1.515.000 ton). Faaliyet raporu yonca, korunga "
+                "ve silajı ayrı ayrı, alan ve üretimle birlikte verdiği "
+                "için çelişki daraldı; kalan pay yıllar arası oynaklık.",
         olcum_yolu=yol("İl Müdürlüğü üretim kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
     y["pancar_carpan"] = varsayim(
         "Pancar üretimi çarpanı", 1.00, "çarpan", (0.95, 1.05),

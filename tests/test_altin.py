@@ -36,6 +36,33 @@ Sistem artık "patates için yer seçimi fırsatı var" demiyor.
 Bu bir bozulma değil, DÜZELTMEDİR: eski tavsiye varsayılmış bir toprak
 farkına dayanıyordu.
 
+Kasım 2026 (dördüncü güncelleme) — BELİRSİZLİK MODELİ ÖLÇÜMLERİ TAKİP
+ETMEMİŞ. Proje üç kalemi ölçtü ama belirsizlik modeli onları hâlâ
+belirsiz sayıyordu, dolayısıyla "önce neyi ölçmeli" sıralaması yanlış
+şeyleri gösteriyordu:
+
+  Buğday üretimi: alt sınırı 244.000 tondu ve gerekçesi belgenin
+      "115 bin ha" ifadesiydi. O ifade çürütüldü (hiçbir yılı tutmuyor),
+      dolayısıyla alt sınırın dayanağı kalmadı. Aralık ±%5'e indi.
+  Fiğ ve kuru fasulye üretimi: "resmî tabloda ayrı kalem değil, tamamen
+      tahmin" deniyordu. Artık ayrı kalem. Kalan pay ölçüm payı değil,
+      yıllar arası oynaklık — fiğ 2023'te 41.648, 2024'te 1.839 ton.
+  Yem bitkisi çarpanı: belgenin kendi çelişkisine dayanıyordu; rapor
+      yoncayı, korungayı ve silajı ayrı verince çelişki daraldı.
+
+ANLAMLI SONUÇ: buğdayın baskın bilinmeyeni DEĞİŞTİ.
+
+    "Buğday üretimi"  ->  "Kişi başı yıllık buğday"
+
+Üretim netleşince darboğaz tüketime kaydı. Bir belirsizlik analizinin
+işi tam olarak budur: ölçüm yapıldıkça sıranın değişmesi gerekir. Eski
+sıra donmuş kalsaydı, proje zaten bildiği bir şeyi ölçmeye çalışırdı.
+
+Bu güncelleme SAHA ÇALIŞMASI YAPILAMAYACAĞI netleştiği için ayrıca
+önemli: kalan en yüksek kazançlı dört iş de masa başı (TÜİK tüketim
+tabloları ve fabrika telefonu). Masa başı kazanç 28,8, saha kazancı 7,6.
+
+
 Kasım 2026 (üçüncü güncelleme) — ÜÇ TAHMİNİN VE BİR ÇELİŞKİNİN KAPANMASI.
 Aynı faaliyet raporu, projenin kendi notlarında zaten eksik işaretlediği
 kalemleri kapattı:
