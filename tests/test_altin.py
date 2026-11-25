@@ -36,6 +36,47 @@ Sistem artık "patates için yer seçimi fırsatı var" demiyor.
 Bu bir bozulma değil, DÜZELTMEDİR: eski tavsiye varsayılmış bir toprak
 farkına dayanıyordu.
 
+Kasım 2026 (üçüncü güncelleme) — ÜÇ TAHMİNİN VE BİR ÇELİŞKİNİN KAPANMASI.
+Aynı faaliyet raporu, projenin kendi notlarında zaten eksik işaretlediği
+kalemleri kapattı:
+
+    patates       4.087 ton (TÜİK 2021, "güncel yıl belgede yok") -> 5.826
+    fiğ          25.000 ton ("TAHMİN — belgede ayrı kalem yok")   -> 1.839
+    kuru fasulye  1.200 ton ("TAHMİN")                            ->   396
+
+Bunlar uyuşmazlık değildi; projenin kendi kabul ettiği boşluklardı.
+
+Buğday/arpa çelişkisi de çözüldü. Projenin buğday verimi (0,32) bağımsız
+bir varsayım değil, başka bir belgenin "115 bin ha" ifadesinden geriye
+hesaplanmıştı. O ifade NE 2023'ü (141.467 ha) NE 2024'ü (135.197 ha)
+tutuyor. Faaliyet raporu ise alanı ve üretimi aynı yıl, aynı kayıttan
+veriyor ve ima ettiği verim (0,272) susuz Muş buğdayı için 0,320'den
+makul. İçsel tutarlılığı olan kaynak seçildi.
+
+DOĞRULAMA: artık dokuz ürünün dokuzunda da "üretim ÷ verim", raporun
+ÖLÇÜLMÜŞ alanını %1 içinde yeniden üretiyor. Proje ekim alanlarını
+varsayımdan değil ölçümden türetiyor.
+
+Değişen sayılar:
+
+    Kaba yem oranı         0,48   ->  0,489
+    Patates oranı          0,12   ->  0,17    (eski üretim 2021'di)
+    Kuru fasulye oranı     0,329  ->  0,111   (eski üretim tahmindi)
+    acik_ton             607.772  -> 597.915
+    sadece_ekimle_dekar  1.257.676 -> 1.237.279
+    bugday_payi            109,3  ->  91,4
+    kat                      4,8  ->    5,0
+    masa_basi_kazanc        33,0  ->   30,2
+
+bugday_payi'nin düşmesi iyileşme DEĞİL: buğday alanı 1.151.000'den
+1.354.000 dekara çıktığı için aynı gereksinim daha küçük bir paya denk
+geliyor. Açık hâlâ buğday alanının %91'i kadar yem alanı istiyor.
+
+YAN BULGU: Hasköy'ün yem karşılama oranı 1,008'e çıktı — ilçe artık
+kendi ihtiyacından fazla üretiyor. "Her ilçede açık vardır" varsayan
+regresyon testi bu yüzden güncellendi; varsayım veriyle çürütüldü.
+
+
 Kasım 2026 (ikinci güncelleme) — yem bitkisi veriminin ÖLÇÜLMESİ. Muş
 İl Tarım ve Orman Müdürlüğü'nün 2025 faaliyet raporu hem alan hem üretim
 veriyor, dolayısıyla verim ikisinin oranı olarak ölçülebiliyor. Projenin

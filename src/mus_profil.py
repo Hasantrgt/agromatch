@@ -67,9 +67,18 @@ URETIM: dict[str, Uretim] = {
     "Yonca":          (434922, "TÜİK 2024 — yeşil ot"),
     "Korunga":          (8389, "TÜİK 2024 — yeşil ot"),
     "Silajlık mısır":  (49703, "TÜİK 2024"),
-    "Patates":          (4087, "TÜİK 2021 — güncel yıl belgede yok"),
-    "Fiğ":             (25000, "TAHMİN — belgede ayrı kalem yok"),
-    "Kuru fasulye":     (1200, "TAHMİN — belgede ayrı kalem yok"),
+    # Bu üçü 2025 faaliyet raporuyla DÜZELDİ. Eski değerler projenin
+    # kendi notlarında zaten "tahmin" ya da "güncel yıl yok" diye
+    # işaretliydi; rapor o boşlukları kapattı.
+    #   patates       4.087 (TÜİK 2021)  -> 5.826
+    #   fiğ          25.000 (TAHMİNDİ)   -> 1.839
+    #   kuru fasulye  1.200 (TAHMİNDİ)   ->   396
+    # UYARI: fiğ ve kuru fasulyede 2023'ten 2024'e sert düşüş var
+    # (fiğ 41.648 -> 1.839 ton, fasulye ~5.617 -> 396). Tek yılın
+    # rakamı bu ürünler için kırılgan; eğilim için birkaç yıl gerekir.
+    "Patates":          (5826, "Muş İl Tarım 2025 faaliyet raporu — 2024"),
+    "Fiğ":              (1839, "Muş İl Tarım 2025 faaliyet raporu — 2024"),
+    "Kuru fasulye":      (396, "Muş İl Tarım 2025 faaliyet raporu — 2024"),
 }
 
 # ======================================================================
@@ -119,16 +128,26 @@ VERIM_OLCUM: dict[str, tuple[float, int, int, str]] = {
     "Yonca":           (1.933, 225033, 434922, "temiz"),
     "Korunga":         (0.787,  10662,   8389, "temiz"),
     "Silajlık mısır":  (5.270,   9432,  49703, "temiz"),
-    # Buğday ve arpa: üretim tutuyor ama projenin verimi bağımsız bir
-    # varsayım DEĞİL — başka bir resmî belgenin "115 bin ha" ifadesinden
-    # geriye hesaplanmış. Yeni rapor aynı alana 135.197 ha diyor. İki
-    # resmî belge çelişirken birini sessizce seçmek doğru olmaz.
-    "Buğday":          (0.272, 1351970, 368297, "çelişki"),
-    "Arpa":            (0.209,  472885,  98938, "çelişki"),
-    # Üretim rakamı bile tutmuyor; verim farkının nereden geldiği belirsiz.
-    "Fiğ":             (0.600,    3067,   1839, "üretim"),
-    "Patates":         (2.651,    2198,   5826, "üretim"),
-    "Kuru fasulye":    (0.203,    1948,    396, "üretim"),
+    # Buğday ve arpa bir süre "çelişki" olarak bekletildi: projenin
+    # verimi bağımsız bir varsayım değil, başka bir resmî belgenin
+    # "115 bin ha" ifadesinden geriye hesaplanmıştı. Çelişki şöyle
+    # çözüldü: o ifade NE 2023'ü (141.467 ha) NE 2024'ü (135.197 ha)
+    # tutuyor, yani hiçbir yılla uyuşmuyor. Faaliyet raporu ise alanı
+    # ve üretimi AYNI yıl ve AYNI kayıttan veriyor, üstelik ima ettiği
+    # verim (0,272 susuz buğday) agronomik olarak 0,320'den makul.
+    # İçsel tutarlılığı olan kaynak tercih edildi.
+    "Buğday":          (0.272, 1351970, 368297, "temiz"),
+    "Arpa":            (0.209,  472885,  98938, "temiz"),
+    # Bu üçü de "üretim tutmuyor" diye bekletiliyordu. Tutmamasının
+    # sebebi raporda değil bizdeydi: projenin kendi notları fiğ ve
+    # kuru fasulyeyi "TAHMİN", patatesi "TÜİK 2021" diye işaretliyordu.
+    # Üretim raporun 2024 değerine çekilince verim de uygulanabilir
+    # oldu. Kontrol: üretim ÷ verim, raporun alanını %1 içinde yeniden
+    # üretiyor (fiğ 3.065/3.067, patates 2.198/2.198, fasulye
+    # 1.951/1.948).
+    "Fiğ":             (0.600,    3067,   1839, "temiz"),
+    "Patates":         (2.651,    2198,   5826, "temiz"),
+    "Kuru fasulye":    (0.203,    1948,    396, "temiz"),
     # Fark ihmal edilebilir (%2); uygulamaya değmez ama kayda değer.
     "Şeker pancarı":   (5.895,  112820, 665032, "temiz"),
 }
