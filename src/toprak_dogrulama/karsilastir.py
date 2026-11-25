@@ -188,6 +188,42 @@ def soilgrids_ozeti(veri: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return sonuc
 
 
+def _sira(d: list[float]) -> list[float]:
+    """Spearman için sıra numaraları; eşitlikte ortalama sıra."""
+    siralı = sorted(range(len(d)), key=lambda i: d[i])
+    sira = [0.0] * len(d)
+    i = 0
+    while i < len(siralı):
+        j = i
+        while j + 1 < len(siralı) and d[siralı[j + 1]] == d[siralı[i]]:
+            j += 1
+        ort = (i + j) / 2 + 1
+        for k in range(i, j + 1):
+            sira[siralı[k]] = ort
+        i = j + 1
+    return sira
+
+
+def _spearman(a: list[float], b: list[float]) -> float | None:
+    """Sıralama uyumu. İki kaynak aynı ilçeleri aynı sırada mı diziyor?
+
+    NEDEN ÖNEMLİ: Model ilçeleri BİRBİRİNE GÖRE karşılaştırıyor. Bir
+    kaynak sistematik olarak kaymış olsa bile ilçeleri aynı sırada
+    diziyorsa, modelin kullandığı FARK bilgisi doğrulanmış olur.
+    Mutlak değerin tutması ile sıralamanın tutması ayrı sorulardır ve
+    ikisi ayrı ayrı raporlanmalıdır.
+    """
+    n = len(a)
+    if n < 4 or len(b) != n:
+        return None
+    sa, sb = _sira(a), _sira(b)
+    ort_a, ort_b = st.fmean(sa), st.fmean(sb)
+    pay = sum((x - ort_a) * (y - ort_b) for x, y in zip(sa, sb))
+    payda = (sum((x - ort_a) ** 2 for x in sa)
+             * sum((y - ort_b) ** 2 for y in sb)) ** 0.5
+    return round(pay / payda, 3) if payda else None
+
+
 def _bunyeden_kil(ilce_kaydi: dict[str, Any]) -> dict[str, Any] | None:
     """Bünye sınıfı dağılımından kil oranı türetir.
 
@@ -302,7 +338,39 @@ def uret(yol: Path | None = None) -> dict[str, Any]:
         turetilmis = [s for s in ait if _turetilmis(s)]
         farklar = [abs(s["fark_lab"]) for s in olculu]
         t_farklar = [abs(s["fark_lab"]) for s in turetilmis]
+        # Sistematik kayma mı, rastgele hata mı?
+        # Altı ilçenin altısında da aynı yönde sapma, küresel modelin bu
+        # bölgedeki YANLILIĞIDIR; laboratuvarın yanlış olduğunun kanıtı
+        # değildir. Bu ayrımı yapmayan bir "tutma oranı" yanıltır.
+        kiyas = olculu or turetilmis
+        isaretli = [s["fark_lab"] for s in kiyas]
+        ayni_yon = bool(isaretli) and (all(f > 0 for f in isaretli)
+                                       or all(f < 0 for f in isaretli))
+        rho = _spearman([s["soilgrids"]["medyan"] for s in kiyas],
+                        [s["laboratuvar"]["medyan"] for s in kiyas])
+
+        # AYIRT EDİCİLİK — sıralama uyumunu yorumlamadan önce sorulacak soru.
+        # İlçeler arası fark, tek bir ilçenin kendi içindeki yayılımdan
+        # küçükse, "hangi ilçe daha yüksek" sorusunun ölçülebilir bir
+        # cevabı yoktur. Böyle bir durumda Spearman katsayısı gürültüyü
+        # sıralamaktan ibarettir ve sayı olarak raporlansa bile YORUMA
+        # girmemelidir.
+        lab_d = [s["laboratuvar"]["medyan"] for s in kiyas]
+        ilceler_arasi = round(max(lab_d) - min(lab_d), 3) if lab_d else None
+        ic_yayilim = (round(st.median([s["soilgrids"]["q3"] - s["soilgrids"]["q1"]
+                                       for s in kiyas]), 3) if kiyas else None)
+        ayirt_edici = (ilceler_arasi is not None and ic_yayilim is not None
+                       and ilceler_arasi > ic_yayilim)
         alan_ozeti.append({
+            "sistematik_kayma": round(st.fmean(isaretli), 3) if isaretli else None,
+            "kayma_yayilimi": (round(st.pstdev(isaretli), 3)
+                               if len(isaretli) > 1 else None),
+            "ayni_yon": ayni_yon,
+            "kiyas_ilce": len(kiyas),
+            "siralama_uyumu": rho,
+            "ilceler_arasi_fark": ilceler_arasi,
+            "ic_yayilim": ic_yayilim,
+            "ayirt_edici": ayirt_edici,
             "alan": alan, "alan_ad": ad,
             "karsilastirilan_ilce": len(ait),
             "olcumlu_ilce": len(olculu),
@@ -342,12 +410,15 @@ def uret(yol: Path | None = None) -> dict[str, Any]:
         },
         "yargi": (
             "Bu bir doğrulamadır, bir ispat değil. SoilGrids de bir TAHMİN "
-            "ürünüdür; Muş'u özel olarak bilmez. Üç sayının (varsayım, "
-            "laboratuvar, SoilGrids) birbirini tuttuğu yerde o değere "
-            "güvenilebilir. Ayrıştığı yerde hangisinin yanlış olduğunu bu "
-            "karşılaştırma söyleyemez — nereye bakılması gerektiğini söyler. "
-            "Kireç ve tuzluluk hiç doğrulanamadı; proje için en kritik "
-            "eksik budur."),
+            "ürünüdür; Muş'u özel olarak bilmez. Üç ayrı soru soruluyor ve "
+            "üçü ayrı ayrı cevaplanıyor: (1) mutlak değerler tutuyor mu, "
+            "(2) sapma sistematik mi yoksa rastgele mi, (3) iki kaynak "
+            "ilçeleri aynı sırada mı diziyor. Sapmanın her ilçede aynı "
+            "yönde olması, küresel modelin bu bölgedeki YANLILIĞINA işaret "
+            "eder; laboratuvarın yanlış olduğunun kanıtı değildir. Model "
+            "ilçeleri birbirine göre kıyasladığı için asıl belirleyici olan "
+            "üçüncü sorudur. Kireç ve tuzluluk hiç doğrulanamadı; proje "
+            "için en kritik eksik budur."),
     }
 
 

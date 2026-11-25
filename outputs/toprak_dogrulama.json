@@ -1,0 +1,616 @@
+{
+ "var": true,
+ "kaynak": "ISRIC SoilGrids 2.0 (250 m, CC-BY 4.0)",
+ "kaynak_adres": "https://www.isric.org/explore/soilgrids",
+ "nokta_sorgusu": 1176,
+ "ilce_sayisi": 6,
+ "derinlik_agirlik": {
+  "0-5cm": 5.0,
+  "5-15cm": 10.0,
+  "15-30cm": 5.0
+ },
+ "om_katsayi": 1.724,
+ "satirlar": [
+  {
+   "ilce": "Merkez",
+   "alan": "ph",
+   "alan_ad": "pH",
+   "soilgrids": {
+    "n": 25,
+    "medyan": 6.85,
+    "q1": 6.537,
+    "q3": 7.013,
+    "min": 6.475,
+    "maks": 7.2,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 7.6,
+   "fark_varsayim": -0.75,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 607,
+    "medyan": 7.48,
+    "q1": 7.29,
+    "q3": 7.65,
+    "guvenilir": true
+   },
+   "fark_lab": -0.63,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Merkez",
+   "alan": "om",
+   "alan_ad": "organik madde (%)",
+   "soilgrids": {
+    "n": 25,
+    "medyan": 7.232,
+    "q1": 5.0,
+    "q3": 9.641,
+    "min": 4.508,
+    "maks": 12.952,
+    "donusum": "g/kg -> % (÷10), sonra × 1.724 (Van Bemmelen) — TÜRETİLDİ",
+    "turetildi": true
+   },
+   "varsayim": 2.0,
+   "fark_varsayim": 5.232,
+   "varsayim_sg_araliginda": false,
+   "turetildi": true,
+   "laboratuvar": {
+    "n": 549,
+    "medyan": 1.85,
+    "q1": 1.37,
+    "q3": 2.49,
+    "guvenilir": true
+   },
+   "fark_lab": 5.382,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Merkez",
+   "alan": "kil",
+   "alan_ad": "kil (%)",
+   "soilgrids": {
+    "n": 25,
+    "medyan": 25.8,
+    "q1": 21.938,
+    "q3": 32.138,
+    "min": 17.1,
+    "maks": 35.075,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 46.0,
+   "fark_varsayim": -20.2,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 564,
+    "medyan": 26.7,
+    "q1": 26.7,
+    "q3": 26.7,
+    "guvenilir": true
+   },
+   "fark_lab": -0.9,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": true
+  },
+  {
+   "ilce": "Bulanık",
+   "alan": "ph",
+   "alan_ad": "pH",
+   "soilgrids": {
+    "n": 24,
+    "medyan": 7.188,
+    "q1": 7.1,
+    "q3": 7.362,
+    "min": 6.825,
+    "maks": 7.425,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 7.5,
+   "fark_varsayim": -0.312,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 44,
+    "medyan": 7.61,
+    "q1": 7.098,
+    "q3": 7.757,
+    "guvenilir": true
+   },
+   "fark_lab": -0.422,
+   "lab_araliginda": true,
+   "uyum": "tutuyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Bulanık",
+   "alan": "om",
+   "alan_ad": "organik madde (%)",
+   "soilgrids": {
+    "n": 24,
+    "medyan": 4.75,
+    "q1": 4.296,
+    "q3": 5.696,
+    "min": 3.866,
+    "maks": 8.094,
+    "donusum": "g/kg -> % (÷10), sonra × 1.724 (Van Bemmelen) — TÜRETİLDİ",
+    "turetildi": true
+   },
+   "varsayim": 2.2,
+   "fark_varsayim": 2.55,
+   "varsayim_sg_araliginda": false,
+   "turetildi": true,
+   "laboratuvar": {
+    "n": 34,
+    "medyan": 1.33,
+    "q1": 0.38,
+    "q3": 1.708,
+    "guvenilir": true
+   },
+   "fark_lab": 3.42,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Bulanık",
+   "alan": "kil",
+   "alan_ad": "kil (%)",
+   "soilgrids": {
+    "n": 24,
+    "medyan": 36.725,
+    "q1": 34.162,
+    "q3": 37.819,
+    "min": 28.575,
+    "maks": 39.55,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 42.0,
+   "fark_varsayim": -5.275,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 36,
+    "medyan": 24.2,
+    "q1": 24.2,
+    "q3": 24.2,
+    "guvenilir": true
+   },
+   "fark_lab": 12.525,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": true
+  },
+  {
+   "ilce": "Malazgirt",
+   "alan": "ph",
+   "alan_ad": "pH",
+   "soilgrids": {
+    "n": 25,
+    "medyan": 7.325,
+    "q1": 7.175,
+    "q3": 7.388,
+    "min": 7.025,
+    "maks": 7.475,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 7.8,
+   "fark_varsayim": -0.475,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 23,
+    "medyan": 7.63,
+    "q1": 7.52,
+    "q3": 7.67,
+    "guvenilir": false
+   },
+   "fark_lab": -0.305,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Malazgirt",
+   "alan": "om",
+   "alan_ad": "organik madde (%)",
+   "soilgrids": {
+    "n": 25,
+    "medyan": 4.9,
+    "q1": 4.211,
+    "q3": 5.7,
+    "min": 3.819,
+    "maks": 7.107,
+    "donusum": "g/kg -> % (÷10), sonra × 1.724 (Van Bemmelen) — TÜRETİLDİ",
+    "turetildi": true
+   },
+   "varsayim": 1.7,
+   "fark_varsayim": 3.2,
+   "varsayim_sg_araliginda": false,
+   "turetildi": true,
+   "laboratuvar": {
+    "n": 4,
+    "medyan": 1.435,
+    "q1": 0.623,
+    "q3": 2.172,
+    "guvenilir": false
+   },
+   "fark_lab": 3.465,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Malazgirt",
+   "alan": "kil",
+   "alan_ad": "kil (%)",
+   "soilgrids": {
+    "n": 25,
+    "medyan": 33.35,
+    "q1": 30.925,
+    "q3": 34.85,
+    "min": 29.225,
+    "maks": 39.2,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 36.0,
+   "fark_varsayim": -2.65,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": null,
+   "uyum": "ölçüm yok"
+  },
+  {
+   "ilce": "Varto",
+   "alan": "ph",
+   "alan_ad": "pH",
+   "soilgrids": {
+    "n": 24,
+    "medyan": 7.0,
+    "q1": 6.825,
+    "q3": 7.1,
+    "min": 6.7,
+    "maks": 7.2,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 6.9,
+   "fark_varsayim": 0.1,
+   "varsayim_sg_araliginda": true,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 277,
+    "medyan": 7.38,
+    "q1": 6.965,
+    "q3": 7.57,
+    "guvenilir": true
+   },
+   "fark_lab": -0.38,
+   "lab_araliginda": true,
+   "uyum": "tutuyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Varto",
+   "alan": "om",
+   "alan_ad": "organik madde (%)",
+   "soilgrids": {
+    "n": 24,
+    "medyan": 7.204,
+    "q1": 6.051,
+    "q3": 8.532,
+    "min": 5.211,
+    "maks": 11.684,
+    "donusum": "g/kg -> % (÷10), sonra × 1.724 (Van Bemmelen) — TÜRETİLDİ",
+    "turetildi": true
+   },
+   "varsayim": 2.8,
+   "fark_varsayim": 4.404,
+   "varsayim_sg_araliginda": false,
+   "turetildi": true,
+   "laboratuvar": {
+    "n": 264,
+    "medyan": 2.01,
+    "q1": 1.37,
+    "q3": 2.67,
+    "guvenilir": true
+   },
+   "fark_lab": 5.194,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Varto",
+   "alan": "kil",
+   "alan_ad": "kil (%)",
+   "soilgrids": {
+    "n": 24,
+    "medyan": 29.913,
+    "q1": 28.131,
+    "q3": 32.025,
+    "min": 21.425,
+    "maks": 36.05,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 30.0,
+   "fark_varsayim": -0.087,
+   "varsayim_sg_araliginda": true,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 274,
+    "medyan": 30.4,
+    "q1": 30.4,
+    "q3": 30.4,
+    "guvenilir": true
+   },
+   "fark_lab": -0.487,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": true
+  },
+  {
+   "ilce": "Hasköy",
+   "alan": "ph",
+   "alan_ad": "pH",
+   "soilgrids": {
+    "n": 24,
+    "medyan": 6.8,
+    "q1": 6.638,
+    "q3": 6.9,
+    "min": 6.5,
+    "maks": 7.1,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 7.5,
+   "fark_varsayim": -0.7,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 105,
+    "medyan": 7.41,
+    "q1": 7.15,
+    "q3": 7.555,
+    "guvenilir": true
+   },
+   "fark_lab": -0.61,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Hasköy",
+   "alan": "om",
+   "alan_ad": "organik madde (%)",
+   "soilgrids": {
+    "n": 24,
+    "medyan": 5.275,
+    "q1": 4.718,
+    "q3": 7.825,
+    "min": 4.293,
+    "maks": 10.478,
+    "donusum": "g/kg -> % (÷10), sonra × 1.724 (Van Bemmelen) — TÜRETİLDİ",
+    "turetildi": true
+   },
+   "varsayim": 2.1,
+   "fark_varsayim": 3.175,
+   "varsayim_sg_araliginda": false,
+   "turetildi": true,
+   "laboratuvar": {
+    "n": 98,
+    "medyan": 1.94,
+    "q1": 1.27,
+    "q3": 2.91,
+    "guvenilir": true
+   },
+   "fark_lab": 3.335,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Hasköy",
+   "alan": "kil",
+   "alan_ad": "kil (%)",
+   "soilgrids": {
+    "n": 24,
+    "medyan": 31.062,
+    "q1": 24.131,
+    "q3": 32.9,
+    "min": 20.175,
+    "maks": 35.525,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 41.0,
+   "fark_varsayim": -9.938,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 98,
+    "medyan": 26.0,
+    "q1": 26.0,
+    "q3": 26.0,
+    "guvenilir": true
+   },
+   "fark_lab": 5.062,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": true
+  },
+  {
+   "ilce": "Korkut",
+   "alan": "ph",
+   "alan_ad": "pH",
+   "soilgrids": {
+    "n": 25,
+    "medyan": 6.9,
+    "q1": 6.787,
+    "q3": 7.0,
+    "min": 6.625,
+    "maks": 7.1,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 7.7,
+   "fark_varsayim": -0.8,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 162,
+    "medyan": 7.52,
+    "q1": 7.33,
+    "q3": 7.662,
+    "guvenilir": true
+   },
+   "fark_lab": -0.62,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Korkut",
+   "alan": "om",
+   "alan_ad": "organik madde (%)",
+   "soilgrids": {
+    "n": 25,
+    "medyan": 5.133,
+    "q1": 4.812,
+    "q3": 6.066,
+    "min": 4.405,
+    "maks": 11.327,
+    "donusum": "g/kg -> % (÷10), sonra × 1.724 (Van Bemmelen) — TÜRETİLDİ",
+    "turetildi": true
+   },
+   "varsayim": 1.9,
+   "fark_varsayim": 3.233,
+   "varsayim_sg_araliginda": false,
+   "turetildi": true,
+   "laboratuvar": {
+    "n": 158,
+    "medyan": 2.01,
+    "q1": 1.37,
+    "q3": 2.735,
+    "guvenilir": true
+   },
+   "fark_lab": 3.123,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": false
+  },
+  {
+   "ilce": "Korkut",
+   "alan": "kil",
+   "alan_ad": "kil (%)",
+   "soilgrids": {
+    "n": 25,
+    "medyan": 31.875,
+    "q1": 28.2,
+    "q3": 33.163,
+    "min": 22.4,
+    "maks": 34.5,
+    "donusum": "doğrudan"
+   },
+   "varsayim": 38.0,
+   "fark_varsayim": -6.125,
+   "varsayim_sg_araliginda": false,
+   "turetildi": false,
+   "laboratuvar": {
+    "n": 159,
+    "medyan": 27.3,
+    "q1": 27.3,
+    "q3": 27.3,
+    "guvenilir": true
+   },
+   "fark_lab": 4.575,
+   "lab_araliginda": false,
+   "uyum": "ayrışıyor",
+   "lab_turetildi": true
+  }
+ ],
+ "alan_ozeti": [
+  {
+   "sistematik_kayma": -0.532,
+   "kayma_yayilimi": 0.108,
+   "ayni_yon": true,
+   "kiyas_ilce": 5,
+   "siralama_uyumu": 0.4,
+   "ilceler_arasi_fark": 0.23,
+   "ic_yayilim": 0.262,
+   "ayirt_edici": false,
+   "alan": "ph",
+   "alan_ad": "pH",
+   "karsilastirilan_ilce": 6,
+   "olcumlu_ilce": 5,
+   "tutan_ilce": 2,
+   "ortalama_mutlak_fark": 0.532,
+   "turetilmis_ilce": 0,
+   "turetilmis_ortalama_fark": null,
+   "lab_turetildi": false,
+   "sg_turetildi": false
+  },
+  {
+   "sistematik_kayma": 4.091,
+   "kayma_yayilimi": 0.984,
+   "ayni_yon": true,
+   "kiyas_ilce": 5,
+   "siralama_uyumu": 0.205,
+   "ilceler_arasi_fark": 0.68,
+   "ic_yayilim": 2.481,
+   "ayirt_edici": false,
+   "alan": "om",
+   "alan_ad": "organik madde (%)",
+   "karsilastirilan_ilce": 6,
+   "olcumlu_ilce": 5,
+   "tutan_ilce": 0,
+   "ortalama_mutlak_fark": 4.091,
+   "turetilmis_ilce": 0,
+   "turetilmis_ortalama_fark": null,
+   "lab_turetildi": false,
+   "sg_turetildi": true
+  },
+  {
+   "sistematik_kayma": 4.155,
+   "kayma_yayilimi": 4.861,
+   "ayni_yon": false,
+   "kiyas_ilce": 5,
+   "siralama_uyumu": -0.5,
+   "ilceler_arasi_fark": 6.2,
+   "ic_yayilim": 4.963,
+   "ayirt_edici": true,
+   "alan": "kil",
+   "alan_ad": "kil (%)",
+   "karsilastirilan_ilce": 6,
+   "olcumlu_ilce": 0,
+   "tutan_ilce": 0,
+   "ortalama_mutlak_fark": null,
+   "turetilmis_ilce": 5,
+   "turetilmis_ortalama_fark": 4.71,
+   "lab_turetildi": true,
+   "sg_turetildi": false
+  }
+ ],
+ "dogrulanamayan": [
+  {
+   "alan": "kirec",
+   "alan_ad": "kirec",
+   "sebep": "SoilGrids karbonat (CaCO3) içeriği yayımlamıyor. Varsayımın en çok şaştığı alan bu olduğu için en çok doğrulanması gereken de buydu; doğrulanamadı."
+  },
+  {
+   "alan": "ec",
+   "alan_ad": "ec",
+   "sebep": "SoilGrids tuzluluk (elektriksel iletkenlik) yayımlamıyor."
+  }
+ ],
+ "ozet": {
+  "karsilastirma": 18,
+  "olcumlu": 10,
+  "tutan": 2,
+  "tutma_orani": 20.0,
+  "turetilmis": 5
+ },
+ "yargi": "Bu bir doğrulamadır, bir ispat değil. SoilGrids de bir TAHMİN ürünüdür; Muş'u özel olarak bilmez. Üç ayrı soru soruluyor ve üçü ayrı ayrı cevaplanıyor: (1) mutlak değerler tutuyor mu, (2) sapma sistematik mi yoksa rastgele mi, (3) iki kaynak ilçeleri aynı sırada mı diziyor. Sapmanın her ilçede aynı yönde olması, küresel modelin bu bölgedeki YANLILIĞINA işaret eder; laboratuvarın yanlış olduğunun kanıtı değildir. Model ilçeleri birbirine göre kıyasladığı için asıl belirleyici olan üçüncü sorudur. Kireç ve tuzluluk hiç doğrulanamadı; proje için en kritik eksik budur."
+}

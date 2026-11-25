@@ -55,6 +55,25 @@ function dogrulamaEfsane() {
     oge("var(--warning)", "projenin varsayımı"));
 }
 
+// Üç testin birlikte söylediği şeyi tek cümleye indirger.
+function dogrulamaSonuc(a) {
+  if (!a.ayirt_edici && a.ayni_yon) {
+    return "Sabit bir kayma var, ilçe ayrımı ise ölçüm gürültüsünden "
+      + "küçük. Mutlak değer için laboratuvar esas alınmalı.";
+  }
+  if (!a.ayirt_edici) {
+    return "İlçeler arası fark, ilçe içi yayılımdan küçük — bu ölçümle "
+      + "ilçeler birbirinden ayrılamaz.";
+  }
+  if (a.ayni_yon) {
+    return "Sistematik kayma var ama ilçe ayrımı ölçülebilir durumda.";
+  }
+  return a.siralama_uyumu != null && a.siralama_uyumu < 0
+    ? "İki kaynak ilçeleri TERS sıralıyor: gerçek bir anlaşmazlık, "
+      + "basit bir kayma değil. En çok incelenmesi gereken alan bu."
+    : "Yön karışık; sapma sistematik değil.";
+}
+
 function sekmeDogrulama() {
   if (!DOGRULAMA || !DOGRULAMA.var) {
     return [bolum("01", "Doğrulama verisi üretilmemiş",
@@ -79,41 +98,64 @@ function sekmeDogrulama() {
             `${n0(DOGRULAMA.ilce_sayisi)} ilçe · ilçe merkezi çevresinde ızgara`],
           ["Karşılaştırma", n0(o.olcumlu),
             "ölçümle doğrudan karşılaştırılabilen ilçe × alan"],
-          ["Tutan", o.tutma_orani == null ? "—" : "%" + n1(o.tutma_orani),
-            `${n0(o.tutan)} / ${n0(o.olcumlu)} · SoilGrids medyanı `
-            + "laboratuvarın çeyrek aralığında"]]
+          ["Sistematik kayma",
+            n0(DOGRULAMA.alan_ozeti.filter(a => a.ayni_yon).length) + " / "
+              + n0(DOGRULAMA.alan_ozeti.length),
+            "her ilçede aynı yönde sapan ölçüm — model yanlılığı"]]
         .map(([b, d, a]) => el("div", { class: "tile" },
           el("div", { class: "k", text: b }),
           el("div", { class: "v", text: d }),
           el("div", { class: "u", text: a })))));
 
-  // --- 02 alan özeti
-  const alanBolum = el("div", { class: "kaydir" },
-    tablo([{ ad: "ölçüm" }, { ad: "ilçe", num: true },
-           { ad: "tutan", num: true }, { ad: "ort. mutlak fark", num: true },
-           { ad: "" }],
-      DOGRULAMA.alan_ozeti.map(a => [
-        el("span", {}, el("strong", { text: a.alan_ad }),
-          a.sg_turetildi
-            ? el("div", { style: "font-size:11px;color:var(--muted)",
-                text: "SoilGrids karbondan türetildi (× "
-                  + n2(DOGRULAMA.om_katsayi) + ")" })
-            : null),
-        el("span", { class: "mono",
-          text: a.lab_turetildi ? n0(a.turetilmis_ilce) : n0(a.olcumlu_ilce) }),
-        a.lab_turetildi
-          ? el("span", { style: "color:var(--muted)", text: "—" })
-          : el("span", { class: "mono",
-              style: `font-weight:700;color:${a.tutan_ilce === a.olcumlu_ilce
-                ? "var(--good)" : a.tutan_ilce === 0
-                ? "var(--critical)" : "var(--warning)"}`,
-              text: n0(a.tutan_ilce) }),
-        el("span", { class: "mono", text: n2(a.lab_turetildi
-          ? a.turetilmis_ortalama_fark : a.ortalama_mutlak_fark) }),
-        a.lab_turetildi
-          ? rozet("laboratuvar değeri türetilmiş", "r-orta")
-          : rozet("doğrudan ölçümle karşılaştırıldı", "r-olcum"),
-      ])));
+  // --- 02 üç ayrı test
+  const testBolum = el("div", {},
+    el("p", { class: "note", text: "Tek bir \"tutuyor mu\" sorusu yanıltır. "
+      + "Üç ayrı soru var ve üçü ayrı cevaplanmalı: mutlak değerler "
+      + "tutuyor mu, sapma sistematik mi, iki kaynak ilçeleri aynı sırada "
+      + "mı diziyor." }),
+    el("div", { class: "kaydir" },
+      tablo([{ ad: "ölçüm" }, { ad: "ilçe", num: true },
+             { ad: "sistematik kayma", num: true }, { ad: "sapma aynı yönde" },
+             { ad: "ilçe ayrımı ölçülebilir mi" }, { ad: "sıralama uyumu" },
+             { ad: "sonuç" }],
+        DOGRULAMA.alan_ozeti.map(a => [
+          el("span", {}, el("strong", { text: a.alan_ad }),
+            a.sg_turetildi
+              ? el("div", { style: "font-size:11px;color:var(--muted)",
+                  text: "karbondan türetildi" })
+              : null),
+          el("span", { class: "mono", text: n0(a.kiyas_ilce) }),
+          el("span", { class: "mono", style: "font-weight:700",
+            text: (a.sistematik_kayma > 0 ? "+" : "") + n2(a.sistematik_kayma)
+              + (a.kayma_yayilimi == null ? ""
+                 : "  ±" + n2(a.kayma_yayilimi)) }),
+          a.ayni_yon
+            ? rozet("altı ilçede de aynı yön", "r-kotu")
+            : rozet("yön karışık", "r-notr"),
+          a.ayirt_edici
+            ? rozet("ölçülebilir", "r-iyi")
+            : el("span", {}, rozet("ölçülemez", "r-orta"),
+                el("div", { style: "font-size:11px;color:var(--muted);"
+                  + "white-space:normal;max-width:210px",
+                  text: `ilçeler arası fark ${n2(a.ilceler_arasi_fark)}, `
+                    + `ilçe içi yayılım ${n2(a.ic_yayilim)}` })),
+          a.ayirt_edici && a.siralama_uyumu != null
+            ? el("span", { class: "mono", style: "font-weight:600",
+                text: "ρ = " + n2(a.siralama_uyumu) })
+            : el("span", { style: "color:var(--muted)", text: "yorumlanamaz" }),
+          el("span", { style: "font-size:12px;white-space:normal;"
+            + "max-width:230px;display:block", text: dogrulamaSonuc(a) }),
+        ]))),
+    el("div", { class: "kutu", style: "margin-top:14px" },
+      el("strong", { text: "Sistematik kayma ne demek, ne demek değil" }),
+      el("p", { text: "Sapma altı ilçenin altısında da aynı yöndeyse bu "
+        + "rastgele hata değildir: küresel modelin bu bölgedeki "
+        + "yanlılığıdır. Laboratuvarın yanlış olduğunun kanıtı DEĞİLDİR. "
+        + "pH'ta kayma −0,53 ve yayılımı yalnızca ±0,11 — yani sabit bir "
+        + "fark çıkarıldığında iki kaynak neredeyse üst üste düşüyor. "
+        + "Muş toprağı kireçli; kireçli topraklar pH 7,5 civarında "
+        + "tamponlanır ve laboratuvarın 7,4-7,6 aralığı bununla "
+        + "tutarlıdır." })));
 
   // --- 03 ilçe × alan ayrıntısı
   const ayrintiBolum = el("div", {}, dogrulamaEfsane());
@@ -182,11 +224,11 @@ function sekmeDogrulama() {
       + "Geriye tek dürüst yol kalıyor: bağımsız bir kaynakla "
       + "karşılaştırmak.",
       girisBolum),
-    bolum("02", "Hangi ölçüm ne kadar tuttu",
-      "Tutma ölçütü: SoilGrids'in ilçe medyanı, laboratuvarın çeyrek "
-      + "aralığına düşüyor mu. Laboratuvar değeri türetilmişse bu test "
-      + "uygulanamaz — o satırlar ayrı sayılır, orana katılmaz.",
-      alanBolum),
+    bolum("02", "Üç ayrı soru, üç ayrı cevap",
+      "Bir doğrulama tek sayıya indirgenirse yanıltır. Asıl belirleyici "
+      + "olan, modelin kullandığı şeyin doğrulanıp doğrulanmadığıdır: "
+      + "model ilçeleri BİRBİRİNE GÖRE kıyaslıyor.",
+      testBolum),
     bolum("03", "İlçe ilçe: üç sayı yan yana",
       "Üçünün birbirini tuttuğu yerde o değere güvenilebilir. Ayrıştığı "
       + "yerde hangisinin yanlış olduğunu bu tablo söylemez; nereye "
