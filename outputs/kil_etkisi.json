@@ -1,0 +1,272 @@
+{
+ "var": true,
+ "esikler": [
+  {
+   "kil_en_az": 45.0,
+   "sinif": "killi"
+  },
+  {
+   "kil_en_az": 35.0,
+   "sinif": "killi-tın"
+  }
+ ],
+ "ilceler": [
+  {
+   "ilce": "Merkez",
+   "varsayim_kil": 46.0,
+   "varsayim_bunye": "killi",
+   "lab_kil": 26.7,
+   "lab_bunye": "tınlı",
+   "lab_kaynak": "türetildi",
+   "sg_kil": 25.8,
+   "sg_bunye": "tınlı",
+   "sinif_ayrisiyor": true,
+   "lab_sg_ayni_sinif": true,
+   "lab_olcum_var": true
+  },
+  {
+   "ilce": "Bulanık",
+   "varsayim_kil": 42.0,
+   "varsayim_bunye": "killi-tın",
+   "lab_kil": 24.2,
+   "lab_bunye": "tınlı",
+   "lab_kaynak": "türetildi",
+   "sg_kil": 36.7,
+   "sg_bunye": "killi-tın",
+   "sinif_ayrisiyor": true,
+   "lab_sg_ayni_sinif": false,
+   "lab_olcum_var": true
+  },
+  {
+   "ilce": "Malazgirt",
+   "varsayim_kil": 36.0,
+   "varsayim_bunye": "killi-tın",
+   "lab_kil": 36.0,
+   "lab_bunye": "killi-tın",
+   "lab_kaynak": "varsayım",
+   "sg_kil": 33.4,
+   "sg_bunye": "tınlı",
+   "sinif_ayrisiyor": true,
+   "lab_sg_ayni_sinif": false,
+   "lab_olcum_var": false
+  },
+  {
+   "ilce": "Varto",
+   "varsayim_kil": 30.0,
+   "varsayim_bunye": "tınlı",
+   "lab_kil": 30.4,
+   "lab_bunye": "tınlı",
+   "lab_kaynak": "türetildi",
+   "sg_kil": 29.9,
+   "sg_bunye": "tınlı",
+   "sinif_ayrisiyor": false,
+   "lab_sg_ayni_sinif": true,
+   "lab_olcum_var": true
+  },
+  {
+   "ilce": "Hasköy",
+   "varsayim_kil": 41.0,
+   "varsayim_bunye": "killi-tın",
+   "lab_kil": 26.0,
+   "lab_bunye": "tınlı",
+   "lab_kaynak": "türetildi",
+   "sg_kil": 31.1,
+   "sg_bunye": "tınlı",
+   "sinif_ayrisiyor": true,
+   "lab_sg_ayni_sinif": true,
+   "lab_olcum_var": true
+  },
+  {
+   "ilce": "Korkut",
+   "varsayim_kil": 38.0,
+   "varsayim_bunye": "killi-tın",
+   "lab_kil": 27.3,
+   "lab_bunye": "tınlı",
+   "lab_kaynak": "türetildi",
+   "sg_kil": 31.9,
+   "sg_bunye": "tınlı",
+   "sinif_ayrisiyor": true,
+   "lab_sg_ayni_sinif": true,
+   "lab_olcum_var": true
+  }
+ ],
+ "karsilastirmalar": [
+  {
+   "ad": "varsayım -> laboratuvar",
+   "degisen_satir": 12,
+   "sinif_degisen": 6,
+   "en_buyuk_fark": 15.8,
+   "ortalama_mutlak_fark": 6.02,
+   "sinif_degisenler": [
+    {
+     "ilce": "Korkut",
+     "urun": "Kuru fasulye",
+     "once_puan": 71.6,
+     "sonra_puan": 87.4,
+     "fark": 15.8,
+     "once_sinif": "uygun",
+     "sonra_sinif": "çok uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Varto",
+     "urun": "Patates",
+     "once_puan": 91.2,
+     "sonra_puan": 80.4,
+     "fark": -10.8,
+     "once_sinif": "çok uygun",
+     "sonra_sinif": "uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Korkut",
+     "urun": "Patates",
+     "once_puan": 63.4,
+     "sonra_puan": 73.9,
+     "fark": 10.5,
+     "once_sinif": "sınırlı",
+     "sonra_sinif": "uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Korkut",
+     "urun": "Silajlık mısır",
+     "once_puan": 82.1,
+     "sonra_puan": 90.1,
+     "fark": 8.0,
+     "once_sinif": "uygun",
+     "sonra_sinif": "çok uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Hasköy",
+     "urun": "Patates",
+     "once_puan": 69.7,
+     "sonra_puan": 75.9,
+     "fark": 6.2,
+     "once_sinif": "sınırlı",
+     "sonra_sinif": "uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Hasköy",
+     "urun": "Kuru fasulye",
+     "once_puan": 83.2,
+     "sonra_puan": 87.4,
+     "fark": 4.2,
+     "once_sinif": "uygun",
+     "sonra_sinif": "çok uygun",
+     "sinif_degisti": true
+    }
+   ]
+  },
+  {
+   "ad": "laboratuvar -> SoilGrids",
+   "degisen_satir": 6,
+   "sinif_degisen": 1,
+   "en_buyuk_fark": 3.6,
+   "ortalama_mutlak_fark": 2.1,
+   "sinif_degisenler": [
+    {
+     "ilce": "Malazgirt",
+     "urun": "Fiğ",
+     "once_puan": 84.3,
+     "sonra_puan": 86.1,
+     "fark": 1.8,
+     "once_sinif": "uygun",
+     "sonra_sinif": "çok uygun",
+     "sinif_degisti": true
+    }
+   ]
+  },
+  {
+   "ad": "varsayım -> SoilGrids",
+   "degisen_satir": 17,
+   "sinif_degisen": 7,
+   "en_buyuk_fark": 15.8,
+   "ortalama_mutlak_fark": 4.99,
+   "sinif_degisenler": [
+    {
+     "ilce": "Korkut",
+     "urun": "Kuru fasulye",
+     "once_puan": 71.6,
+     "sonra_puan": 87.4,
+     "fark": 15.8,
+     "once_sinif": "uygun",
+     "sonra_sinif": "çok uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Varto",
+     "urun": "Patates",
+     "once_puan": 91.2,
+     "sonra_puan": 80.4,
+     "fark": -10.8,
+     "once_sinif": "çok uygun",
+     "sonra_sinif": "uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Korkut",
+     "urun": "Patates",
+     "once_puan": 63.4,
+     "sonra_puan": 73.9,
+     "fark": 10.5,
+     "once_sinif": "sınırlı",
+     "sonra_sinif": "uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Korkut",
+     "urun": "Silajlık mısır",
+     "once_puan": 82.1,
+     "sonra_puan": 90.1,
+     "fark": 8.0,
+     "once_sinif": "uygun",
+     "sonra_sinif": "çok uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Hasköy",
+     "urun": "Patates",
+     "once_puan": 69.7,
+     "sonra_puan": 75.9,
+     "fark": 6.2,
+     "once_sinif": "sınırlı",
+     "sonra_sinif": "uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Hasköy",
+     "urun": "Kuru fasulye",
+     "once_puan": 83.2,
+     "sonra_puan": 87.4,
+     "fark": 4.2,
+     "once_sinif": "uygun",
+     "sonra_sinif": "çok uygun",
+     "sinif_degisti": true
+    },
+    {
+     "ilce": "Malazgirt",
+     "urun": "Fiğ",
+     "once_puan": 84.3,
+     "sonra_puan": 86.1,
+     "fark": 1.8,
+     "once_sinif": "uygun",
+     "sonra_sinif": "çok uygun",
+     "sinif_degisti": true
+    }
+   ]
+  }
+ ],
+ "lab_olcumu_olmayan": [
+  "Malazgirt"
+ ],
+ "ozet": {
+  "sinifi_ayrisan_ilce": 5,
+  "lab_sg_ayni_sinif": 4,
+  "toplam_ilce": 6,
+  "lab_sg_sinif_degisen_satir": 1
+ },
+ "yargi": "Kil puana doğrudan girmiyor; önce bünye sınıfına çevriliyor. Bu yüzden bir kil farkı ancak SINIF SINIRINI geçtiğinde tavsiyeyi değiştirir. Doğrulamada çıkan anlaşmazlığın önemi de buradan ölçülür: iki kaynak farklı sayı söylüyor ama aynı sınıfa düşüyorsa, anlaşmazlık tavsiyeyi etkilemez ve akademik kalır. Farklı sınıfa düşüyorsa, hangi kaynağın kullanıldığı doğrudan çiftçiye verilen öneriyi değiştirir."
+}

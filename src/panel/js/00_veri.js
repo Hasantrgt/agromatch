@@ -15,3 +15,4 @@ const ETKI = __ETKI_JSON__;
 const COLLESME = __COLLESME_JSON__;
 const KALITE = __KALITE_JSON__;
 const DOGRULAMA = __DOGRULAMA_JSON__;
+const KIL = __KIL_JSON__;

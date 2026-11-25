@@ -132,6 +132,7 @@ files = [
     # Bağımsız kaynakla doğrulama
     "src/toprak_dogrulama/karsilastir.py",
     "src/toprak_dogrulama/soilgrids_cek.py",
+    "src/toprak_dogrulama/kil_etkisi.py",
 ]
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

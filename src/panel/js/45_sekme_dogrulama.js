@@ -1,79 +1,6 @@
 // Doğrulama sekmesi: laboratuvar ölçümü bağımsız bir kaynakla karşılaştırılır.
 // Üç sayı yan yana: varsayım, laboratuvar, SoilGrids.
 
-const UYUM_ROZET = { "tutuyor": "r-iyi", "ayrışıyor": "r-kotu",
-                     "ölçüm yok": "r-notr" };
-
-// Üç kaynağı tek bir ölçek üzerinde gösterir: SoilGrids çeyrek bandı,
-// laboratuvar çeyrek bandı ve varsayım işareti.
-function ucluOlcek(s, alt, ust) {
-  const en = 220;
-  const px = v => Math.round((v - alt) / (ust - alt) * en);
-  const kap = el("div", { style: `position:relative;width:${en}px;height:26px` });
-
-  const band = (q1, q3, ustten, renk, baslik) => {
-    const sol = Math.max(px(q1), 0);
-    const gen = Math.max(px(q3) - px(q1), 2);
-    return el("div", { title: baslik,
-      style: `position:absolute;left:${sol}px;top:${ustten}px;`
-        + `width:${gen}px;height:7px;border-radius:3px;background:${renk};`
-        + "opacity:.5" });
-  };
-  const cizgi = (v, ustten, yuk, renk, baslik) =>
-    el("div", { title: baslik,
-      style: `position:absolute;left:${Math.max(0, Math.min(en - 2, px(v)))}px;`
-        + `top:${ustten}px;width:2px;height:${yuk}px;background:${renk}` });
-
-  const sg = s.soilgrids;
-  kap.append(band(sg.q1, sg.q3, 3, "var(--s1)", "SoilGrids çeyrek aralığı"));
-  kap.append(cizgi(sg.medyan, 1, 11, "var(--s1)", "SoilGrids medyanı " + n2(sg.medyan)));
-
-  if (s.laboratuvar) {
-    const l = s.laboratuvar;
-    if (!s.lab_turetildi) {
-      kap.append(band(l.q1, l.q3, 15, "var(--s3)", "laboratuvar çeyrek aralığı"));
-    }
-    kap.append(cizgi(l.medyan, 13, 11,
-      s.lab_turetildi ? "var(--muted)" : "var(--ink)",
-      (s.lab_turetildi ? "türetilmiş laboratuvar değeri " : "laboratuvar medyanı ")
-      + n2(l.medyan)));
-  }
-  kap.append(cizgi(s.varsayim, 0, 26, "var(--warning)",
-    "varsayım " + n2(s.varsayim)));
-  return kap;
-}
-
-function dogrulamaEfsane() {
-  const oge = (renk, metin) => el("span",
-    { style: "display:flex;align-items:center;gap:6px" },
-    el("span", { style: `width:12px;height:5px;border-radius:2px;background:${renk}` }),
-    el("span", { text: metin }));
-  return el("div", { style: "display:flex;flex-wrap:wrap;gap:4px 18px;"
-    + "font-size:12px;color:var(--muted);margin-bottom:10px" },
-    oge("var(--s1)", "SoilGrids (bağımsız tahmin)"),
-    oge("var(--ink)", "laboratuvar ölçümü"),
-    oge("var(--warning)", "projenin varsayımı"));
-}
-
-// Üç testin birlikte söylediği şeyi tek cümleye indirger.
-function dogrulamaSonuc(a) {
-  if (!a.ayirt_edici && a.ayni_yon) {
-    return "Sabit bir kayma var, ilçe ayrımı ise ölçüm gürültüsünden "
-      + "küçük. Mutlak değer için laboratuvar esas alınmalı.";
-  }
-  if (!a.ayirt_edici) {
-    return "İlçeler arası fark, ilçe içi yayılımdan küçük — bu ölçümle "
-      + "ilçeler birbirinden ayrılamaz.";
-  }
-  if (a.ayni_yon) {
-    return "Sistematik kayma var ama ilçe ayrımı ölçülebilir durumda.";
-  }
-  return a.siralama_uyumu != null && a.siralama_uyumu < 0
-    ? "İki kaynak ilçeleri TERS sıralıyor: gerçek bir anlaşmazlık, "
-      + "basit bir kayma değil. En çok incelenmesi gereken alan bu."
-    : "Yön karışık; sapma sistematik değil.";
-}
-
 function sekmeDogrulama() {
   if (!DOGRULAMA || !DOGRULAMA.var) {
     return [bolum("01", "Doğrulama verisi üretilmemiş",
@@ -234,9 +161,15 @@ function sekmeDogrulama() {
       + "yerde hangisinin yanlış olduğunu bu tablo söylemez; nereye "
       + "bakılacağını söyler.",
       ayrintiBolum),
-    bolum("04", "Doğrulanamayanlar — ve neden önemli",
+    (KIL && KIL.var)
+      ? bolum("04", "Peki bu anlaşmazlık tavsiyeyi değiştiriyor mu",
+          "Bir doğrulamanın asıl sorusu budur. İstatistiksel bir fark, "
+          + "karar değiştirmiyorsa akademik kalır; değiştiriyorsa acildir.",
+          kilEtkisiBolumu())
+      : null,
+    bolum("05", "Doğrulanamayanlar — ve neden önemli",
       "Bir doğrulamanın en dürüst kısmı, neyi doğrulayamadığını "
       + "yazdığı yerdir.",
       eksikBolum),
-  ];
+  ].filter(Boolean);
 }

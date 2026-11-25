@@ -24,6 +24,7 @@ outputs/*
 !outputs/olcum_etkisi.json
 !outputs/veri_kalitesi.json
 !outputs/toprak_dogrulama.json
+!outputs/kil_etkisi.json
 
 # --- Üretilen paneller ve belgeler (kök dizindeki HTML/PDF'ler)
 /*.html

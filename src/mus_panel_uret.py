@@ -56,6 +56,7 @@ BOS_KARLILIK: dict = {"satirlar": [], "piyasa": [], "ayirt_edilebilirlik": [],
 BOS_OLCUM: dict = {"var": False}
 BOS_KALITE: dict = {"var": False}
 BOS_DOGRULAMA: dict = {"var": False}
+BOS_KIL: dict = {"var": False}
 BOS_ETKI: dict = {"satirlar": [], "ozet": {}, "sinif_degisenler": []}
 BOS_COLLESME: dict = {"satirlar": [], "siniflar": [], "ozet": {}, "resmi": {},
                       "ayrim": []}
@@ -137,6 +138,12 @@ def hepsini_calistir():
     else:
         print("NOT: SoilGrids verisi yok; depodaki doğrulama sonucu korundu.")
         print("     Üretmek için: python src/toprak_dogrulama/soilgrids_cek.py")
+    import toprak_dogrulama.kil_etkisi as tke
+    kil_etkisi = tke.uret()
+    if kil_etkisi.get("var"):
+        (CIKTI / "kil_etkisi.json").write_text(
+            json.dumps(kil_etkisi, ensure_ascii=False, indent=1),
+            encoding="utf-8")
     # Toprak ölçüm hatasının ürün kararını ne kadar bozduğu. Panelde
     # doğrudan görünmüyor ama dışa aktarma paketine giriyor; zincirde
     # olmazsa temiz klonda o veri seti boş kalır.
@@ -281,6 +288,7 @@ def main():
     collesme = oku("collesme.json", BOS_COLLESME)
     kalite = oku("veri_kalitesi.json", BOS_KALITE)
     dogrulama = oku("toprak_dogrulama.json", BOS_DOGRULAMA)
+    kil = oku("kil_etkisi.json", BOS_KIL)
     if not olcum.get("var"):
         print("NOT: Toprak ölçüm verisi yok, o sekme boş kalacak.")
         print("     Üretmek için: python src/toprak_olcum/analiz.py")
@@ -302,7 +310,8 @@ def main():
             .replace("__COLLESME_JSON__", json.dumps(collesme, ensure_ascii=False))
             .replace("__KALITE_JSON__", json.dumps(kalite, ensure_ascii=False))
             .replace("__DOGRULAMA_JSON__",
-                     json.dumps(dogrulama, ensure_ascii=False)))
+                     json.dumps(dogrulama, ensure_ascii=False))
+            .replace("__KIL_JSON__", json.dumps(kil, ensure_ascii=False)))
 
     hedef = KOK / "mus_panel.html"
     hedef.write_text(html, encoding="utf-8")
@@ -314,8 +323,8 @@ def main():
                          "__IZ_JSON__", "__DEPO_JSON__",
                          "__BOCEK_JSON__", "__UYARI_JSON__", "__KARLILIK_JSON__", "__OLCUM_JSON__",
                          "__ETKI_JSON__", "__COLLESME_JSON__",
-                         "__KALITE_JSON__", "__DOGRULAMA_JSON__")
-                         if p in html]
+                         "__KALITE_JSON__", "__DOGRULAMA_JSON__",
+                         "__KIL_JSON__") if p in html]
     if kalan:
         print("UYARI — doldurulmamış yer tutucu:", ", ".join(kalan))
 
