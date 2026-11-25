@@ -14,7 +14,17 @@ function sekmeDenge() {
       el("span", {}, rozet("%" + Math.round(y.karsilama * 100),
         y.karsilama >= 0.85 ? "r-iyi"
           : y.karsilama >= 0.65 ? "r-orta" : "r-kotu")),
-      n0(y.acik_ton), n0(y.ek_yonca_dekar)]));
+      n0(y.acik_ton),
+      // Gereken alan ilçenin bütün ekili alanından büyükse, sayıyı yalın
+      // yazmak okuyana yapılabilir bir şey öneriyormuş izlenimi verir.
+      y.yonca_ile_kapanir === false
+        ? el("span", {}, el("span", { class: "mono",
+              style: "color:var(--critical);font-weight:700",
+              text: n0(y.ek_yonca_dekar) }),
+            el("div", { style: "font-size:11px;color:var(--critical)",
+              text: `ekili alanın %${n0((y.ek_yonca_ekili_orani || 0) * 100)}'i `
+                + "— imkânsız" }))
+        : n0(y.ek_yonca_dekar)]));
 
   const kotaTablo = tablo(
     [{ ad: "İlçe" }, { ad: "Pancar alanı (da)", num: true }, { ad: "Üretim (ton)", num: true },
@@ -84,6 +94,22 @@ function sekmeDenge() {
       + `${n0(dar)} ilçede %60'ın altında.`;
   }
 
+  // Açığın ekimle kapanamadığı ilçeler — tavsiyenin sınırı.
+  function kapanmayanNot() {
+    const kapanmaz = MUS.yem.filter(y => y.yonca_ile_kapanir === false);
+    if (!kapanmaz.length) return null;
+    const ad = kapanmaz.map(y => y.ilce).join(", ");
+    return el("div", { class: "kutu", style: "margin-top:12px" },
+      el("strong", { text: "Bu açık ekimle kapanmıyor: " + ad }),
+      el("p", { text: "Gereken yonca alanı, ilçenin BÜTÜN ekili alanından "
+        + "büyük. Tabloda duran sayı bir hedef değil, bir sınırın "
+        + "ölçüsü: yem bitkisi ekerek kapatılamayacak kadar büyük bir "
+        + "açık var demektir. Bu ilçelerde hedef açığı sıfırlamak değil "
+        + "küçültmek olmalı — mera ıslahı, hayvan dağılımı ve il dışı "
+        + "yem alımı birlikte düşünülmeli. Yonca verimi ölçülene kadar "
+        + "(varsayım 3,80, ölçüm 1,93 ton/da) bu sorun görünmüyordu." }));
+  }
+
   return [
     bolum("01", "Yem bilançosu",
       "Mera ve anız dahil edildi; dahil edilmeseydi açık gerçekte olduğundan çok daha "
@@ -94,7 +120,8 @@ function sekmeDenge() {
         + okumaNotu()
         + " Açık, hayvan sayısının azalması gerektiği anlamına gelmez; yem "
         + "bitkisi alanının artması gerektiği anlamına gelir. Tablonun son "
-        + "sütunu açığı kapatacak yonca alanını veriyor." })),
+        + "sütunu açığı kapatacak yonca alanını veriyor." }),
+      kapanmayanNot()),
     bolum("02", "Şeker pancarı ve fabrika kotası",
       `Fabrikanın işleyebileceği pancar bir tavan koyuyor: günde `
       + `${n0(k.gunluk_kapasite_ton || 6000)} ton × ${n0(k.kampanya_gun || 95)} gün = `

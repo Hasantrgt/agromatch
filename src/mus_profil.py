@@ -94,6 +94,65 @@ KURU_MADDE: dict[str, float] = {
     "Yonca": 0.25, "Korunga": 0.25, "Fiğ": 0.25, "Silajlık mısır": 0.32,
 }
 
+# ------------------------------------------------- ölçülen verim (2024)
+# Muş İl Tarım ve Orman Müdürlüğü 2025 faaliyet raporu. Rapor hem ALAN
+# hem ÜRETİM veriyor, dolayısıyla verim ikisinin oranı olarak ÖLÇÜLÜYOR —
+# bizim gibi varsayılmıyor. Projenin üretim rakamları dokuz üründen
+# altısında raporla birebir aynı, yani aynı kaynaktan besleniyoruz;
+# ayrışan tek şey verim.
+#
+# RAPOR KENDİ İÇİNDE ÇELİŞİYOR — bilerek kayda geçiyor. Sayfa 22'deki
+# Tablo 8 korungayı 1.066,2 da, sayfa 47 ise 10.662 da yazıyor. Hangisinin
+# doğru olduğu belli: Tablo 8'in değeriyle verim 7,87 ton/da çıkıyor ki
+# korunga için imkânsız; sayfa 47'ninkiyle 0,79 — normal. Aynı on kat
+# hatası patates (26,5 ton/da), mısır silaj (52,7) ve fiğde de var.
+# Raporun kendi "Toplam" satırı yanlış değerlerden hesaplanmış, yani hata
+# toplama da taşınmış. Burada SAYFA 47 değerleri kullanılıyor.
+#
+# durum alanı, verimin neden uygulandığını ya da uygulanmadığını söyler:
+#   "temiz"   üretim tutuyor, alan güvenilir, varsayımın dayanağı yok
+#             -> ölçüm uygulanır
+#   "çelişki" iki resmî belge farklı alan veriyor -> uygulanmaz
+#   "üretim"  üretim rakamı bile tutmuyor -> uygulanmaz
+VERIM_OLCUM: dict[str, tuple[float, int, int, str]] = {
+    # ürün:            (verim, alan_da, üretim_ton, durum)
+    "Yonca":           (1.933, 225033, 434922, "temiz"),
+    "Korunga":         (0.787,  10662,   8389, "temiz"),
+    "Silajlık mısır":  (5.270,   9432,  49703, "temiz"),
+    # Buğday ve arpa: üretim tutuyor ama projenin verimi bağımsız bir
+    # varsayım DEĞİL — başka bir resmî belgenin "115 bin ha" ifadesinden
+    # geriye hesaplanmış. Yeni rapor aynı alana 135.197 ha diyor. İki
+    # resmî belge çelişirken birini sessizce seçmek doğru olmaz.
+    "Buğday":          (0.272, 1351970, 368297, "çelişki"),
+    "Arpa":            (0.209,  472885,  98938, "çelişki"),
+    # Üretim rakamı bile tutmuyor; verim farkının nereden geldiği belirsiz.
+    "Fiğ":             (0.600,    3067,   1839, "üretim"),
+    "Patates":         (2.651,    2198,   5826, "üretim"),
+    "Kuru fasulye":    (0.203,    1948,    396, "üretim"),
+    # Fark ihmal edilebilir (%2); uygulamaya değmez ama kayda değer.
+    "Şeker pancarı":   (5.895,  112820, 665032, "temiz"),
+}
+VERIM_KAYNAK = ("Muş İl Tarım ve Orman Müdürlüğü, 2025 yılı faaliyet "
+                "raporu, Tablo 8 ve Bölüm 7.1")
+VERIM_OLCUM_KULLAN = True
+
+# Varsayılan hâli saklanıyor ki ölçümün NE DEĞİŞTİRDİĞİ ölçülebilsin.
+VERIM_VARSAYIM: dict[str, float] = dict(VERIM)
+
+
+def verim_uygula() -> None:
+    """Ölçülen verimleri VERIM'e bindirir; yalnızca "temiz" olanları."""
+    VERIM.update(VERIM_VARSAYIM)
+    if not VERIM_OLCUM_KULLAN:
+        return
+    for urun, (v, _a, _u, durum) in VERIM_OLCUM.items():
+        if durum == "temiz" and urun in VERIM:
+            VERIM[urun] = v
+
+
+verim_uygula()
+
+
 # ad: (tip, su ihtiyacı mm, mazot L/da, N kg/da, P kg/da, K kg/da,
 #      fiyat TL/ton, maliyet TL/da, destek TL/da, kışlık mı)
 URUN: dict[str, UrunKunye] = {

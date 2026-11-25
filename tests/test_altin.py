@@ -34,7 +34,37 @@ Varto'daki üstünlüğü 16,9 puandan 11,3'e indi ve eşiğin altına düştü.
 Sistem artık "patates için yer seçimi fırsatı var" demiyor.
 
 Bu bir bozulma değil, DÜZELTMEDİR: eski tavsiye varsayılmış bir toprak
-farkına dayanıyordu. Değişikliğin tamamı src/toprak_olcum/etki.py ile
+farkına dayanıyordu.
+
+Kasım 2026 (ikinci güncelleme) — yem bitkisi veriminin ÖLÇÜLMESİ. Muş
+İl Tarım ve Orman Müdürlüğü'nün 2025 faaliyet raporu hem alan hem üretim
+veriyor, dolayısıyla verim ikisinin oranı olarak ölçülebiliyor. Projenin
+yonca verimi 3,80 ton/da VARSAYIMDI; ölçülen 1,933. Korunga 1,50 -> 0,787,
+silajlık mısır 4,00 -> 5,27. Üretim rakamlarımız raporla birebir aynı,
+yani ayrışan tek şey verim.
+
+Değişen dört sayı:
+
+    acik_ton             609.828  ->   607.772
+    sadece_ekimle_dekar  641.924  -> 1.257.676
+    bugday_payi             55,8  ->     109,3
+    kat                      4,3  ->       4,8
+    masa_basi_kazanc        33,8  ->      33,0
+
+NEDEN DOĞRU: Yonca verimi yarıya inince, aynı açığı kapatmak için gereken
+alan ikiye katlanıyor. Bu bir bozulma değil, varsayımın şişirdiği bir
+sayının gerçek değerine inmesidir.
+
+NE ANLAMA GELİYOR: bugday_payi'nin 100'ü aşması, açığı YALNIZCA ekimle
+kapatmanın il genelinde buğday alanının TAMAMINDAN fazlasını gerektirdiğini
+söylüyor. İlçe düzeyinde de aynı: Merkez için gereken 735.062 dekar, oysa
+ilçenin bütün ekili alanı 485.571 dekar. Yani "şu kadar yonca ekin"
+tavsiyesi Merkez'de fiziksel olarak imkânsız. Panel artık bunu sayıyla
+geçiştirmiyor, açıkça yazıyor.
+
+Bu, projenin verdiği tavsiyeyi değiştiren bir düzeltmedir: açık ekimle
+kapatılamıyorsa hedef onu küçültmek olmalı, sıfırlamak değil.
+ Değişikliğin tamamı src/toprak_olcum/etki.py ile
 ölçülebilir; ilçe×ürün puanlarında ortalama mutlak fark 1,63 puan, ama 45
 satırın 7'sinde uygunluk SINIFI değişti.
 """

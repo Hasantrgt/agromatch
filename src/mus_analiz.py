@@ -29,6 +29,11 @@ ESIK_FAZLA = 1.10      # arz/ihtiyaç bunun üstündeyse "fazla"
 ESIK_ACIK = 0.95       # bunun altındaysa "açık"
 
 
+def yonca_km_da() -> float:
+    """Dekara yonca kuru maddesi (ton). Verim × kuru madde oranı."""
+    return mp.VERIM["Yonca"] * mp.KURU_MADDE["Yonca"]
+
+
 def sayi(x: float, basamak: int = 0) -> str:
     """Türkçe binlik ayracı: 570000 -> 570.000"""
     return f"{x:,.{basamak}f}".replace(",", "X").replace(".", ",").replace("X", ".")
@@ -124,6 +129,9 @@ def yem_bilancosu(ilce: str) -> dict[str, Any]:
     kesif_ton = arpa_a * arpa_v * 0.87 * 0.70
 
     arz = mera_ton + aniz_ton + kaba_ton + kesif_ton
+    ek_yonca = round(max(0.0, ihtiyac - arz) / (yonca_km_da() * 0.88)) \
+        if ihtiyac else 0
+    ekili_alan = sum(a for a, _v in mp.DESEN[ilce].values())
     return dict(
         ilce=ilce, buyukbas=bb, kucukbas=kb,
         ihtiyac_ton=round(ihtiyac), mera_ton=round(mera_ton),
@@ -131,8 +139,28 @@ def yem_bilancosu(ilce: str) -> dict[str, Any]:
         kesif_ton=round(kesif_ton), arz_ton=round(arz),
         acik_ton=round(max(0.0, ihtiyac - arz)),
         karsilama=round(arz / ihtiyac, 3) if ihtiyac else None,
-        # Açığı kapatmak için gereken ek yonca alanı
-        ek_yonca_dekar=round(max(0.0, ihtiyac - arz) / (0.95 * 0.88)) if ihtiyac else 0,
+        # Açığı kapatmak için gereken ek yonca alanı.
+        #
+        # Buradaki 0,95 bir zamanlar ÇIPLAK SABİT olarak yazılıydı ve
+        # elle hesaplanmıştı: VERIM["Yonca"] 3,8 × KURU_MADDE["Yonca"]
+        # 0,25 = 0,95. Sorun şu ki verim değişince sabit sessizce eski
+        # kalıyordu — hiçbir test kırılmaz, yalnızca tavsiye yanlış
+        # çıkardı. Üstelik hemen üstündeki ESIK_ACIK da 0,95 olduğu için
+        # okuyan kişi hangisi olduğunu ayırt edemiyordu.
+        #
+        # Artık kaynağından hesaplanıyor; ikisi birbirinden ayrı düşemez.
+        # (0,88 çarpanı belgelenmemiş bir hasat/kullanım payı; olduğu
+        #  gibi korundu, uydurma bir gerekçe yazılmadı.)
+        ek_yonca_dekar=ek_yonca,
+        # YAPILABİLİRLİK — ölçülen verim bağlanınca ortaya çıkan sorun.
+        # Gereken alan ilçenin bütün ekili alanından büyükse, "şu kadar
+        # yonca ekin" bir tavsiye değil, imkânsız bir dilektir. Sayıyı
+        # yazıp susmak, okuyana yapılabilir bir şey öneriyormuş izlenimi
+        # verir. Bu yüzden oran da taşınıyor ve panel bunu söylüyor.
+        ekili_alan_dekar=round(ekili_alan),
+        ek_yonca_ekili_orani=(round(ek_yonca / ekili_alan, 3)
+                              if ekili_alan else None),
+        yonca_ile_kapanir=bool(ekili_alan and ek_yonca <= ekili_alan),
     )
 
 
@@ -291,9 +319,19 @@ def oneriler() -> list[dict[str, Any]]:
                 oncelik=1, baslik="Kaba yem açığını kapat",
                 metin=(f"{sayi(yem['acik_ton'])} ton kuru madde açık var "
                        f"(ihtiyacın %{round((1 - (yem['karsilama'] or 0)) * 100)}'i). "
-                       f"Yaklaşık {sayi(yem['ek_yonca_dekar'])} dekar ek yonca ya da "
-                       f"eşdeğeri korunga bunu kapatır."),
-                kazanc="Dışarıdan yem alımı azalır, besi maliyeti düşer."))
+                       + (f"Yaklaşık {sayi(yem['ek_yonca_dekar'])} dekar ek "
+                          "yonca ya da eşdeğeri korunga bunu kapatır."
+                          if yem.get("yonca_ile_kapanir") else
+                          f"Kapatmak için {sayi(yem['ek_yonca_dekar'])} dekar "
+                          "ek yonca gerekir — ilçenin BÜTÜN ekili alanı "
+                          f"{sayi(yem['ekili_alan_dekar'])} dekar. Yani bu "
+                          "açık yem bitkisi ekerek kapatılamaz; mera "
+                          "ıslahı, hayvan dağılımı ve il dışı yem alımı "
+                          "birlikte düşünülmeli.")),
+                kazanc=("Dışarıdan yem alımı azalır, besi maliyeti düşer."
+                        if yem.get("yonca_ile_kapanir")
+                        else "Açığın tamamı ekimle kapanmıyor; hedef "
+                             "küçültmek, sıfırlamak değil.")))
 
         bos = kota["bos_alan_dekar"] or 0
         if bos > 0 and mp.DESEN[ilce].get("Şeker pancarı", (0, 0))[0] > 0:
