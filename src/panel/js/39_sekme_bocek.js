@@ -181,8 +181,14 @@ function sekmeBocek() {
     el("p", { class: "note", text: "Doğal düşmanı yazılmamış olanlar: "
       + bos.dogal_dusmani_yazilmamis.join(" · ") }));
 
+  const kararBolum = kararBolumuKur();
   return [
-    bolum("01", "Tarla zararlıları: böceğin kendi verdiği zarar",
+    kararBolum
+      ? bolum("01", "Karar: tarlamda şu böcek var, ne yapayım",
+          "Projenin üçüncü kısmının asıl çıktısı bu. Dört adım, her "
+          + "zararlı için ayrı ayrı.", kararBolum)
+      : null,
+    bolum("02", "Tarla zararlıları: böceğin kendi verdiği zarar",
       `Muş'un dokuz ürününde ekonomik önemi olan ${n0(o.zararli)} tür. `
       + "Bunlar hastalık değildir — böcek bitkiyi doğrudan yer, emer ya da "
       + "deler. Hastalık kataloğundaki 57 kaydın yalnızca 3'ü böcekle "
@@ -192,7 +198,7 @@ function sekmeBocek() {
       el("h3", { style: "font-size:14px;margin:18px 0 6px",
         text: "Hangi ay hangi zararlı: tarlaya ne zaman bakılacak" }),
       takvimTablo),
-    bolum("02", "Pestisit yükü: bir ilaç grubu başka neyi öldürüyor",
+    bolum("03", "Pestisit yükü: bir ilaç grubu başka neyi öldürüyor",
       "Bu tablo ÜRÜN ADI VE DOZ VERMEZ — reçete yazma yetkisi olmayan bir "
       + "yazılım ilaç tavsiye edemez, ruhsatlı ürün listesi de Bakanlık'ın "
       + "BKÜ kayıtlarından gelir. Burada tutulan şey etki mekanizması "
@@ -205,27 +211,27 @@ function sekmeBocek() {
       + "(Ed. 6) ile doğrulanmıştır; toksisite değerleri grubun genel "
       + "eğilimidir, bir ürün için bağlayıcı değildir.",
       grupTablo, vurulanKart),
-    bolum("03", "Faydalılar: yolu asıl yürüyen canlılar",
+    bolum("04", "Faydalılar: yolu asıl yürüyen canlılar",
       `${n0(o.faydali)} tür. Bir tarlada böcek demek zararlı demek değildir; `
       + "tozlaşmayı yapan da, zararlıyı baskılayan da böcektir. Süneye karşı "
       + "atılan geniş etkili bir ilaç Trissolcus'u da öldürürse ertesi yıl "
       + "süne daha çok olur — pestisitten arındırılmış yolun somut karşılığı "
       + "bu canlıları ayakta tutmaktır.",
       faydaliKart),
-    bolum("04", "Kalıntısız yol: hangisinde var, hangisinde yok",
+    bolum("05", "Kalıntısız yol: hangisinde var, hangisinde yok",
       `${n0(yolVar.length)} zararlı için kalıntı bırakmayan en az bir seçenek `
       + `var; ${n0(yolYok.length)} tanesi için YOK. Bu bir eksiklik değil, `
       + "bulgudur: o yedi tür için bugün elimizde yalnızca kimyasal seçenek "
       + "bulunuyor ve projenin dürüst cevabı bunu yazmaktır.",
       yolTablo),
-    bolum("05", "İkinci kısımla birleştiği yerler",
+    bolum("06", "İkinci kısımla birleştiği yerler",
       "Üçüncü kısım ikinci kısımdan kopuk değil. Üç hastalığı böcek taşıyor; "
       + "iki zararlı tarlada başlayıp ambarda devam ediyor. Bu satırlar "
       + "iki kısmın aynı sorunu iki ucundan tuttuğu yerler.",
       koprArea),
-    bolum("06", "Bu kısımda neyin eksik olduğu",
+    bolum("07", "Bu kısımda neyin eksik olduğu",
       "Katalogdaki boşluklar gizlenmiyor, sayılıyor. Danışman hocadan "
       + "istenecek şeylerin listesi burası.",
       eksikBolum),
-  ];
+  ].filter(Boolean);
 }

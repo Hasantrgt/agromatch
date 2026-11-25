@@ -22,6 +22,7 @@ from typing import Any
 import bulas_kaynagi as bk
 import mus_profil as mp
 from bocek import faydali as fy
+from bocek import karar as kr
 from bocek import pestisit as ps
 from bocek import tarla_zararli as tz
 
@@ -155,6 +156,11 @@ def uret() -> dict[str, Any]:
         "hastalik_bulas": {h["ad"]: h["bulas"] for h in bk.zenginlestir()},
         "koprular": koprular(),
         "bosluklar": bosluklar(),
+        # Karar sistemi: "17 zararlının listesi" değil, "tarlamda şu böcek
+        # var, ne yapayım" sorusunun cevabı. Dört adım ve sırası önemli.
+        "karar": kr.hepsi(),
+        "karar_bosluklari": kr.bosluklar(),
+        "karar_adimlari": list(kr.ADIM_ADI),
         "bulas": {"ozet": bk_ozet["kaynak"],
                   "aciklama": bk.KAYNAK_ACIKLAMA,
                   "kisim": {str(k): v for k, v in bk_ozet["kisim"].items()}},
