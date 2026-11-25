@@ -235,11 +235,74 @@ def _desen() -> dict[str, Desen]:
 
 DESEN = _desen()
 
+# --------------------------------------------- ilçe hayvan varlığı (ÖLÇÜM)
+# Muş İl Tarım ve Orman Müdürlüğü 2025 yılı faaliyet raporu, Bölüm 3.1.1.
+# Kurumun KENDİ YAYIMLADIĞI belgeden alındı — ziyarette veri verilmedi,
+# ama yayımlanmış rapor kamuya açık. Dört sütunun da (büyükbaş, küçükbaş,
+# kovan, işletme) toplamı raporun yazdığı toplamı birebir tutuyor; bu,
+# aktarımın doğru olduğunun kontrolüdür.
+#
+# NEDEN ÖNEMLİ: Bu tablo gelene kadar proje, büyükbaş ile küçükbaşın
+# ilçelere AYNI oranda dağıldığını varsayıyordu (tek bir h_pay). Gerçek
+# dağılım bunu desteklemiyor:
+#
+#       ilçe        varsayılan   gerçek büyükbaş   gerçek küçükbaş
+#       Merkez          %26,0            %26,3             %50,5
+#       Bulanık         %23,5            %31,6             %14,7
+#       Malazgirt       %21,5            %22,0              %5,6
+#       Varto           %14,5             %7,2             %19,2
+#
+# Merkez il küçükbaşının yarısını barındırıyor, Malazgirt ise sığırın
+# beşte birine sahipken küçükbaşın yalnızca %5,6'sına sahip. Kaba yem
+# dengesi doğrudan bu sayılara bağlı olduğu için varsayım, projenin en
+# büyük bulgusunu çarpıtıyordu.
+HAYVAN_ILCE: dict[str, tuple[int, int, int, int]] = {
+    # ilçe:      (büyükbaş, küçükbaş, kovan, işletme)
+    "Merkez":    (72384, 697116, 30961, 6628),
+    "Bulanık":   (87044, 202122,  2455, 5260),
+    "Malazgirt": (60541,  77731,  3280, 3460),
+    "Varto":     (19743, 265200, 12696, 2033),
+    "Hasköy":    (18766,  48805,  1994, 1758),
+    "Korkut":    (16977,  88298,  6545, 2179),
+}
+HAYVAN_KAYNAK = ("Muş İl Tarım ve Orman Müdürlüğü, 2025 yılı faaliyet "
+                 "raporu, Bölüm 3.1.1")
+
+# İl toplamı TÜİK 2024'te kalıyor, yalnızca İLÇE DAĞILIMI ölçümden geliyor.
+#
+# Bakanlık raporunun il toplamı TÜİK'ten farklı (büyükbaş 275.455'e karşı
+# 242.277; küçükbaş 1.379.272'ye karşı 1.158.210) çünkü biri TÜRKVET
+# kayıtlarından, diğeri TÜİK anketinden geliyor. Projenin arz tarafı
+# (mera, yem üretimi) baştan sona TÜİK 2024 ile kurulu; yalnızca hayvan
+# toplamını başka bir kayıttan almak, dengenin iki yakasını farklı
+# kaynaklardan beslemek olurdu. Bu yüzden ölçümden alınan şey PAY,
+# toplam değil. Toplam farkı ayrıca raporlanıyor.
+HAYVAN_OLCUM_KULLAN = True
+
+
+def _hayvan_payi(tur: int) -> dict[str, float]:
+    """Ölçülen ilçe dağılımını paya çevirir. tur: 0 büyükbaş, 1 küçükbaş."""
+    toplam = sum(v[tur] for v in HAYVAN_ILCE.values())
+    return {i: v[tur] / toplam for i, v in HAYVAN_ILCE.items()}
+
+
+def _ilce_hayvan(ilce: str, h_pay: float) -> tuple[int, int]:
+    """İlçenin büyükbaş ve küçükbaş sayısı.
+
+    Ölçüm kapalıysa ya da ilçe ölçümde yoksa eski varsayıma (h_pay)
+    düşer: ölçüm bir İYİLEŞTİRMEDİR, önkoşul değil.
+    """
+    if not HAYVAN_OLCUM_KULLAN or ilce not in HAYVAN_ILCE:
+        return (round(OLCUM["buyukbas"][0] * h_pay),
+                round(OLCUM["kucukbas"][0] * h_pay))
+    return (round(OLCUM["buyukbas"][0] * _hayvan_payi(0)[ilce]),
+            round(OLCUM["kucukbas"][0] * _hayvan_payi(1)[ilce]))
+
+
 ILCE = {
     ilce: (rakim,
            round(OLCUM["nufus"][0] * n_pay),
-           round(OLCUM["buyukbas"][0] * h_pay),
-           round(OLCUM["kucukbas"][0] * h_pay),
+           *_ilce_hayvan(ilce, h_pay),
            round(OLCUM["mera_da"][0] * m_pay),
            sul)
     for ilce, (rakim, n_pay, t_pay, m_pay, h_pay, sul) in PAY.items()
@@ -288,7 +351,11 @@ KUNYE: list[KunyeSatiri] = [
     ("İlçe nüfusları", "dağıtım", "İl toplamının tahmini dağıtımı", "—",
      "düşük", "Resmî belgede ilçe kırılımı yok. TÜİK ADNKS ilçe tablosu ile değişecek."),
     ("Hayvan varlığı", "ölçüm", "TÜİK — Bakanlık rehberi Tablo 6", "2024",
-     "yüksek", "242.277 büyükbaş, 1.158.210 küçükbaş. İlçe dağılımı tahmin."),
+     "yüksek", "242.277 büyükbaş, 1.158.210 küçükbaş. İLÇE DAĞILIMI ARTIK ÖLÇÜM: "
+         "Muş İl Tarım ve Orman Müdürlüğü 2025 faaliyet raporu "
+         "Bölüm 3.1.1. İl toplamı TÜİK'te bırakıldı; bakanlık "
+         "raporunun toplamı farklı (275.455 / 1.379.272) çünkü "
+         "TÜRKVET kaydından geliyor, dengenin arz tarafı ise TÜİK."),
     ("Mera alanı", "ölçüm", "TÜİK — Bakanlık rehberi Tablo 1", "2024",
      "yüksek", "3.716.350 dekar. İlçe dağılımı tahmin."),
     ("Toplam tarım alanı", "ölçüm", "TÜİK — Bakanlık rehberi Tablo 1", "2024",

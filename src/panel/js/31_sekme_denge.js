@@ -12,7 +12,8 @@ function sekmeDenge() {
       y.ilce, n0(y.buyukbas + y.kucukbas), n0(y.ihtiyac_ton),
       n0(y.mera_ton), n0(y.aniz_ton), n0(y.kaba_ton), n0(y.kesif_ton),
       el("span", {}, rozet("%" + Math.round(y.karsilama * 100),
-        y.karsilama >= 0.65 ? "r-orta" : "r-kotu")),
+        y.karsilama >= 0.85 ? "r-iyi"
+          : y.karsilama >= 0.65 ? "r-orta" : "r-kotu")),
       n0(y.acik_ton), n0(y.ek_yonca_dekar)]));
 
   const kotaTablo = tablo(
@@ -67,16 +68,33 @@ function sekmeDenge() {
   }
   ciz();
 
+  // Bu cümle bir zamanlar elle yazılmıştı ("hiçbir ilçede %70'e
+  // ulaşmıyor") ve ilçe hayvan sayıları ölçümle değişince YANLIŞ hâle
+  // geldi — panelde duran yanlış bir cümle, hiç olmayan bir cümleden
+  // kötüdür. Artık veriden hesaplanıyor.
+  function okumaNotu() {
+    const oran = MUS.yem.map(y => y.karsilama * 100);
+    const en_az = Math.min(...oran), en_cok = Math.max(...oran);
+    const dar = oran.filter(o => o < 60).length;
+    if (dar === 0) {
+      return `Karşılama oranı ${n0(en_az)}–${n0(en_cok)} arasında; `
+        + "hiçbir ilçe %60'ın altında değil.";
+    }
+    return `Karşılama oranı ${n0(en_az)}–${n0(en_cok)} arasında değişiyor; `
+      + `${n0(dar)} ilçede %60'ın altında.`;
+  }
+
   return [
     bolum("01", "Yem bilançosu",
       "Mera ve anız dahil edildi; dahil edilmeseydi açık gerçekte olduğundan çok daha "
       + "büyük görünürdü. Kesif yem, arpa danesinin hayvana giden payıdır. "
       + "Hepsi kuru madde (KM) cinsinden.",
       yemTablo,
-      el("div", { class: "uyari", html: "<strong>Okuma notu:</strong> Karşılama oranı "
-        + "hiçbir ilçede %70'e ulaşmıyor. Bu, hayvan sayısının azalması gerektiği "
-        + "anlamına gelmez; yem bitkisi alanının artması gerektiği anlamına gelir. "
-        + "Tablonun son sütunu açığı kapatacak yonca alanını veriyor." })),
+      el("div", { class: "uyari", html: "<strong>Okuma notu:</strong> "
+        + okumaNotu()
+        + " Açık, hayvan sayısının azalması gerektiği anlamına gelmez; yem "
+        + "bitkisi alanının artması gerektiği anlamına gelir. Tablonun son "
+        + "sütunu açığı kapatacak yonca alanını veriyor." })),
     bolum("02", "Şeker pancarı ve fabrika kotası",
       `Fabrikanın işleyebileceği pancar bir tavan koyuyor: günde `
       + `${n0(k.gunluk_kapasite_ton || 6000)} ton × ${n0(k.kampanya_gun || 95)} gün = `
