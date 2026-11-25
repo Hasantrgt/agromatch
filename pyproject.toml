@@ -128,6 +128,10 @@ files = [
     "src/bocek/pestisit.py",
     "src/toprak_olcum/analiz.py",
     "src/toprak_olcum/etki.py",
+    "src/toprak_olcum/kalite.py",
+    # Bağımsız kaynakla doğrulama
+    "src/toprak_dogrulama/karsilastir.py",
+    "src/toprak_dogrulama/soilgrids_cek.py",
 ]
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
