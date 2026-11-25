@@ -105,12 +105,20 @@ Paneldeki sayılar üç türdür ve karıştırılmamalıdır:
 
 | Tür | Anlamı | Örnek |
 |---|---|---|
-| **ölçüm** | Resmî kaynakta yayımlanmış | Nüfus, hayvan varlığı, ürün üretim miktarı |
-| **varsayım** | Literatürden alınan katsayı | Verim, mera verimi, hastalık eşikleri |
-| **dağıtım** | İl toplamının ilçelere bölünmesi | Bütün ilçe sayıları |
+| **ölçüm** | Resmî kaynakta yayımlanmış | Nüfus, hayvan varlığı, üretim, **verim**, **ekim alanı**, toprak analizleri |
+| **varsayım** | Literatürden alınan katsayı | Mera verimi, hastalık eşikleri, fiyat-maliyet |
+| **dağıtım** | İl toplamının ilçelere bölünmesi | İlçe nüfusu, mera alanı, ürün deseni |
 
-**Resmî kaynakta Muş için ilçe kırılımı yoktur.** İl toplamları gerçek, ilçe
-dağılımı tahmindir. Panel bu ayrımı her sayıda gösterir.
+**Bu tablo sabit değil; proje ilerledikçe satırlar varsayımdan ölçüme geçiyor.**
+Verim bir zamanlar varsayımdı: Muş İl Tarım ve Orman Müdürlüğü'nün 2025
+faaliyet raporu hem alanı hem üretimi verdiği için artık ikisinin oranı
+olarak ölçülüyor. Aynı rapor ilçe hayvan dağılımını da ölçüme çevirdi.
+Künyenin doğru kalmasını `tests/test_kunye_dogru.py` denetliyor — etiketler
+veriyle birlikte güncellenmezse test kırılır.
+
+**İlçe kırılımı hâlâ kısmen eksiktir.** Hayvan varlığı ilçe bazında
+yayımlanıyor, ama ürün ekim alanı yalnızca il genelinde. Panel bu ayrımı
+her sayıda gösterir.
 
 Ana kaynak: T.C. Tarım ve Orman Bakanlığı — *Muş Tarımsal Yatırım Rehberi 2025*
 (TÜİK 2024 verileri).

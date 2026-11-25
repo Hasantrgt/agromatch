@@ -438,18 +438,34 @@ KUNYE: list[KunyeSatiri] = [
      "yüksek", "3.716.350 dekar. İlçe dağılımı tahmin."),
     ("Toplam tarım alanı", "ölçüm", "TÜİK — Bakanlık rehberi Tablo 1", "2024",
      "orta", "3.241.124 da. Belgenin 2.1 bölümü 357.342 ha 'potansiyel' diyor; çelişkili."),
-    ("Ürün üretimi (ton)", "ölçüm", "TÜİK — Bakanlık rehberi Tablo 3", "2024",
-     "yüksek", "Pancar, buğday, arpa, yonca, korunga, silajlık mısır gerçek. "
-               "Fiğ ve kuru fasulye belgede yok, tahmin."),
-    ("Verim (ton/dekar)", "varsayım", "Literatür ve belge içi tutarlılık", "—",
-     "düşük", "Buğdayda 0,32 seçildi; belgedeki '115 bin ha' ifadesiyle tutarlı. "
-              "Diğerleri bölgesel mertebe. İl Müdürlüğü verim kaydıyla değişecek."),
-    ("Ekim alanı", "varsayım", "Üretim ÷ verim olarak türetildi", "—",
-     "düşük", "Ölçülmedi. Verim değişirse alan değişir."),
+    ("Ürün üretimi (ton)", "ölçüm",
+     "Muş İl Tarım 2025 faaliyet raporu (TÜİK ile aynı kayıt)", "2024",
+     "yüksek", "Dokuz ürünün dokuzu da resmî kayıttan. Fiğ ve kuru fasulye "
+               "bir zamanlar TAHMİNDİ; faaliyet raporunda ayrı kalem olarak "
+               "yer aldıkları için düzeltildi (fiğ 25.000 -> 1.839 ton, kuru "
+               "fasulye 1.200 -> 396). Patates TÜİK 2021'den 2024'e çekildi."),
+    ("Verim (ton/dekar)", "ölçüm",
+     "Muş İl Tarım 2025 faaliyet raporu — alan ve üretimin oranı", "2024",
+     "yüksek", "ARTIK VARSAYIM DEĞİL. Rapor hem alan hem üretim verdiği için "
+               "verim ikisinin oranı olarak ölçülüyor. Eski buğday verimi "
+               "(0,32) bağımsız bir varsayım da değildi: başka bir belgenin "
+               "'115 bin ha' ifadesinden geriye hesaplanmıştı ve o ifade "
+               "hiçbir yılı tutmuyor (2023: 141.467 ha, 2024: 135.197 ha). "
+               "Ölçülen 0,272. Yonca 3,80 varsayımdan 1,933 ölçüme indi."),
+    ("Ekim alanı", "ölçüm",
+     "Üretim ÷ verim; ikisi de Muş İl Tarım 2025 raporundan", "2024",
+     "yüksek", "Hâlâ türetiliyor ama girdilerinin ikisi de ölçüm olduğu için "
+               "sonuç, raporun ÖLÇTÜĞÜ alanı %1 içinde yeniden üretiyor "
+               "(yonca 224.998/225.033, buğday 1.354.033/1.351.970). "
+               "Bağımsız bir alan ölçümü hâlâ yok; türetim doğrulanmış."),
     ("İlçe ürün dağılımı", "dağıtım", "Ova yüzölçümü ve sulama erişimi tahmini", "—",
      "düşük", "Dayanak: Bulanık Ovası 52.250 ha, Malazgirt Ovası 45.000 ha."),
-    ("Toprak parametreleri", "varsayım", "Bölgesel toprak etüdü mertebeleri", "—",
-     "düşük", "ÖNCELİK: üniversite laboratuvarı analizleriyle değiştirilecek."),
+    ("Toprak parametreleri", "ölçüm",
+     "Muş İl Tarım laboratuvar kayıtları 2011-2015", "2011-2015",
+     "orta", "KISMEN ÖLÇÜM. pH, organik madde, kireç ve EC için 1.223 örnek "
+             "bağlı (beş ilçe; Malazgirt örnek sayısı güven eşiğinin "
+             "altında). Kil bünye sınıfından türetiliyor. Kireç ve tuzluluk "
+             "bağımsız kaynakla DOĞRULANAMADI — en kritik eksik budur."),
     ("Yağış / sıcaklık", "varsayım", "MGM uzun yıllar mertebesi, rakımla düzeltildi",
      "1991-2020", "orta", "Open-Meteo arşivinden ilçe bazında çekilebilir."),
     ("Fabrika kapasitesi", "varsayım", "Teyit edilmedi", "—",
