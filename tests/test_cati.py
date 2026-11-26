@@ -204,3 +204,39 @@ def test_ozet_sayilari_matrisle_tutuyor():
     assert o["cift"] == len(cati.matris())
     assert sum(o["durum_sayilari"].values()) == o["cift"]
     assert o["durum_sayilari"]["kırar"] == len(cati.kiran_ciftler())
+
+
+# ------------------------------------------- pancar büyütme vaadi
+def test_guvenle_sozu_geri_gelmedi():
+    """1. kısım "sözleşmeli alan GÜVENLE büyütülebilir" diyordu.
+
+    Toprak katmanına sorulmamıştı; altı ilçenin altısında da pancar
+    uygunluğu tavanlanmış durumda. Söz daraltıldı, geri gelmemeli.
+    """
+    for o in ma.oneriler():
+        for m in o["maddeler"]:
+            butun = f"{m['metin']} {m['kazanc']}".lower()
+            assert "güvenle büyütülebilir" not in butun, (
+                f"{o['ilce']}: daraltılmamış pancar sözü geri gelmiş")
+
+
+def test_her_ilcede_pancar_uygunlugu_tavanli():
+    """Bulgu kilidi: tavan kalkarsa uyarı metni de gözden geçirilmeli."""
+    for ilce in mp.ILCE:
+        d = cati.pancar_buyutme_uyarisi(ilce)
+        assert d["tavanlandi"] is True, f"{ilce}: pancar tavanı kalkmış"
+        assert d["kisitlayici"], f"{ilce}: kısıtlayıcı adı yok"
+
+
+def test_drenaj_kisitli_ilcede_kok_curuklugu_aniliyor():
+    """Drenaj hem tavanı koyan kısıt hem de Rhizoctonia'nın koşulu.
+
+    O ilçede uyarı bu bağı kurmuyorsa, çatı iki kısmı yine ayrı
+    okuyor demektir.
+    """
+    drenajli = [i for i in mp.ILCE
+                if cati.pancar_buyutme_uyarisi(i)["drenaj_kisiti"]]
+    assert drenajli, "drenaj kısıtlı ilçe kalmamış — bulgu değişti"
+    for ilce in drenajli:
+        c = cati.pancar_buyutme_uyarisi(ilce)["cumle"]
+        assert "DRENAJ" in c and "Rhizoctonia" in c, ilce

@@ -486,6 +486,48 @@ def denetle() -> list[str]:
     return sorun
 
 
+def pancar_buyutme_uyarisi(ilce: str) -> dict[str, Any]:
+    """Pancar alanını büyütme önerisi toprak katmanına soruldu mu.
+
+    1. kısım fabrika kotasında boşluk görünce "sözleşmeli alan GÜVENLE
+    büyütülebilir" diyordu. Toprak katmanına sorulmamıştı: altı ilçenin
+    altısında da pancar puanı TAVANLANMIŞ durumda ve tavanı koyan şey
+    telafi edilemeyen bir kısıt (Liebig'in minimum yasası).
+
+    Merkez ve Bulanık'ta o kısıt DRENAJ. Drenaj aynı zamanda pancarın
+    Rhizoctonia kök çürüklüğünün sevdiği koşul ve o hastalık katalogda
+    önem 3. Yani "güvenle" kelimesi tam olarak drenajın zayıf olduğu
+    yerde eksik kalıyor.
+
+    Bu, pancarı büyütmeye karşı bir uyarı değil: kıran tek münavebe
+    pancarlı (bkz. pancar_tavani). Söylenen şey, sıranın drenajda
+    olduğu.
+    """
+    import mus_toprak as mt  # tepe seviyede aktarılmıyor: mus_analiz'in
+    # toprak katmanından bağımsız kalması bilerek korunuyor
+
+    u = mt.uygunluk(ilce, "Şeker pancarı")
+    kisit = u.get("kisitlayici")
+    tavanli = bool(u.get("tavanlandi"))
+    drenajli = kisit == "drenaj"
+    return {
+        "ilce": ilce, "puan": u.get("puan"), "sinif": u.get("sinif"),
+        "tavanlandi": tavanli, "kisitlayici": kisit,
+        "drenaj_kisiti": drenajli,
+        "cumle": (
+            "Sözleşmeli alan büyütülebilir, ama bu ilçede pancar "
+            "uygunluğunun tavanını DRENAJ koyuyor ve drenaj aynı zamanda "
+            "pancarın Rhizoctonia kök çürüklüğüne uygun koşuldur. Önce "
+            "tahliye, sonra alan."
+            if drenajli else
+            f"Sözleşmeli alan büyütülebilir; bu ilçede uygunluğun tavanını "
+            f"{kisit} koyuyor ve bu telafi edilemeyen bir kısıt."
+            if tavanli else
+            "Sözleşmeli alan büyütülebilir; toprak tarafında tavan koyan "
+            "bir kısıt görünmüyor."),
+    }
+
+
 # ------------------------------------------------------------- panel verisi
 def panel_verisi() -> dict[str, Any]:
     """Panelin "Çatı" sekmesinin okuduğu veri.

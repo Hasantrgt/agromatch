@@ -344,7 +344,7 @@ def oneriler() -> list[dict[str, Any]]:
                            f"boşluk kaldı; bu ilçenin payı yaklaşık "
                            f"{sayi(ilce_pay)} dekar. Tavan aşılırsa sökülen pancar "
                            f"fabrikaya giremez."),
-                    kazanc="Sözleşmeli alan güvenle büyütülebilir."))
+                    kazanc=cati.pancar_buyutme_uyarisi(ilce)["cumle"]))
 
         tp = mp.TOPRAK[ilce]
         if tp[9] == "zayıf":

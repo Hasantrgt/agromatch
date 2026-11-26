@@ -85,7 +85,15 @@ diyecek bir dayanak yok — oradaki kaldıraç **drenaj ve tohum/çeşittir**.
 Bu bir çelişki değil, iki kısmın **birlikte** okunmasının sonucu: ayrı
 sekmelerde dururken görünmüyordu.
 
-**Nerede.** `cati.pancar_tavani()` · `tests/test_cati.py::test_pancar_tavani_celiskiyi_yakaliyor`
+Aynı öneri bir de toprak katmanına soruldu. 1. kısım kotada boşluk
+görünce "sözleşmeli alan **güvenle** büyütülebilir" diyordu; oysa altı
+ilçenin altısında da pancar uygunluğu **tavanlanmış** durumda. Merkez ve
+Bulanık'ta tavanı koyan kısıt **drenaj** — ve drenaj aynı zamanda pancarın
+Rhizoctonia kök çürüklüğüne uygun koşuldur (katalogda önem 3). "Güvenle"
+kelimesi tam orada eksikti; şimdi kısıtı adıyla söylüyor. Bu pancarı
+büyütmeye karşı bir uyarı değil — sıranın drenajda olduğunun söylenmesi.
+
+**Nerede.** `cati.pancar_tavani()`, `cati.pancar_buyutme_uyarisi()` · `tests/test_cati.py::test_pancar_tavani_celiskiyi_yakaliyor`
 
 ## 3 · Cins, tür değildir — ve bu ayrım bulgunun yarısını belirler
 
