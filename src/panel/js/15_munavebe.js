@@ -88,3 +88,24 @@ function munavebeBosluk() {
         el("p", { class: "note", style: "white-space:normal;margin:2px 0 0",
           text: "Kapanması: " + b.kapanmasi })))));
 }
+
+// Arazi bütçesi: öneriler tek tek doğru ama hepsi aynı toprağı istiyor.
+const ARAZI_ROZET = { "sığıyor": "r-iyi", "yarıdan fazlası": "r-orta",
+                      "sığmıyor": "r-kotu" };
+
+function munavebeArazi() {
+  const satirlar = (CATI.arazi || []).slice()
+    .sort((a, b) => b.toplam_pay - a.toplam_pay);
+  return el("div", { class: "kaydir" },
+    tablo([{ ad: "ilçe" }, { ad: "önerilerin istediği", num: true },
+           { ad: "ilçenin ekili alanı", num: true },
+           { ad: "pay", num: true }, { ad: "durum" }],
+      satirlar.map(a => [
+        el("strong", { text: a.ilce }),
+        el("span", { class: "mono", text: n0(a.toplam_dekar) + " da" }),
+        el("span", { class: "mono", text: n0(a.ekili_alan_dekar) + " da" }),
+        el("span", { class: "mono", style: "font-weight:600",
+          text: "%" + n1(100 * a.toplam_pay) }),
+        rozet(a.durum, ARAZI_ROZET[a.durum] || "r-notr"),
+      ])));
+}

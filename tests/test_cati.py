@@ -240,3 +240,51 @@ def test_drenaj_kisitli_ilcede_kok_curuklugu_aniliyor():
     for ilce in drenajli:
         c = cati.pancar_buyutme_uyarisi(ilce)["cumle"]
         assert "DRENAJ" in c and "Rhizoctonia" in c, ilce
+
+
+# ----------------------------------------------- arazi bütçesi
+def test_arazi_butcesi_toplami_tutuyor():
+    for ilce in mp.ILCE:
+        b = cati.arazi_butcesi(ilce)
+        assert b["toplam_dekar"] == pytest.approx(
+            sum(t["dekar"] for t in b["talepler"]))
+        assert b["toplam_pay"] == pytest.approx(
+            b["toplam_dekar"] / b["ekili_alan_dekar"])
+        assert b["durum"] in cati.ARAZI_DURUM
+
+
+def test_merkez_onerileri_ilceye_sigmiyor():
+    """Bulgu 6'nın arazi tarafındaki karşılığı."""
+    assert cati.arazi_butcesi("Merkez")["durum"] == "sığmıyor"
+
+
+def test_bulanik_yaridan_fazlasini_istiyor():
+    """EN KRİTİK TEST (bu bulgu için).
+
+    Bulanık aritmetik olarak sığdığı için eski uygunluk testinden
+    geçiyordu. Durum değişirse bulgu değişti demektir.
+    """
+    b = cati.arazi_butcesi("Bulanık")
+    assert b["durum"] == "yarıdan fazlası", (
+        "Bulanık artık yarıdan fazlasını istemiyorsa bulgu 14 gözden "
+        "geçirilmeli")
+    assert 0.5 < b["toplam_pay"] < 1.0
+
+
+def test_yem_onerisi_istedigi_payi_soyluyor():
+    """Alan payı söylenmeden 'kapanır' demek, ölçeği gizlemektir."""
+    bulundu = 0
+    for o in ma.oneriler():
+        for m in o["maddeler"]:
+            if m["baslik"] != "Kaba yem açığını kapat":
+                continue
+            bulundu += 1
+            assert "ekili alanı" in m["metin"] or "ekili alanın" in m["metin"], (
+                f"{o['ilce']}: yem önerisi istediği alan payını söylemiyor")
+    assert bulundu >= 5
+
+
+def test_arazi_sinirlari_agronomik_iddia_etmiyor():
+    """Sınırlar aritmetik; proje bilmediği bir eşiği uydurmuyor."""
+    n = cati.arazi_butcesi("Bulanık")["sinir_notu"]
+    assert "aritmetik" in n and "bilmiyor" in n

@@ -319,9 +319,14 @@ def oneriler() -> list[dict[str, Any]]:
             madde.append(dict(
                 oncelik=1, baslik="Kaba yem açığını kapat",
                 metin=(f"{sayi(yem['acik_ton'])} ton kuru madde açık var "
-                       f"(ihtiyacın %{round((1 - (yem['karsilama'] or 0)) * 100)}'i). "
+                       f"(ihtiyacın %{round((1 - (yem['karsilama'] or 0)) * 100)} "
+                       "kadarı). "
                        + (f"Yaklaşık {sayi(yem['ek_yonca_dekar'])} dekar ek "
-                          "yonca ya da eşdeğeri korunga bunu kapatır."
+                          "yonca ya da eşdeğeri korunga bunu kapatır. "
+                          # Tek uygunluk testi "ilçeye sığıyor mu" idi ve
+                          # bu çok zayıf bir eşik; istenen alanın payı
+                          # artık söyleniyor (bkz. cati.arazi_cumlesi).
+                          + cati.arazi_cumlesi(ilce)
                           if yem.get("yonca_ile_kapanir") else
                           f"Kapatmak için {sayi(yem['ek_yonca_dekar'])} dekar "
                           "ek yonca gerekir — ilçenin BÜTÜN ekili alanı "

@@ -313,6 +313,39 @@ veriyordu ve **uydurmaydı**; kaldırıldı ve testle geri gelmesi engellendi.)
 
 **Nerede.** `src/bocek/karar.py` · `tests/test_bocek_karar.py`
 
+## 14 · Öneriler aynı toprağı istiyor ve kimse toplamıyordu
+
+**Soru.** Bir ilçeye verilen öneriler tek tek doğru. Peki hepsi birlikte
+o ilçenin toprağına sığıyor mu?
+
+**Bulgu.** Yem açığı önerisinin tek uygunluk testi "gereken alan ilçeye
+sığıyor mu" idi — çok zayıf bir eşik. Bulanık'ta gereken ek yonca
+297.242 dekar; ilçenin bütün ekili alanı 577.970 dekar. Yani öneri tek
+başına ilçenin **%51,4'ünü** istiyor ve test onu "kapanır" diye
+geçiriyordu. Pancar payıyla birlikte öneriler **%51,8**.
+
+| İlçe | öneriler toplamı | ekili alan payı | durum |
+| --- | --- | --- | --- |
+| Merkez | 733.104 dekar | %132,3 | sığmıyor |
+| Bulanık | 299.587 dekar | %51,8 | yarıdan fazlası |
+| Varto | 51.620 dekar | %22,6 | sığıyor |
+| Korkut | 31.463 dekar | %19,6 | sığıyor |
+| Malazgirt | 65.385 dekar | %12,0 | sığıyor |
+| Hasköy | 644 dekar | %0,4 | sığıyor |
+
+Merkez zaten "kapatılamaz" diye işaretliydi (bulgu 6). Yakalanan yeni
+şey Bulanık: aritmetik olarak sığdığı için geçiyordu, oysa ilçenin
+yarısını başka ürüne çevirmek tavsiye değil **dönüşümdür**. Öneri artık
+istediği payı söylüyor.
+
+**Sınır.** Burada agronomik eşik uydurulmadı. Sınırlar yalnızca
+aritmetik: toplam ekili alanı aşıyorsa "sığmıyor", yarısını aşıyorsa
+"yarıdan fazlası". Hangi oranın gerçekten uygulanabilir olduğu
+agronomik bir sorudur ve bu proje onu bilmiyor — bildiği ve söylemesi
+gereken şey, önerinin ne kadar toprak istediğidir.
+
+**Nerede.** `cati.arazi_butcesi()`, `cati.arazi_cumlesi()` · `tests/test_cati.py`
+
 ---
 
 # Projenin cevap veremediği yerler

@@ -528,6 +528,79 @@ def pancar_buyutme_uyarisi(ilce: str) -> dict[str, Any]:
     }
 
 
+# ------------------------------------------------------ arazi bütçesi
+# Öneriler tek tek üretiliyor ve her biri kendi içinde doğru. Ama hepsi
+# AYNI TOPRAĞI istiyor ve bugüne kadar kimse toplamıyordu.
+#
+# Yem açığı önerisinin tek uygunluk testi "gereken alan ilçeye sığıyor
+# mu" idi. Bu çok zayıf bir eşik: Bulanık'ta gereken ek yonca ilçenin
+# ekili alanının yarısından fazlası ve test onu "kapanır" diye geçiriyordu.
+# Yarısını başka ürüne çeviren bir şey tavsiye değil, dönüşümdür.
+#
+# BURADA AGRONOMİK EŞİK UYDURULMUYOR. Sınırlar yalnızca aritmetik:
+#     sığmıyor        toplam > ilçenin bütün ekili alanı
+#     yarıdan fazlası toplam > ekili alanın yarısı
+#     sığıyor         kalanı
+# "Yarı" bir raporlama sınırıdır, agronomik bir iddia değil: hangi oranın
+# uygulanabilir olduğunu bu proje bilmiyor. Bildiği ve söylemesi gereken
+# şey, önerinin ne kadar toprak istediğidir.
+
+ARAZI_DURUM = ("sığıyor", "yarıdan fazlası", "sığmıyor")
+
+
+def arazi_butcesi(ilce: str) -> dict[str, Any]:
+    """Bir ilçenin önerilerinin birlikte istediği alan ve ilçedeki payı."""
+    import mus_analiz as ma  # döngüyü kırmak için fonksiyon içinde
+
+    yem = ma.yem_bilancosu(ilce)
+    kota = ma.kota_ozeti()
+    pay = {d["ilce"]: d for d in kota["ilce"]}
+    bos = float(kota["bos_alan_dekar"] or 0)
+    mevcut = float(kota["mevcut_alan_dekar"] or 1)
+    pancar_pay = round(bos * pay[ilce]["alan"] / mevcut) if bos > 0 else 0
+
+    ekili = float(yem["ekili_alan_dekar"]) or 1.0
+    talepler: list[dict[str, Any]] = []
+    if yem["ek_yonca_dekar"] > 0:
+        talepler.append({"ad": "Kaba yem açığını kapatmak için ek yonca",
+                         "dekar": float(yem["ek_yonca_dekar"])})
+    if pancar_pay > 0:
+        talepler.append({"ad": "Fabrika kotasındaki boşluk için pancar",
+                         "dekar": float(pancar_pay)})
+    for t in talepler:
+        t["pay"] = float(t["dekar"]) / ekili
+
+    toplam = sum(float(t["dekar"]) for t in talepler)
+    oran = toplam / ekili
+    durum = ("sığmıyor" if oran > 1.0
+             else "yarıdan fazlası" if oran > 0.5
+             else "sığıyor")
+    return {
+        "ilce": ilce, "ekili_alan_dekar": ekili, "talepler": talepler,
+        "toplam_dekar": toplam, "toplam_pay": oran, "durum": durum,
+        "sinir_notu": ("Sınırlar aritmetiktir; hangi oranın uygulanabilir "
+                       "olduğu agronomik bir sorudur ve bu proje onu "
+                       "bilmiyor."),
+    }
+
+
+def arazi_cumlesi(ilce: str) -> str:
+    """Yem önerisinin metnine girecek, hesaplanmış alan cümlesi."""
+    b = arazi_butcesi(ilce)
+    payi = _tr(100 * b["toplam_pay"], 1)
+    if b["durum"] == "sığmıyor":
+        return (f"Önerilerin istediği alan ilçenin bütün ekili alanını "
+                f"aşıyor (%{payi}).")
+    if b["durum"] == "yarıdan fazlası":
+        return (f"Dikkat: bu öneri tek başına ilçenin ekili alanının "
+                f"%{_tr(100 * b['talepler'][0]['pay'], 1)} kadarını "
+                "istiyor; bütün öneriler birlikte "
+                f"%{payi}. Bu ölçekte bir değişiklik tavsiye değil, "
+                "dönüşümdür: mera ıslahı ve hayvan dağılımı da "
+                "masada olmalı.")
+    return (f"Gereken alan ilçenin ekili alanının %{payi} kadarı.")
+
+
 # ------------------------------------------------------------- panel verisi
 def panel_verisi() -> dict[str, Any]:
     """Panelin "Çatı" sekmesinin okuduğu veri.
@@ -551,6 +624,7 @@ def panel_verisi() -> dict[str, Any]:
         "baskin_bulgu": baskin_cift_bulgusu(),
         "tavan": pancar_tavani(),
         "yuk": [urun_yuku(u) for u in mp.URUN],
+        "arazi": [arazi_butcesi(i) for i in mp.ILCE],
         "bosluklar": bosluklar(),
     }
 

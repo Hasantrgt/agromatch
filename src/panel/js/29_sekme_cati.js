@@ -195,7 +195,16 @@ function munavebeBolumu() {
       + "cinsin farklı türleri farklı konakçı tutabilir. Orada \u201ckırmaz\u201d "
       + "demek, kataloğun söylemediğini söylemek olurdu.",
       munavebeMatris()),
-    bolum("06", "Çatının cevap veremediği yerler",
+    bolum("06", "Öneriler aynı toprağı istiyor",
+      "Bir ilçeye verilen öneriler tek tek doğru olabilir ve yine de "
+      + "birlikte o ilçenin toprağına sığmayabilir. Yem açığı önerisinin "
+      + "tek uygunluk testi \u201cgereken alan ilçeye sığıyor mu\u201d idi; "
+      + "Bulanık'ta ilçenin yarısından fazlasını isteyen bir öneri bu "
+      + "testten geçiyordu. Sınırlar burada yalnızca aritmetiktir — hangi "
+      + "oranın uygulanabilir olduğu agronomik bir sorudur ve proje onu "
+      + "bilmiyor; bildiği, önerinin ne kadar toprak istediğidir.",
+      munavebeArazi()),
+    bolum("07", "Çatının cevap veremediği yerler",
       "Bir karar sisteminin en dürüst kısmı, nerede karar veremediğidir. "
       + "Bunlardan biri masa başından kapanmıyor: aynı tür kaydı, tarlada "
       + "aynı suşun geçtiğini kanıtlamaz.",
