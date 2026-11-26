@@ -346,6 +346,55 @@ gereken şey, önerinin ne kadar toprak istediğidir.
 
 **Nerede.** `cati.arazi_butcesi()`, `cati.arazi_cumlesi()` · `tests/test_cati.py`
 
+## 15 · Öneri metinleri ölçümü hiç okumuyordu
+
+**Soru.** Taramanın son üç vaadi: "drenaj her şeyin önünde", "fosforu
+kireç bağlıyor", "erozyon riski yüksek". Bunlar neye dayanıyor?
+
+**Bulgu.** Dayandıkları sayıları **ham varsayımdan** okuyorlardı. Aynı
+projenin toprak katmanı o değerlerin ölçülmüş hâlini üretiyor; öneri
+metni onu hiç çağırmıyordu. Yani 1. kısmın puanlaması ölçümle, öneri
+metni varsayımla konuşuyordu — aynı toprak hakkında iki sayı.
+
+Kireçte fark küçük değil:
+
+| İlçe | varsayım | laboratuvar | ölçüm kullanıldı mı |
+| --- | --- | --- | --- |
+| Merkez | %10 | **%2,2** | evet |
+| Bulanık | %9 | **%1,3** | evet |
+| Korkut | %11 | **%2,6** | evet |
+| Hasköy | %9 | **%1,4** | evet |
+| Varto | %4 | **%1,4** | evet |
+| Malazgirt | %13 | %2,7 | **hayır** — n=4, güven eşiği 30 |
+
+Beş ilçenin beşinde de ölçüm varsayımın **3–7 kat altında**. Ve fosfor
+önerisi tam olarak altıncı ilçede, Malazgirt'te çıkıyor: ölçümünün
+reddedildiği ve varsayımın (%13) yerinde kaldığı tek ilçe. O ilçenin
+kendi ince ölçümü de %2,7 diyor, yani diğer beşle aynı yönde.
+
+Üstüne: **kireç, SoilGrids'in yayımlamadığı iki alandan biri** (bulgu 8)
+— projenin bağımsız bir kaynakla hiç doğrulayamadığı değer. Yani bu
+öneri projenin en az doğrulanmış sayısına dayanıyor ve bunu
+söylemiyordu. Artık söylüyor.
+
+**Öneri sayıları değişmedi.** Hiçbir madde ortaya çıkmadı ya da kayboldu;
+değişen şey tavsiye değil, tavsiyenin dayanağının görünür olması.
+
+**Onaylanan iki vaat.** Aynı taramada "drenaj her şeyin önünde" iddiası
+veriyle TUTUYOR: öneri çıkan iki ilçede (Merkez, Bulanık) drenaj dokuz
+üründen **sekizinin** tavanını koyuyor. "Erozyon riski yüksek" ise
+korunga öneriyor ve yem açığı önerisi de "yonca ya da eşdeğeri korunga"
+diyor — ikisi çelişmiyor. Yalnızca yanlışları raporlayan bir tarama
+yanlı olurdu.
+
+**Sınır.** Erozyon önerisi "yıllık tahıl bu araziyi yorar" diyor; aynı
+ilçelerde pancar alanının büyütülmesi de öneriliyor ve pancar yıllık bir
+çapa bitkisidir. Bunu değerlendirmek için projede **olmayan** bir alan
+gerekir (ürünün toprak örtüsü / çok yıllık mı). Uydurulmadı; boşluk
+olarak yazıldı.
+
+**Nerede.** `cati.toprak_girdisi()`, `cati.kirec_uyarisi()` · `tests/test_cati.py`
+
 ---
 
 # Projenin cevap veremediği yerler
@@ -361,6 +410,8 @@ Bir karar sisteminin en dürüst kısmı, nerede karar veremediğidir.
 | Cins düzeyinde kalan etkenler | 18 ürün çiftinde münavebe kararı belirsiz | **Evet** — tür düzeyi kayıt aranabilir |
 | Bulaş kaynağı atamaları | Topraktan/havadan ayrımı literatüre dayanıyor, Bakanlık belgesinden doğrulanmadı | Evet — danışman gözden geçirmesi |
 | Eşiksiz 12 zararlı | O zararlılarda ilaçlama kararı verilemiyor | Evet — ZMTT taraması |
+| Malazgirt kireç ölçümü n=4 | Fosfor önerisi varsayıma dayanıyor | Evet — o ilçeden daha çok örnek |
+| Ürünün toprak örtüsü / çok yıllıklık alanı yok | Erozyon önerisi ile pancar büyütme önerisi karşılaştırılamıyor | Evet — literatürden kayıt eklenebilir |
 
 **Baskın bilinmeyenler** (duyarlılık analizi, varyans payı):
 

@@ -528,6 +528,89 @@ def pancar_buyutme_uyarisi(ilce: str) -> dict[str, Any]:
     }
 
 
+# ------------------------------------------------- toprak girdisi
+# 1. kısmın öneri metinleri mp.TOPRAK'ı HAM okuyordu: tuple'dan tp[2],
+# tp[9], tp[10]. Oysa aynı projenin toprak katmanı o değerlerin ölçülmüş
+# hâlini üretiyor (mus_toprak.ilce_toprak). Sonuç: 1. kısmın puanlaması
+# ölçümle, öneri metni varsayımla konuşuyordu. Aynı toprak hakkında iki
+# farklı sayı.
+#
+# Kireçte fark küçük değil: beş ilçede ölçüm varsayımın 3–7 katı ALTINDA
+# (varsayım %9–11, ölçüm %1,3–2,6). Altıncı ilçe Malazgirt'te ölçüm n=4
+# ile projenin güven eşiğinin (30) altında kaldığı için reddedildi ve
+# varsayım (%13) yerinde durdu — fosfor önerisinin çıktığı tek ilçe de o.
+
+def toprak_girdisi(ilce: str) -> dict[str, Any]:
+    """Öneri metinlerinin okuması gereken toprak değerleri ve kaynakları.
+
+    mus_toprak fonksiyon içinde aktarılıyor: mus_analiz'in toprak
+    katmanından bağımsız kalması bilerek korunan bir tasarım kararı.
+    """
+    import mus_toprak as mt  # döngüyü kırmak için fonksiyon içinde
+
+    t = mt.ilce_toprak(ilce)
+    kaynak = dict(t.get("_kaynak") or {})
+    return {
+        "ilce": ilce,
+        "degerler": {k: v for k, v in t.items() if k != "_kaynak"},
+        "kaynak": kaynak,
+    }
+
+
+def kirec_uyarisi(ilce: str) -> dict[str, Any]:
+    """Kireç değeri neye dayanıyor — fosfor önerisinin altındaki zemin.
+
+    Kireç, SoilGrids'in yayımlamadığı iki alandan biri (diğeri tuzluluk),
+    yani projenin bağımsız bir kaynakla HİÇ doğrulayamadığı değer. Buna
+    dayanan bir öneri, dayanağını söylemek zorundadır.
+    """
+    import mus_toprak as mt  # yukarıdaki ile aynı sebep
+    import toprak_olcum.analiz as ta
+
+    g = toprak_girdisi(ilce)
+    kirec = g["degerler"].get("kirec")
+    kaynak = g["kaynak"].get("kirec", "varsayım")
+
+    # Güvenilir ölçümler mus_toprak'ın bindirdiği katmanda; güven eşiğinin
+    # ALTINDA kalıp reddedilen ölçüm orada yok, yayımlanmış özette var.
+    olculu: list[float] = []
+    katman = mt.olcum_katmani() if mt.OLCUM_KULLAN else {}
+    for kayit in (katman or {}).values():
+        k = (kayit or {}).get("kirec")
+        if k and k.get("deger") is not None:
+            olculu.append(float(k["deger"]))
+
+    ince = None
+    ozet = ta.yayimlanmis_ozet() or {}
+    kendi = ((ozet.get("ilce") or {}).get(ilce, {}).get("alanlar") or {})
+    aday = kendi.get("kirec")
+    if aday and not aday.get("guvenilir") and aday.get("medyan") is not None:
+        ince = aday
+
+    parcalar = [f"Kireç %{_tr(float(kirec), 1)} ({kaynak})."]
+    if kaynak == "varsayım" and olculu:
+        parcalar.append(
+            f"Bu sayı ölçülmedi. Laboratuvarın güvenilir ölçüm yaptığı "
+            f"{len(olculu)} ilçede kireç medyanı %{_tr(min(olculu), 1)} ile "
+            f"%{_tr(max(olculu), 1)} arasında — yani varsayımların çok "
+            "altında.")
+    if ince is not None:
+        parcalar.append(
+            f"Bu ilçenin kendi ölçümü %{_tr(ince['medyan'], 1)} diyor ama "
+            f"n={ince['n']} ile güven eşiğinin altında kaldığı için "
+            "kullanılmadı.")
+    parcalar.append(
+        "Kireç ayrıca SoilGrids'in yayımlamadığı iki alandan biri: proje "
+        "bu değeri bağımsız bir kaynakla hiç doğrulayamadı. Öneri bu "
+        "zemine dayanıyor.")
+    return {
+        "ilce": ilce, "kirec": kirec, "kaynak": kaynak,
+        "guvenilir_olcum_ilce": len(olculu),
+        "ince_olcum": ince,
+        "cumle": " ".join(parcalar),
+    }
+
+
 # ------------------------------------------------------ arazi bütçesi
 # Öneriler tek tek üretiliyor ve her biri kendi içinde doğru. Ama hepsi
 # AYNI TOPRAĞI istiyor ve bugüne kadar kimse toplamıyordu.

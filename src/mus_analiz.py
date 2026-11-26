@@ -351,22 +351,29 @@ def oneriler() -> list[dict[str, Any]]:
                            f"fabrikaya giremez."),
                     kazanc=cati.pancar_buyutme_uyarisi(ilce)["cumle"]))
 
-        tp = mp.TOPRAK[ilce]
-        if tp[9] == "zayıf":
+        # Öneri metinleri mp.TOPRAK'ı HAM okuyordu: aynı projenin toprak
+        # katmanı o değerlerin ÖLÇÜLMÜŞ hâlini üretirken öneri varsayımla
+        # konuşuyordu. Artık ölçüm katmanından geçiyor; hangi değerin
+        # ölçüm hangisinin varsayım olduğunu cati.toprak_girdisi taşıyor.
+        tg = cati.toprak_girdisi(ilce)["degerler"]
+        if tg["drenaj"] == "zayıf":
             madde.append(dict(
                 oncelik=1, baslik="Drenaj her şeyin önünde",
                 metin=("Toprak drenajı zayıf. Gübre ya da çeşit değişikliğinden önce "
                        "tahliye kanalı açılmadan verim artışı kalıcı olmaz; "
                        "kök çürüklüğü ve rizoktonia riski yüksek kalır."),
                 kazanc="Diğer bütün yatırımların getirisi buna bağlı."))
-        if tp[2] >= 12:
+        if float(tg["kirec"]) >= 12:
             madde.append(dict(
                 oncelik=3, baslik="Fosforu kireç bağlıyor",
-                metin=(f"Kireç %{tp[2]}. Normal fosforlu gübrenin önemli kısmı "
-                       f"bitkiye geçmiyor; bant uygulaması ya da asitleyici "
-                       f"formülasyon gerekiyor."),
-                kazanc="Aynı gübreden daha çok fayda."))
-        if tp[10] >= 4:
+                metin=("Normal fosforlu gübrenin önemli kısmı bitkiye "
+                       "geçmiyor; bant uygulaması ya da asitleyici "
+                       "formülasyon gerekiyor. "
+                       + cati.kirec_uyarisi(ilce)["cumle"]),
+                kazanc=("Aynı gübreden daha çok fayda — ama bu öneri "
+                        "projenin en az doğrulanmış sayısına dayanıyor; "
+                        "uygulamadan önce kireç ölçülmeli.")))
+        if float(tg["erozyon"]) >= 4:
             madde.append(dict(
                 oncelik=2, baslik="Erozyon riski yüksek",
                 metin=("Eğim ve toprak sığlığı nedeniyle erozyon riski yüksek. "

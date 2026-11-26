@@ -288,3 +288,65 @@ def test_arazi_sinirlari_agronomik_iddia_etmiyor():
     """Sınırlar aritmetik; proje bilmediği bir eşiği uydurmuyor."""
     n = cati.arazi_butcesi("Bulanık")["sinir_notu"]
     assert "aritmetik" in n and "bilmiyor" in n
+
+
+# --------------------------------------------- toprak girdisi / kireç
+def test_oneriler_olcum_katmanindan_okuyor():
+    """Öneri metinleri ham varsayımı değil ölçüm katmanını okumalı.
+
+    Eskiden mp.TOPRAK tuple'ı doğrudan okunuyordu; aynı projenin toprak
+    katmanı ölçülmüş değeri üretirken öneri varsayımla konuşuyordu.
+    """
+    olculu = [i for i in mp.ILCE
+              if cati.toprak_girdisi(i)["kaynak"].get("kirec") == "ölçüm"]
+    assert len(olculu) >= 5, "kireç ölçümü uygulanmıyor"
+    for ilce in olculu:
+        ham = float(mp.TOPRAK[ilce][2])
+        olcum = float(cati.toprak_girdisi(ilce)["degerler"]["kirec"])
+        assert olcum != ham, f"{ilce}: ölçüm uygulanmamış görünüyor"
+
+
+def test_kirec_varsayimlari_olcumlerin_belirgin_ustunde():
+    """Bulgu kilidi: beş ilçede de varsayım ölçümün çok üstünde.
+
+    Yön değişirse (ölçüm varsayımı aşarsa) bulgu 15 gözden geçirilmeli.
+    """
+    for ilce in mp.ILCE:
+        g = cati.toprak_girdisi(ilce)
+        if g["kaynak"].get("kirec") != "ölçüm":
+            continue
+        assert float(g["degerler"]["kirec"]) < float(mp.TOPRAK[ilce][2]), ilce
+
+
+def test_kirec_onerisi_dayanagini_soyluyor():
+    """Doğrulanmamış bir sayıya dayanan öneri bunu yazmak zorunda."""
+    bulundu = 0
+    for o in ma.oneriler():
+        for m in o["maddeler"]:
+            if m["baslik"] != "Fosforu kireç bağlıyor":
+                continue
+            bulundu += 1
+            metin = m["metin"]
+            assert "varsayım" in metin, f"{o['ilce']}: kaynak yazılmamış"
+            assert "doğrulayamadı" in metin, (
+                f"{o['ilce']}: doğrulanamadığı söylenmiyor")
+            assert "ölçülmeli" in m["kazanc"], f"{o['ilce']}: kazanç kayıtsız"
+    assert bulundu >= 1, "fosfor önerisi hiçbir ilçede çıkmıyor"
+
+
+def test_drenaj_onerisi_dogrulandi():
+    """'Drenaj her şeyin önünde' iddiası veriyle tutuyor mu.
+
+    Bu bir yakalama değil, ONAY: öneri çıkan ilçelerde drenaj ürünlerin
+    çoğunun tavanını koyuyor. Tarama yalnızca yanlışları raporlarsa
+    yanlı olur.
+    """
+    import mus_toprak as mt
+    for ilce in mp.ILCE:
+        if cati.toprak_girdisi(ilce)["degerler"]["drenaj"] != "zayıf":
+            continue
+        drenajli = sum(1 for u in mp.URUN
+                       if mt.uygunluk(ilce, u).get("kisitlayici") == "drenaj")
+        assert drenajli >= 6, (
+            f"{ilce}: drenaj artık ürünlerin çoğunu tavanlamıyor "
+            f"({drenajli}/9) — 'her şeyin önünde' iddiası gözden geçirilmeli")
