@@ -16,3 +16,4 @@ const COLLESME = __COLLESME_JSON__;
 const KALITE = __KALITE_JSON__;
 const DOGRULAMA = __DOGRULAMA_JSON__;
 const KIL = __KIL_JSON__;
+const CATI = __CATI_JSON__;

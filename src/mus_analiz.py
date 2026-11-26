@@ -20,6 +20,7 @@ import math
 from pathlib import Path
 from typing import Any
 
+import cati
 import mus_profil as mp
 
 KOK = Path(__file__).resolve().parent.parent
@@ -370,11 +371,21 @@ def oneriler() -> list[dict[str, Any]]:
 
         etkin = cesitlilik(ilce)
         if etkin < 3.0:
+            # "Münavebe hastalık baskısını kırar" cümlesi burada yazılıydı ve
+            # 2. kısma sorulmamıştı. Soruldu: 36 ürün çiftinin yalnızca biri
+            # topraktan bulaşan ortak etken taşımıyor. Söz artık hesaplanıyor
+            # (bkz. cati.munavebe_cumlesi).
+            mun = cati.ilce_munavebe(ilce)
             madde.append(dict(
                 oncelik=3, baslik="Ürün deseni dar",
                 metin=(f"Etkin ürün sayısı {etkin:.1f}. Tek ürüne bağımlılık "
-                       f"fiyat ve hastalık şokunu doğrudan çiftçiye yansıtır."),
-                kazanc="Risk dağılır, münavebe hastalık baskısını kırar."))
+                       "fiyat ve hastalık şokunu doğrudan çiftçiye yansıtır. "
+                       + cati.munavebe_cumlesi(ilce)),
+                kazanc=("Fiyat riski dağılır; listelenen çift toprak "
+                        "patojenini de kırar."
+                        if mun["kiran"] else
+                        "Fiyat riski dağılır — ama toprak patojeni için "
+                        "kaldıraç münavebe değil, drenaj ve tohum/çeşit.")))
 
         madde.sort(key=lambda m: int(m["oncelik"]))
         cikti.append(dict(ilce=ilce, maddeler=madde))

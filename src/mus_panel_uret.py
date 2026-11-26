@@ -53,6 +53,7 @@ BOS_UYARI: dict = {"uyarilar": {}, "ilceler": [], "aylar": [], "turler": [],
 BOS_KARLILIK: dict = {"satirlar": [], "piyasa": [], "ayirt_edilebilirlik": [],
                       "parametre": {}, "veri_yasi": {}, "ozet": {}}
 
+BOS_CATI: dict = {"var": False}
 BOS_OLCUM: dict = {"var": False}
 BOS_KALITE: dict = {"var": False}
 BOS_DOGRULAMA: dict = {"var": False}
@@ -103,6 +104,10 @@ def hepsini_calistir():
         (CIKTI / "depo.json").write_text(
             json.dumps(dpv.uret(), ensure_ascii=False, indent=1),
             encoding="utf-8")
+    # Çatı: 1. ve 2. kısmı birbirine soran katman. Dış veri istemez, bu
+    # yüzden koşulsuz üretilir.
+    import cati
+    cati.uret()  # outputs/cati.json'u kendisi yazar
     import collesme.dsi as cds
     import toprak_olcum.analiz as tol
     import toprak_olcum.etki as tet
@@ -283,6 +288,11 @@ def main():
         print("NOT: Karlılık verisi yok, o sekme boş kalacak.")
         print("     Üretmek için: python src/piyasa/karlilik.py")
 
+    cativeri = oku("cati.json", BOS_CATI)
+    if not cativeri.get("var"):
+        print("NOT: Çatı verisi yok, o sekmenin denetim bölümü boş kalacak.")
+        print("     Üretmek için: python src/cati.py")
+
     olcum = oku("toprak_olcum.json", BOS_OLCUM)
     etki = oku("olcum_etkisi.json", BOS_ETKI)
     collesme = oku("collesme.json", BOS_COLLESME)
@@ -311,7 +321,9 @@ def main():
             .replace("__KALITE_JSON__", json.dumps(kalite, ensure_ascii=False))
             .replace("__DOGRULAMA_JSON__",
                      json.dumps(dogrulama, ensure_ascii=False))
-            .replace("__KIL_JSON__", json.dumps(kil, ensure_ascii=False)))
+            .replace("__KIL_JSON__", json.dumps(kil, ensure_ascii=False))
+            .replace("__CATI_JSON__",
+                     json.dumps(cativeri, ensure_ascii=False)))
 
     hedef = KOK / "mus_panel.html"
     hedef.write_text(html, encoding="utf-8")
@@ -324,7 +336,7 @@ def main():
                          "__BOCEK_JSON__", "__UYARI_JSON__", "__KARLILIK_JSON__", "__OLCUM_JSON__",
                          "__ETKI_JSON__", "__COLLESME_JSON__",
                          "__KALITE_JSON__", "__DOGRULAMA_JSON__",
-                         "__KIL_JSON__") if p in html]
+                         "__KIL_JSON__", "__CATI_JSON__") if p in html]
     if kalan:
         print("UYARI — doldurulmamış yer tutucu:", ", ".join(kalan))
 

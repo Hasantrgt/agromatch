@@ -149,14 +149,56 @@ function sekmeCati() {
     bolum("01", "Proje üç kısımdan oluşur",
       "Ayrım SEBEBE göre yapılır, belirtiye göre değil: bir sorunun kaynağı "
       + "toprak mıdır, böcek midir? Cevap, hangi kısmın ilgilendiğini ve "
-      + "hangi çözümün işe yarayacağını birlikte belirler. Toprak kaynaklı "
-      + "bir kök çürüklüğüne ilaçlama değil ekim nöbeti çare olur; böcekle "
-      + "taşınan bir virüse dayanıklı çeşit değil vektör yönetimi.",
+      + "hangi çözümün işe yarayacağını birlikte belirler. Böcekle taşınan "
+      + "bir virüse dayanıklı çeşit değil vektör yönetimi çare olur. "
+      + "Toprak kaynaklı kök çürüklüğünde ise ekim nöbeti ancak iki ürün "
+      + "ortak etken TAŞIMIYORSA çare olur — ve bu, aşağıda görüleceği "
+      + "gibi Muş'ta istisna.",
       catiKisimKart()),
     bolum("02", "İlçe seçin: üç kısım yan yana",
-      "Aynı ilçe için üç soru arka arkaya cevaplanıyor. Bu sayfanın amacı "
-      + "yeni bilgi vermek değil, üç kısmın aynı tarlada buluştuğunu "
-      + "göstermek — çiftçi bunların üçünü ayrı ayrı değil birlikte yaşıyor.",
+      "Aynı ilçe için üç soru arka arkaya cevaplanıyor. Bu bölüm yeni bilgi "
+      + "vermez, üç kısmın aynı tarlada buluştuğunu gösterir — çiftçi "
+      + "bunların üçünü ayrı ayrı değil birlikte yaşıyor. Yeni bilgi "
+      + "aşağıda: iki kısmı yan yana koymak yetmiyor, birbirine sormak "
+      + "gerekiyor.",
       dugmeler, govde),
+    ...munavebeBolumu(),
+  ];
+}
+
+// Çatının asıl işi: 1. kısmın 2. kısma sormadan verdiği sözü denetlemek.
+function munavebeBolumu() {
+  if (!CATI || !CATI.var) {
+    return [bolum("03", "Münavebe denetimi üretilmemiş",
+      "Bu bölüm çatı katmanının verisini okur. Üretmek için: "
+      + "python src/cati.py")];
+  }
+  return [
+    bolum("03", "1. kısmın sözü 2. kısma soruldu",
+      "Planlama kısmı, ürün deseni dar olan ilçeye \u201crisk dağılır, "
+      + "münavebe hastalık baskısını kırar\u201d diyordu. Bu cümle 2. kısma "
+      + "sorulmadan yazılmıştı. 2. kısımda ise her hastalığın patojeni ve "
+      + "bulaş kaynağı kayıtlı, yani soru hesaplanabilir: iki ürün "
+      + "TOPRAKTAN bulaşan aynı etkeni paylaşıyorsa, aralarındaki münavebe "
+      + "o etkenin baskısını kırmaz — toprakta aynı patojeni beslemeye "
+      + "devam eder.",
+      munavebeOzet(), munavebeBaskin()),
+    bolum("04", "Kıran münavebe neye dayanıyor",
+      "Baskıyı kıran tek çift pancarlı. Pancar alanı ise agronomiyle değil "
+      + "Muş Şeker Fabrikası kotasıyla sınırlı. İki kısım ayrı sekmelerde "
+      + "dururken bu görünmüyordu; birlikte okununca önerinin tavanı "
+      + "ortaya çıkıyor.",
+      munavebeTavan()),
+    bolum("05", "Otuz altı çiftin tamamı ve gerekçeleri",
+      "\u201cBelirsiz\u201d bir cevaptır, eksiklik değil: katalog o "
+      + "etkeni yalnız cins düzeyinde yazıyor (Fusarium spp. gibi) ve aynı "
+      + "cinsin farklı türleri farklı konakçı tutabilir. Orada \u201ckırmaz\u201d "
+      + "demek, kataloğun söylemediğini söylemek olurdu.",
+      munavebeMatris()),
+    bolum("06", "Çatının cevap veremediği yerler",
+      "Bir karar sisteminin en dürüst kısmı, nerede karar veremediğidir. "
+      + "Bunlardan biri masa başından kapanmıyor: aynı tür kaydı, tarlada "
+      + "aynı suşun geçtiğini kanıtlamaz.",
+      munavebeBosluk()),
   ];
 }
