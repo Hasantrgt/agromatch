@@ -18,6 +18,11 @@ Proje üç soruyu birlikte cevaplar:
 bir sayı verir; bu motor sayının **belirsizlik aralığını**, **türeyişini** ve
 **hangi ölçümün o belirsizliği en çok azaltacağını** birlikte üretir.
 
+> **[BULGULAR.md](BULGULAR.md) — projenin ne öğrendiği.** Bu dosya yöntemi ve
+> dizin yapısını anlatır; bulgular orada, her biri kaynağı ve sınırıyla
+> birlikte. Belgedeki sayılar `tests/test_bulgular.py` ile koda bağlıdır:
+> kod değişip belge güncellenmezse test kırılır.
+
 ---
 
 ## Hızlı başlangıç
