@@ -8,7 +8,7 @@ olsun diye değil, **birbirimizin işini bozmayalım** diye yazıldı.
 ## Başlamadan önce
 
 ```bash
-git clone https://github.com/<kullanıcı>/agromatch.git
+git clone https://github.com/Hasantrgt/agromatch.git
 cd agromatch
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
