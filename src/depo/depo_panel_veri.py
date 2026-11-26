@@ -36,6 +36,7 @@ import mus_profil as mp
 from depo import ambar_sicaklik as amb
 from depo import depo_profil as dp
 from depo import doz_cevap as dc
+from depo import karar as dkr
 from depo import literatur as lit
 
 KOK = Path(__file__).resolve().parent.parent.parent
@@ -143,6 +144,10 @@ def uret(veri: Path | None = None) -> dict[str, Any]:
     en_sicak_yigin = max(max(v) for v in ambar["aylik_yigin"].values())
     kosullar = sorted({c["sicaklik"] for c in dcb["calismalar"].values()})
     return dict(
+        # Karar akışı: "ambarımda şu böcek var, ne yapayım".
+        karar=dkr.hepsi(),
+        karar_ozet=dkr.ozet(),
+        karar_adimlari=list(dkr.ADIM_ADI),
         zararlilar=[dict(z) for z in zararlilar],
         mucadele=list(dp.MUCADELE),
         kaynaklar=dp.KAYNAKLAR,

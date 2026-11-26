@@ -176,41 +176,47 @@ function sekmeDepo() {
       ? "Tanenin içindeki larvaya da ulaşır" : "Yalnızca ergine etkili" }),
     el("p", { style: "font-size:12.5px;color:var(--muted)", text: "Bedeli: " + m.bedel }))));
 
+  const kararBolum = depoKararBolumu();
   return [
-    bolum("01", "Doz–cevap: yayınlanmış denemelerden LC50 kestirimi",
+    kararBolum
+      ? bolum("01", "Karar: ambarımda şu böcek var, ne yapayım",
+          "Depo kararının tarladan farkı: böcek tanenin İÇİNDE olabilir. "
+          + "Yüzeye uygulanan hiçbir şey oraya ulaşmaz.", kararBolum)
+      : null,
+    bolum("02", "Doz–cevap: yayınlanmış denemelerden LC50 kestirimi",
       "Buradaki sayıların hiçbiri üretilmemiştir. İki açık erişimli yayından alınan "
       + `${n0(o.olcum)} ölçüm (toplam ${n0(o.birey)} birey) probit modele uyduruldu ve `
       + "öldürücü doz kestirildi. Kaynaklar bölümün altında künyeleriyle duruyor.",
       dozBolum),
-    bolum("02", "Bu kestirimler Muş'a doğrudan taşınmaz",
+    bolum("03", "Bu kestirimler Muş'a doğrudan taşınmaz",
       "Diyatomlu toprak böceği zehirlemez, kurutur. Bu yüzden etkisi sıcaklığa ve "
       + "neme bağlıdır — ve iki yayın bunu aynı ürün üzerinde ölçmüş. Aşağıdaki "
       + "karşıtlık, bu projenin depo için verebileceği en dürüst cevabın neden "
       + "'önce ölçün' olduğunu gösteriyor.",
       karsitlikBolum),
-    bolum("03", "Ambar sıcaklığı: yığın dışarıyı gecikmeli takip eder",
+    bolum("04", "Ambar sıcaklığı: yığın dışarıyı gecikmeli takip eder",
       `Tahıl yığını büyük bir ısı deposudur. Dış hava −5 °C'ye inerken yığının içi `
       + `haftalarca ılık kalır; bu yüzden "Muş soğuk, depoda sorun olmaz" sanısı `
       + `yanlıştır. Model, aylık yığın sıcaklığını dış havanın sönümlenmiş hâli olarak `
       + `hesaplar (sönümleme ${amb.sonumleme} — bir VARSAYIMDIR, ambara veri kaydedici `
       + `konarak ölçülmelidir).`,
       sicaklikTablo),
-    bolum("04", "Gelişme penceresi: hangi zararlı kaç ay gelişebiliyor",
+    bolum("05", "Gelişme penceresi: hangi zararlı kaç ay gelişebiliyor",
       "Her türün bir gelişme eşiği var. Isıtılmamış ambarda yığın sıcaklığı o eşiği "
       + "kaç ay aşıyorsa zararlı o kadar süre üreyebilir. Sıfır ay demek, soğuk tek "
       + "başına o türü durduruyor demektir — kalıntısız, dirençsiz, bedava. "
       + "Eşik değerleri literatürden alınmıştır ve danışman hocanın teyidini bekler.",
       pencereTablo),
-    bolum("05", "Mücadele seçenekleri: kalıntı, direnç ve faydalıya etki",
+    bolum("06", "Mücadele seçenekleri: kalıntı, direnç ve faydalıya etki",
       "Bu tablo ilaç TAVSİYE ETMEZ — ürün ve doz seçimi reçete yazma yetkisi olan "
       + "kişilerin kararıdır. Yaptığı iş yöntemleri aynı ölçütlerle yan yana koymak. "
       + "'İç larvaya' sütunu kritik: buğday biti larvası tanenin içinde geliştiği için "
       + "yalnızca ergine etkili bir yöntem gizli bulaşmayı temizlemez.",
       mucadeleTablo),
-    bolum("06", "Kalıntı bırakmayan yol",
+    bolum("07", "Kalıntı bırakmayan yol",
       `Sekiz yöntemin ${kalintisiz.length} tanesi üründe ölçülebilir kalıntı bırakmıyor. `
       + "\"Pestisitten arındırılmış yol\" bu seçeneklerin birleşiminden çıkar; hiçbiri "
       + "tek başına yeterli değildir.",
       yolKart),
-  ];
+  ].filter(Boolean);
 }

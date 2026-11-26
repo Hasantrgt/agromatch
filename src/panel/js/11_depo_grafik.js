@@ -112,3 +112,107 @@ function karsitlikGrafik(k) {
     satir(k.yuksek, DEPO_RENK.nokta));
 }
 
+
+
+// --- Depo karar akışı -------------------------------------------------
+// Tarla kartından ayrı: buradaki ayrım "ulaşan / ulaşmayan". Taneyi
+// içeriden yiyen larvaya yüzey uygulaması ULAŞMAZ ve bu, panelin
+// söylemesi gereken en önemli şey.
+
+function depoYolListesi(baslik, yollar, iyi) {
+  if (!yollar || !yollar.length) return null;
+  return el("div", { style: "margin-top:6px" },
+    el("div", { style: "font-size:11.5px;font-weight:700;margin-bottom:3px;"
+      + `color:${iyi ? "var(--good)" : "var(--critical)"}`, text: baslik }),
+    el("div", { style: "display:flex;flex-wrap:wrap;gap:6px" },
+      ...yollar.map(y => el("span", {
+        class: "rozet " + (iyi ? "r-iyi" : "r-kotu"),
+        title: (y.mekanizma || "") + (y.kosul ? "  KOŞUL: " + y.kosul : ""),
+        text: y.ad }))));
+}
+
+function depoAdimKutusu(a) {
+  const govde = el("div", { style: "flex:1;min-width:0" },
+    el("div", { style: "display:flex;align-items:center;gap:8px;"
+      + "flex-wrap:wrap;margin-bottom:4px" },
+      el("strong", { text: a.ad }),
+      rozet(a.durum, a.durum === "tane içinde" ? "r-kotu"
+        : a.durum === "ulaşan kalıntısız yol yok" ? "r-kotu"
+        : a.durum === "gerekebilir" ? "r-orta" : "r-iyi")),
+    el("p", { style: "font-size:12.5px;margin:0;color:var(--ink-2)",
+      text: a.aciklama }));
+
+  const u1 = depoYolListesi("ULAŞIR", a.ulasan, true);
+  const u2 = depoYolListesi("ULAŞMAZ — tek başına yetmez", a.ulasmayan, false);
+  if (u1) govde.append(u1);
+  if (u2) govde.append(u2);
+
+  if (a.olcum) {
+    const o = a.olcum;
+    govde.append(el("div", { class: "tiles", style: "margin-top:8px" },
+      ...[[`${n0(o.dusuk.sicaklik)}°C · %${n0(o.dusuk.nem)} nem`,
+            "%" + n1(o.dusuk.olum), "ölüm — aynı ürün, aynı doz"],
+          [`${n0(o.yuksek.sicaklik)}°C · %${n0(o.yuksek.nem)} nem`,
+            "%" + n1(o.yuksek.olum), "ölüm — aynı ürün, aynı doz"],
+          ["Fark", n1(o.kat) + " kat", "koşul söylenmezse tavsiye kura olur"]]
+        .map(([b, d, s]) => el("div", { class: "tile vurgu" },
+          el("div", { class: "k", text: b }),
+          el("div", { class: "v", text: d }),
+          el("div", { class: "u", text: s })))));
+  }
+
+  if (a.secenekler && a.secenekler.length) {
+    govde.append(el("div", { class: "liste", style: "margin-top:8px" },
+      a.secenekler.map(s => el("div", { class: "madde" },
+        el("span", { class: "sira mono", text: "!" }),
+        el("div", { class: "govde" },
+          el("strong", { text: s.ad }),
+          el("span", { style: "color:var(--muted);font-size:12px",
+            text: "  direnç riski: " + s.direnc_riski }),
+          s.kosul ? el("p", { style: "font-size:12px;margin:2px 0 0",
+            text: s.kosul }) : null)))));
+  }
+
+  return el("div", { style: "display:flex;gap:12px;padding:10px 0;"
+    + "border-top:1px solid var(--grid)" },
+    el("div", { class: "mono",
+      style: "flex:none;width:26px;height:26px;border-radius:50%;"
+        + "background:var(--brand-soft);color:var(--ink);display:flex;"
+        + "align-items:center;justify-content:center;font-weight:700;"
+        + "font-size:12px", text: String(a.adim) }),
+    govde);
+}
+
+function depoKararKarti(k) {
+  return el("div", { class: "kart", style: "margin-bottom:14px" },
+    el("div", { class: "ust", style: "justify-content:space-between;"
+      + "align-items:flex-start;flex-wrap:wrap;gap:6px" },
+      el("div", {},
+        el("h3", { text: k.zararli }),
+        el("div", { style: "font-size:11.5px;color:var(--muted);"
+          + "font-style:italic", text: k.tur })),
+      k.karantina ? rozet("karantina", "r-kotu") : null),
+    el("p", { class: "kazanc", style: "margin:6px 0 2px", text: k.ozet }),
+    ...k.adimlar.map(depoAdimKutusu));
+}
+
+function depoKararBolumu() {
+  if (!DEPO || !DEPO.karar || !DEPO.karar.length) return null;
+  const o = DEPO.karar_ozet;
+  return el("div", {},
+    el("div", { class: "kutu" },
+      el("strong", { text: "İlk soru 'hangi ilaç' değil, 'böcek nerede'." }),
+      el("p", { text: o.not_ })),
+    el("div", { class: "tiles", style: "margin-top:12px" },
+      ...[["Depo zararlısı", n0(o.zararli), "karar akışı üretilen tür"],
+          ["Taneyi içeriden yiyen", n0(o.yuzey_uygulamasi_yetmeyen),
+            o.ic_besleyen.join(", ")],
+          ["Ulaşan yolu olmayan", n0(o.kalintisiz_yolu_olmayan.length),
+            "kalıntısız yolun yetmediği tür"]]
+        .map(([b, d, s]) => el("div", { class: "tile" },
+          el("div", { class: "k", text: b }),
+          el("div", { class: "v", text: d }),
+          el("div", { class: "u", text: s })))),
+    el("div", { style: "margin-top:14px" },
+      ...DEPO.karar.map(depoKararKarti)));
+}
