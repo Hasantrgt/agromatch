@@ -36,6 +36,44 @@ Sistem artık "patates için yer seçimi fırsatı var" demiyor.
 Bu bir bozulma değil, DÜZELTMEDİR: eski tavsiye varsayılmış bir toprak
 farkına dayanıyordu.
 
+Kasım 2026 (beşinci güncelleme) — KİŞİ BAŞI TÜKETİM ÖLÇÜLDÜ. Saha
+çalışması yapılamayacağı netleştikten sonra belirsizlik modeli en yüksek
+kazançlı işin masa başı olduğunu söylemişti: kişi başı tüketim rakamları.
+TEPGE (Bakanlık'ın araştırma enstitüsü) ürün raporlarından, TÜİK denge
+tablolarına dayanarak bulundu. Üç varsayımın ÜÇÜ DE yüksekti:
+
+    buğday         250 kg  ->  173,3 kg   (TEPGE Buğday raporu, 2024/25)
+    patates         85 kg  ->   58,0 kg   (TEPGE Patates raporu, 2023/24)
+    kuru fasulye      9 kg  ->    3,1 kg   (TEPGE Kuru Baklagil, 2023/24)
+
+Kuru fasulyedeki üç kat fark bir TANIM hatasıydı: kuru BAKLAGİL toplamı
+(fasulye 3,1 + nohut 4,9 + mercimek 5,3 ≈ 13 kg) kuru FASULYE sanılmış.
+
+Talep yüksek varsayıldığı için il kendi ihtiyacını olduğundan daha az
+karşılıyor görünüyordu. Üç oran da yukarı taşındı:
+
+    Buğday         2,628  ->  3,445
+    Patates        0,170  ->  0,246
+    Kuru fasulye   0,111  ->  0,314
+
+TAVSİYELER DEĞİŞMEDİ (eylem tablosu aynı) — yani düzeltme kararı değil,
+kararın dayandığı sayıyı düzeltti. Bu iyi bir işaret: model bu kadar
+büyük bir girdi değişimine rağmen aynı şeyi öneriyorsa, öneriler o
+girdiye aşırı duyarlı değil demektir.
+
+İKİ BASKIN BİLİNMEYEN YİNE DEĞİŞTİ:
+
+    bugday:  "Kişi başı yıllık buğday"  ->  "Tohumluk ve fire payı"
+    fasulye: "Kişi başı yıllık fasulye" ->  "Kuru fasulye üretimi"
+
+Ölçülen şey sıradan düşüyor, darboğaz bir sonrakine kayıyor. Belirsizlik
+analizinin işi budur.
+
+Aralıklar bilerek asimetrik: buğdayda 173,3 Türkiye ortalaması ve
+kırsalda ev ekmeği nedeniyle Muş daha YÜKSEK olabilir, daha düşük
+olması için sebep yok. Aralık yalnızca yukarı açık bırakıldı.
+
+
 Kasım 2026 (dördüncü güncelleme) — BELİRSİZLİK MODELİ ÖLÇÜMLERİ TAKİP
 ETMEMİŞ. Proje üç kalemi ölçtü ama belirsizlik modeli onları hâlâ
 belirsiz sayıyordu, dolayısıyla "önce neyi ölçmeli" sıralaması yanlış

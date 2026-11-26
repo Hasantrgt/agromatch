@@ -88,24 +88,24 @@
    "baslik": "Buğday",
    "olcek": "ulusal",
    "oran": {
-    "medyan": 2.847,
-    "alt90": 2.482,
-    "ust90": 3.325,
-    "alt50": 2.684,
-    "ust50": 3.034,
-    "sapma": 0.2575,
-    "sapma_yp": 25.8
+    "medyan": 3.445,
+    "alt90": 2.987,
+    "ust90": 3.976,
+    "alt50": 3.241,
+    "ust50": 3.661,
+    "sapma": 0.299,
+    "sapma_yp": 29.9
    },
    "karar": "fazla",
    "esigi_kesiyor": false,
    "arz_medyan": 368339,
-   "ihtiyac_medyan": 129221,
-   "baskin": "Kişi başı yıllık buğday",
-   "baskin_pay": 53.9,
+   "ihtiyac_medyan": 106802,
+   "baskin": "Tohumluk ve fire payı",
+   "baskin_pay": 65.6,
    "duyarlilik": {
-    "Buğday üretimi (ton)": 2.6,
-    "Kişi başı yıllık buğday (ton)": 53.9,
-    "Tohumluk ve fire payı": 42.1,
+    "Buğday üretimi (ton)": 2.5,
+    "Kişi başı yıllık buğday (ton)": 30.8,
+    "Tohumluk ve fire payı": 65.6,
     "Kampanya süresi (gün)": 0.2
    }
   },
@@ -114,22 +114,22 @@
    "baslik": "Patates",
    "olcek": "ulusal",
    "oran": {
-    "medyan": 0.17,
-    "alt90": 0.135,
-    "ust90": 0.225,
-    "alt50": 0.153,
-    "ust50": 0.19,
-    "sapma": 0.027,
-    "sapma_yp": 2.7
+    "medyan": 0.246,
+    "alt90": 0.219,
+    "ust90": 0.274,
+    "alt50": 0.234,
+    "ust50": 0.258,
+    "sapma": 0.0166,
+    "sapma_yp": 1.7
    },
    "karar": "açık",
    "esigi_kesiyor": false,
    "arz_medyan": 5826,
-   "ihtiyac_medyan": 34297,
+   "ihtiyac_medyan": 23657,
    "baskin": "Kişi başı yıllık patates (ton)",
-   "baskin_pay": 99.4,
+   "baskin_pay": 99.1,
    "duyarlilik": {
-    "Kişi başı yıllık patates (ton)": 99.4,
+    "Kişi başı yıllık patates (ton)": 99.1,
     "Kişi başı yıllık buğday (ton)": 0.2
    }
   },
@@ -138,24 +138,24 @@
    "baslik": "Kuru fasulye",
    "olcek": "ulusal",
    "oran": {
-    "medyan": 0.108,
-    "alt90": 0.079,
-    "ust90": 0.158,
-    "alt50": 0.094,
-    "ust50": 0.126,
-    "sapma": 0.0243,
-    "sapma_yp": 2.4
+    "medyan": 0.314,
+    "alt90": 0.273,
+    "ust90": 0.359,
+    "alt50": 0.296,
+    "ust50": 0.332,
+    "sapma": 0.0261,
+    "sapma_yp": 2.6
    },
    "karar": "açık",
    "esigi_kesiyor": false,
    "arz_medyan": 396,
-   "ihtiyac_medyan": 3659,
-   "baskin": "Kişi başı yıllık kuru fasulye (ton)",
-   "baskin_pay": 91.2,
+   "ihtiyac_medyan": 1260,
+   "baskin": "Kuru fasulye üretimi",
+   "baskin_pay": 52.1,
    "duyarlilik": {
-    "Kişi başı yıllık kuru fasulye (ton)": 91.2,
+    "Kişi başı yıllık kuru fasulye (ton)": 47.1,
     "Kayıtsız ürün üretimi çarpanı": 40.9,
-    "Tohumluk ve fire payı": 0.2
+    "Tohumluk ve fire payı": 0.9
    }
   }
  ],
@@ -218,7 +218,7 @@
    "urun": "Patates",
    "eylem": "gerek yok",
    "olcek": "ulusal",
-   "oran": 0.17,
+   "oran": 0.246,
    "en_iyi_ilce": "Varto",
    "makas": 11.3,
    "yeri_onemli": false
@@ -227,7 +227,7 @@
    "urun": "Kuru fasulye",
    "eylem": "fırsat",
    "olcek": "ulusal",
-   "oran": 0.108,
+   "oran": 0.314,
    "en_iyi_ilce": "Hasköy",
    "makas": 17.1,
    "yeri_onemli": true
@@ -236,7 +236,7 @@
    "urun": "Buğday",
    "eylem": "koru",
    "olcek": "ulusal",
-   "oran": 2.847,
+   "oran": 3.445,
    "en_iyi_ilce": "Hasköy",
    "makas": 6.1,
    "yeri_onemli": false
@@ -251,6 +251,6 @@
  "belirsiz_karar": [
   "Şeker pancarı"
  ],
- "masa_basi_kazanc": 28.8,
+ "masa_basi_kazanc": 30.5,
  "saha_kazanc": 7.6
 }

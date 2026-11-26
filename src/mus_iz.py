@@ -114,19 +114,27 @@ def yapraklar() -> dict[str, iz.Dugum]:
         gerekce="Üretimin tohumluk ayrılan ve depoda kaybolan payı.",
         olcum_yolu=yol("İl Müdürlüğü sertifikalı tohum kaydı", "resmî yazı", 1, 1, "Danışman hoca"))
     y["kb_bugday"] = varsayim(
-        "Kişi başı yıllık buğday", 0.250, "ton/kişi", (0.195, 0.300),
-        gerekce="Un, bulgur, makarna eşdeğeri. Kırsalda ev ekmeği nedeniyle "
-                "daha yüksek olabilir.",
+        "Kişi başı yıllık buğday", 0.1733, "ton/kişi", (0.1733, 0.1733, 0.230),
+        gerekce="ARTIK ÖLÇÜM: TEPGE Buğday Ürün Raporu, 2024/25 için "
+                "173,3 kg. Eski varsayım 250 kg idi — %44 yüksek. Aralık "
+                "yalnızca YUKARI açık bırakıldı: 173,3 Türkiye ortalaması, "
+                "kırsalda ev ekmeği nedeniyle Muş daha yüksek olabilir. "
+                "Aşağı sapması için bir sebep yok.",
         olcum_yolu=yol(
-                "TÜİK hanehalkı tüketim anketi + bölgesel düzeltme", "masa başı", 1,
-                2, "Öğrenci ekibi"))
+                "Bölgesel tüketim anketi (TEPGE ulusal ortalamayı verdi)",
+                "masa başı", 1, 2, "Öğrenci ekibi"))
     y["kb_patates"] = varsayim(
-        "Kişi başı yıllık patates", 0.085, "ton/kişi", (0.055, 0.120),
-        gerekce="Türkiye ortalaması mertebesi; bölgesel ölçüm yok.",
+        "Kişi başı yıllık patates", 0.058, "ton/kişi", (0.050, 0.058, 0.070),
+        gerekce="ARTIK ÖLÇÜM: TEPGE Patates Ürün Raporu, 2023/24 için "
+                "58,0 kg. Eski varsayım 85 kg idi — %47 yüksek.",
         olcum_yolu=yol("TÜİK hanehalkı tüketim anketi", "masa başı", 1, 2, "Öğrenci ekibi"))
     y["kb_fasulye"] = varsayim(
-        "Kişi başı yıllık kuru fasulye", 0.009, "ton/kişi", (0.005, 0.014),
-        gerekce="Kuru baklagil tüketimi; bölgesel kayıt yok.",
+        "Kişi başı yıllık kuru fasulye", 0.0031, "ton/kişi",
+        (0.0027, 0.0031, 0.0036),
+        gerekce="ARTIK ÖLÇÜM: TEPGE Kuru Baklagil Ürün Raporu, 2023/24 "
+                "için 3,1 kg. Eski varsayım 9 kg idi — üç kat. Fark "
+                "muhtemelen tanım hatası: kuru BAKLAGİL toplamı (fasulye "
+                "3,1 + nohut 4,9 + mercimek 5,3) kuru FASULYE sanılmış.",
         olcum_yolu=yol("TÜİK hanehalkı tüketim anketi", "masa başı", 1, 2, "Öğrenci ekibi"))
 
     # Üretim: bir ölçümün kendisi de belirsiz olabilir

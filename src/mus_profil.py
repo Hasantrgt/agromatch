@@ -228,7 +228,27 @@ KABA_YEM_GRUBU = ("Yonca", "Korunga", "Silajlık mısır", "Fiğ")
 
 # Hayvan başına yıllık kuru madde ihtiyacı (ton) — NRC/TÜRKVET mertebeleri
 YEM_IHTIYAC: dict[str, float] = {"buyukbas": 2.60, "kucukbas": 0.45}
-GIDA_IHTIYAC: dict[str, float] = {"Buğday": 0.250, "Patates": 0.085, "Kuru fasulye": 0.009}
+# Kişi başına yıllık gıda tüketimi (ton). ARTIK VARSAYIM DEĞİL:
+# TEPGE (Tarım ve Orman Bakanlığı Tarımsal Ekonomi ve Politika Geliştirme
+# Enstitüsü) ürün raporlarından, TÜİK denge tablolarına dayanıyor.
+#
+# Üç varsayımın üçü de YÜKSEKTİ ve üçü de aynı yönde şaşmıştı:
+#       buğday         0,250 -> 0,1733   (TEPGE Buğday raporu, 2024/25)
+#       patates        0,085 -> 0,058    (TEPGE Patates raporu, 2023/24)
+#       kuru fasulye   0,009 -> 0,0031   (TEPGE Kuru Baklagil raporu, 2023/24)
+#
+# Kuru fasulyedeki üç kat fark muhtemelen bir tanım hatasıydı: kuru
+# BAKLAGİL toplamı (fasulye 3,1 + nohut 4,9 + mercimek 5,3 ≈ 13 kg) kuru
+# FASULYE sanılmış. Proje yalnızca kuru fasulye üretiyor ve dengesini
+# kuru fasulye üzerinden kuruyor.
+#
+# Talep yüksek varsayıldığı için il kendi ihtiyacını olduğundan daha az
+# karşılıyor görünüyordu. Düzeltme üç oranı da yukarı taşıyor.
+GIDA_IHTIYAC: dict[str, float] = {
+    "Buğday": 0.1733, "Patates": 0.058, "Kuru fasulye": 0.0031}
+GIDA_KAYNAK = ("TEPGE ürün raporları (TÜİK denge tabloları): buğday "
+               "2024/25 173,3 kg; patates 2023/24 58,0 kg; kuru fasulye "
+               "2023/24 3,1 kg")
 
 MERA_VERIM = 0.10      # ton kuru madde / dekar / yıl — zayıf step merası
 ANIZ_VERIM = 0.05      # tahıl anızından ton KM / dekar
@@ -476,6 +496,13 @@ KUNYE: list[KunyeSatiri] = [
               "fazlası, 80 saat yerine 1 saatte."),
     ("Fiyat ve maliyet", "varsayım", "2025 sezonu mertebesi", "2025",
      "düşük", "TMO ve ziraat odası maliyet cetveliyle değişecek."),
+    ("Kişi başı gıda tüketimi", "ölçüm",
+     "TEPGE ürün raporları — TÜİK denge tabloları", "2023/24-2024/25",
+     "yüksek", "Buğday 173,3 kg, patates 58,0 kg, kuru fasulye 3,1 kg. "
+               "Üçü de varsayımdı ve üçü de yüksekti (250 / 85 / 9). Kuru "
+               "fasulyedeki üç kat fark tanım hatasıydı: kuru BAKLAGİL "
+               "toplamı kuru FASULYE sanılmış. Ulusal ortalama; Muş'ta "
+               "kırsal tüketim daha yüksek olabilir."),
     ("Hastalık eşikleri", "varsayım", "Fitopatoloji literatürü", "—",
      "orta", "Muş'ta saha gözlemi yok. Zirai Mücadele Teknik Talimatları ile kesinleşecek."),
 ]
