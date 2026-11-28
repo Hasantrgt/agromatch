@@ -71,6 +71,23 @@ def _esik_adimi(z: dict[str, Any], ergin_m2: float | None,
                 "aciklama": k.get("gerekce", ""), "ayrinti": k,
                 "esik": esik, "esik_kaynak": kaynak}
 
+    # ÜÇ AYRI CEVAP, ikisi kolayca karıştırılır:
+    #   "eşik bilinmiyor"   bizde kayıt yok — ilaçlama önerilmez
+    #   "resmî eşik yok"    TALİMAT eşik vermiyor ve bunu açıkça söylüyor;
+    #                       karar sayıma değil başka bir ölçüte bağlı
+    #   "eşik var"          sayıma bağlı karar
+    # İkincisini birincisiyle birleştirmek, Bakanlığın verdiği kararı
+    # "bilinmiyor" diye göstermek olurdu. Tersi daha kötü: eşik vermeyen
+    # bir zararlıda "ölçüm gerekli" demek, olmayan sayıyı aratır.
+    if z.get("esik_turu") == "yok":
+        return {
+            "adim": 1, "ad": ADIM_ADI[0], "durum": "resmî eşik yok",
+            "aciklama": ("Talimat bu zararlı için ekonomik zarar eşiği "
+                         "VERMİYOR ve bunu açıkça yazıyor. Bu, eşiği "
+                         "bilmediğimiz anlamına gelmez: karar sayıma "
+                         "değil, aşağıdaki ölçüte bağlanmıştır."),
+            "esik": esik, "esik_kaynak": kaynak}
+
     if not esik:
         return {
             "adim": 1, "ad": ADIM_ADI[0], "durum": "eşik bilinmiyor",
@@ -206,19 +223,26 @@ def bosluklar() -> dict[str, Any]:
     Bir karar sisteminin en dürüst kısmı, nerede karar veremediğidir.
     """
     esiksiz, kalintisiz_yok, caresiz = [], [], []
+    resmi_esiksiz = []
     for k in hepsi():
         a = {x["adim"]: x for x in k["adimlar"]}
         if a[1]["durum"] == "eşik bilinmiyor":
             esiksiz.append(k["zararli"])
+        if a[1]["durum"] == "resmî eşik yok":
+            resmi_esiksiz.append(k["zararli"])
         if a[2]["durum"] == "yok":
             kalintisiz_yok.append(k["zararli"])
         if a[2]["durum"] == "yok" and not a[3]["secenekler"]:
             caresiz.append(k["zararli"])
     return {
         "esigi_bilinmeyen": esiksiz,
+        "resmi_esigi_olmayan": resmi_esiksiz,
         "kalintisiz_yolu_olmayan": kalintisiz_yok,
         "hicbir_secenegi_olmayan": caresiz,
         "not_": "Eşiği bilinmeyen zararlıya ilaçlama önerilmez; kalıntısız "
                 "yolu olmayan için o boşluk yazılır. Hiçbir seçeneği "
-                "olmayan varsa, proje bunu gizlemek yerine listeler.",
+                "olmayan varsa, proje bunu gizlemek yerine listeler. "
+                "'Resmî eşiği olmayan' bunlardan AYRI bir durumdur: orada "
+                "boşluk bizde değil, talimat eşik yerine başka bir ölçüt "
+                "koymuştur.",
     }

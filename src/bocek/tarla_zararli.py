@@ -143,6 +143,7 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
                  "verim kaybı olmadan kaldırır; fenolojik döneme göre bu "
                  "tolerans %40'a çıkabilir. İlaçlama 1. dölde ilk 4. dönem "
                  "larvalar görüldüğünde yapılır"),
+        "esik_turu": "yok",
         "esik_kaynak": "ZMTT",
         "depoda_da": False, "kaynak": "ZMTT",
         "belirti": ("Ergin ve larva yaprağı tamamen yer; ağır bulaşmada "
@@ -284,14 +285,23 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "urunler": ("Kuru fasulye",), "onem": 3,
         "zarar_sekli": "tohum_delme", "hedef_organ": "tohum",
         "vektor": (), "kritik_aylar": (8, 9, 10, 11, 12),
-        "dogal_dusman": (),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": True, "kaynak": "literatür",
+        "dogal_dusman": ("Dinarmus laticeps (larva parazitoidi)",),
+        "esik": ("Talimat ekonomik zarar eşiği VERMİYOR; karar fenolojik "
+                 "döneme bağlanmış: alt kapsüller kuru oluma girer girmez "
+                 "10-14 gün ara ile 2-3 tarla ilaçlaması. Tarla "
+                 "ilaçlamasının etkisi %100 olmadığı için bulaşık alanda "
+                 "ambar tarafı da gerekir."),
+        "esik_turu": "yok",
+        "esik_kaynak": "ZMTT",
+        "depoda_da": True, "kaynak": "ZMTT",
         "belirti": ("Larva tohumun içini yer, çıkış deliği bırakır. "
                     "Çimlenme ve pazar değeri biter."),
         "not_": ("Tarlada bulaşır, DEPODA çoğalır. Muş'ta kuru fasulye "
-                 "ambar şartlarında tutulduğu için depo tarafı belirleyici."),
+                 "ambar şartlarında tutulduğu için depo tarafı belirleyici. "
+                 "Talimatın kültürel önlemleri ilaçtan önce geliyor: GEÇ "
+                 "EKİM bulaşmayı belirgin azaltıyor, hasat ve harmanın "
+                 "gecikmesi ise artırıyor; temiz tohumluk ve temizlenmiş "
+                 "ambar şart."),
     },
     {
         "ad": "Bakla yaprak biti", "latince": "Aphis fabae",
@@ -300,11 +310,20 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": ("Fasulye sarı mozaik virüsü",),
         "kritik_aylar": (5, 6, 7),
         "dogal_dusman": ("gelin böceği", "altın gözlü böcek", "Aphidius spp."),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": False, "kaynak": "literatür",
+        "esik": ("Bir yaprağa düşen zararlı sayısı 10-20 adet ise "
+                 "mücadeleye başlanır. Nisandan itibaren tarlaya köşegen "
+                 "girilerek 3-5 adımda bir taze yaprak koparılır; "
+                 "baklagillerde 25-50 yaprakta lupla sayılır."),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": "Sürgün uçlarında koloni; emgi ve virüs taşıma.",
-        "not_": "Hastalık kataloğundaki fasulye sarı mozaiğinin vektörü.",
+        "not_": ("Hastalık kataloğundaki fasulye sarı mozaiğinin vektörü. "
+                 "Talimat eşiğin yanına şunu da koyuyor: ilaçlamaya karar "
+                 "vermeden ÖNCE parazitoit ve predatörlerin etkinliği "
+                 "dikkate alınmalı. Sünede olduğu gibi, faydalı burada da "
+                 "kararın parçası. Ayrıca kuraklık ve sıcak popülasyonu "
+                 "aniden düşürüyor; bu da ilaçlamadan önce beklenecek bir "
+                 "sebep."),
     },
     # ------------------------------------------- Yonca / Korunga / Fiğ
     {

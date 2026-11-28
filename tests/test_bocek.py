@@ -185,7 +185,10 @@ def test_kaynak_disiplini_korunuyor():
           50 yaprakta varlık)
       Endüstri ve Süs Bitkileri Zararlıları ZMTT, Pancar pireleri bölümü
         - Pancar piresi (asimilasyon alanının %20'si zarar görmüşse)
-    Belgede bulunmayan eşik UYDURULMADI; yedi zararlı hâlâ eşiksiz.
+      ZMTT Cilt III (Sebze Zararlıları)
+        - Bakla yaprak biti (yaprak başına 10-20 birey, 25-50 yaprakta)
+        - Fasulye tohum böceği (talimat EŞİK VERMİYOR; fenolojik zamanlama)
+    Belgede bulunmayan eşik UYDURULMADI; beş zararlı hâlâ eşiksiz.
 
     Hububat Zararlıları ZMTT de okundu ama kımıl, ekin sap arısı ve
     hububat yaprak bitlerini İÇERMİYOR: o cilt mısır ve çim zararlıları
@@ -195,7 +198,8 @@ def test_kaynak_disiplini_korunuyor():
     assert dogrulanmis == {"Süne", "Patates böceği", "Yonca hortumlu böceği",
                            "Ekin kambur böceği", "Mısır kurdu", "Bozkurt",
                            "Patates güvesi", "Yeşil şeftali yaprak biti",
-                           "Pancar piresi"}
+                           "Pancar piresi", "Bakla yaprak biti",
+                           "Fasulye tohum böceği"}
     for kayit in (*fy.FAYDALILAR, *ps.ETKI_GRUPLARI):
         assert kayit["kaynak"] == "literatür", kayit.get("ad", kayit.get("grup"))
 

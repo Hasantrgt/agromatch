@@ -5,6 +5,9 @@
 const ADIM_ROZET = {
   // 1. adım
   "eşik bilinmiyor": "r-kotu",
+  // "resmî eşik yok" boşluk DEĞİL: talimat eşik yerine başka bir ölçüt
+  // koymuş. Kırmızı göstermek onu eksiklik gibi okutur.
+  "resmî eşik yok": "r-notr",
   "eşik var — ölçüm gerekli": "r-orta",
   // 2. adım
   "var": "r-iyi",

@@ -44,6 +44,23 @@ def test_adim_sirasi_esikle_basliyor():
     assert d["adimlar"][2]["ad"] == "İlaç gerekiyorsa hangisi"
 
 
+def test_resmi_esik_yok_ayri_bir_cevap():
+    """"Talimat eşik vermiyor" ile "eşiği bilmiyoruz" aynı şey değil.
+
+    İkisini birleştirmek Bakanlığın verdiği kararı boşluk gibi gösterir;
+    tersi daha kötüdür — eşik vermeyen bir zararlıda "ölçüm gerekli"
+    demek, olmayan bir sayıyı aratır. Patates böceğinde tam bu oluyordu.
+    """
+    b = kr.bosluklar()
+    assert b["resmi_esigi_olmayan"], "resmî eşiği olmayan kayıt kalmamış"
+    for ad in b["resmi_esigi_olmayan"]:
+        a = kr.karar(ad)["adimlar"][0]
+        assert a["durum"] == "resmî eşik yok", ad
+        assert a["esik"], f"{ad}: eşik yerine konan ölçüt yazılmamış"
+        assert ad not in b["esigi_bilinmeyen"], (
+            f"{ad}: hem resmî eşiksiz hem bilinmeyen sayılamaz")
+
+
 @pytest.mark.parametrize("ad", [z["ad"] for z in tz.ZARARLILAR])
 def test_esigi_bilinmeyen_zararliya_ilaclama_onerilmiyor(ad: str):
     """Eşik yoksa 1. adım bunu açıkça söylemeli.
@@ -54,6 +71,9 @@ def test_esigi_bilinmeyen_zararliya_ilaclama_onerilmiyor(ad: str):
     d = kr.karar(ad)
     esik_adimi = d["adimlar"][0]
     z = next(x for x in tz.ZARARLILAR if x["ad"] == ad)
+    if z.get("esik_turu") == "yok":
+        assert esik_adimi["durum"] == "resmî eşik yok", ad
+        return
     if not z.get("esik"):
         assert esik_adimi["durum"] == "eşik bilinmiyor", ad
         assert "önerilmez" in esik_adimi["aciklama"] \
@@ -175,5 +195,5 @@ def test_zmtt_taramasi_esiksizleri_azaltti():
     Sayı değişirse BULGULAR.md'deki 13. bulgu da güncellenmeli.
     """
     b = kr.bosluklar()
-    assert len(b["esigi_bilinmeyen"]) == 7, (
+    assert len(b["esigi_bilinmeyen"]) == 5, (
         "eşiksiz zararlı sayısı değişti — BULGULAR.md güncellenmeli")

@@ -300,7 +300,7 @@ eder, ürün yine kaybedilir — üstelik "kalıntısız yol işe yaramıyor" ka
 
 | | |
 |---|---|
-| Eşiği bilinmeyen zararlı | 7 / 17 |
+| Eşiği bilinmeyen zararlı | 5 / 17 |
 | Kalıntısız yolu olmayan | 7 / 17 |
 | Hiçbir seçeneği olmayan | 0 |
 
@@ -308,9 +308,15 @@ Eşiği bilinmeyen zararlıya **ilaçlama önerilmiyor** — "eşik yok" diye ya
 ve karar tarlayı gören ziraat mühendisine bırakılıyor.
 
 **ZMTT taraması (28 Kasım 2026).** Bakanlık TAGEM Entegre Mücadele Teknik
-Talimatları okunarak beş eşik daha işlendi ve eşiksiz zararlı **12'den 7'ye**
-indi: mısır kurdu, bozkurt, patates güvesi, yeşil şeftali yaprak biti ve
-pancar piresi. Belgede bulunmayan eşik uydurulmadı.
+Talimatları okunarak altı eşik işlendi ve eşiksiz zararlı **12'den 5'e**
+indi: mısır kurdu, bozkurt, patates güvesi, yeşil şeftali yaprak biti,
+pancar piresi ve bakla yaprak biti. Belgede bulunmayan eşik uydurulmadı.
+
+Beş belge okundu, üçü işe yaradı. Okunup **hiçbir şey vermeyen** ikisi de
+kayda değer: "Hububat Zararlıları ZMTT" kımıl, ekin sap arısı ve hububat
+yaprak bitlerini içermiyor (mısır ve çim zararlıları için bir ek cilt),
+"ZMTT Cilt 6" ise nematod ve yabancı ot cildi. Belgenin adı içeriğini
+garanti etmiyor.
 
 Bunlardan ikisi karar sisteminin cevabını değiştiriyor:
 
@@ -323,7 +329,12 @@ Bunlardan ikisi karar sisteminin cevabını değiştiriyor:
 - **Patates güvesi** — depo sıcaklığı **10 °C'nin altındayken zararlı
   gelişemiyor**. Tarlada başlayıp depoda süren tek zararlının kararı, böylece
   3. kısmın depo tarafına bağlanıyor.
-- **Pancar piresi** — eşik bir böcek sayısı değil, **yaprak alanı kaybı**:
+- **Bakla yaprak biti** — eşik yaprak başına 10–20 birey; ama talimat
+  yanına şunu koyuyor: *ilaçlamaya karar vermeden önce parazitoit ve
+  predatörlerin etkinliği dikkate alınmalı.* Sünede olduğu gibi faydalı,
+  kararın parçası. Projenin "faydalı kararı değiştirir" savının ikinci
+  resmî dayanağı.
+- **Pancar piresi** — eşik bir böcek sayısı değil, **yaklaşık yaprak alanı kaybı**:
   asimilasyon alanının %20'si. Üstelik talimat üç ayrı gerekçeyle ilaçlamaya
   karşı duruyor: tohum ilacı çıkıştan sonra 35–40 gün koruyor, sonraki
   döllerin zararını bitki telafi ediyor, larvaların köke zararı önemsiz.
@@ -422,6 +433,36 @@ gerekir (ürünün toprak örtüsü / çok yıllık mı). Uydurulmadı; boşluk
 olarak yazıldı.
 
 **Nerede.** `cati.toprak_girdisi()`, `cati.kirec_uyarisi()` · `tests/test_cati.py`
+
+## 16 · "Talimat eşik vermiyor", "eşiği bilmiyoruz" demek değil
+
+**Soru.** ZMTT taramasında bir zararlının belgesinde eşik yerine başka bir
+ölçüt bulundu. Karar sistemi bunu nasıl göstermeli?
+
+**Bulgu.** Göstermiyordu — ve yanlış gösteriyordu. Karar akışının ilk adımı
+yalnızca iki cevap biliyordu: *eşik var* ya da *eşik bilinmiyor*. Oysa üç
+durum var:
+
+| cevap | anlamı |
+| --- | --- |
+| eşik var | karar sayıma bağlı |
+| **resmî eşik yok** | **talimat eşik VERMİYOR ve bunu açıkça yazıyor; karar başka bir ölçüte bağlı** |
+| eşik bilinmiyor | bizde kayıt yok — ilaçlama önerilmez |
+
+Bu ayrım yokken **patates böceği** kaydı kendi kendisiyle çelişiyordu: eşik
+metni *"kimyasal mücadelede EŞİK YOKTUR"* diye başlıyor, ama karar akışı o
+kaydı "eşik var — ölçüm gerekli" diye gösteriyordu. Yani olmayan bir sayıyı
+saydırıyordu. **Fasulye tohum böceğinde** de aynısı olacaktı: talimat eşik
+vermiyor, mücadeleyi fenolojik döneme bağlıyor (alt kapsüller kuru oluma
+girince).
+
+İkisini "eşiği bilinmeyen" kovasına atmak da yanlış olurdu: orada boşluk
+bizde değil, Bakanlık eşik yerine başka bir ölçüt koymuş.
+
+**Sınır.** Bu ayrımın hangi kayıtlara konacağı belge okunarak elle
+belirleniyor; otomatik bir kural yok. Şimdilik iki kayıtta var.
+
+**Nerede.** `bocek/karar.py` (`_esik_adimi`, `bosluklar`) · `tests/test_bocek_karar.py`
 
 ---
 
