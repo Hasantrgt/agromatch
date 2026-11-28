@@ -358,7 +358,13 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "esik_kaynak": None,
         "depoda_da": False, "kaynak": "literatür",
         "belirti": "Sürgünde koloni, bitki zayıflar, kaba yem kalitesi düşer.",
-        "not_": "Doğal düşman baskısı çoğu yıl ilaç gerektirmeden yeterlidir.",
+        "not_": ("Doğal düşman baskısı çoğu yıl ilaç gerektirmeden "
+                 "yeterlidir. EŞİK EKSİKLİĞİ ARAMA YETERSİZLİĞİ DEĞİL: "
+                 "ZMTT'nin altı ciltlik setinde bu tür yok; Cilt VI'daki "
+                 "genel indeks (I-VI) tarandı ve ne Acyrthosiphon ne de "
+                 "'bezelye yaprakbiti' adıyla kayıt bulundu. Setteki yem "
+                 "bitkisi zararlıları yalnızca yonca hortumlu böceği ve "
+                 "korungada çadır tırtılı (ikisi de Cilt II)."),
     },
     {
         "ad": "Baklagil tohum hortumluları", "latince": "Apion spp.",
@@ -372,7 +378,10 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "belirti": ("Larva tohum taslağını yer; tohumluk üretiminde verim "
                     "düşer. Kaba yem amaçlı üretimde zarar önemsizdir."),
         "not_": ("Muş'ta korunga ve fiğ ağırlıkla KABA YEM için üretiliyor; "
-                 "bu yüzden ekonomik zarar yalnızca tohumluk tarlalarında."),
+                 "bu yüzden ekonomik zarar yalnızca tohumluk tarlalarında. "
+                 "ZMTT setinde bu grup da yok: genel indekste yalnızca "
+                 "'Mercimekte Apion (Apion arrogans)' var ve o Cilt III'te, "
+                 "farklı bir tür ve farklı bir üründür."),
     },
 )
 

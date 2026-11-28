@@ -340,6 +340,24 @@ Bunlardan ikisi karar sisteminin cevabını değiştiriyor:
   döllerin zararını bitki telafi ediyor, larvaların köke zararı önemsiz.
   Yani eşik aşılsa bile sıra önce tohum ilacında.
 
+**Kalan beşin nerede olduğu da doğrulandı.** ZMTT setinin Cilt VI'sı
+I–VI ciltlerinin genel indeksini taşıyor; o indeks tarandı:
+
+| zararlı | nerede |
+| --- | --- |
+| Kımıl (*Aelia* spp.) | Cilt I |
+| Ekin sap arıları (*Cephus pygmaeus*) | Cilt I |
+| Hububat yaprak bitleri (*Rhopalosiphum padi*, *Sitobion avenae*) | Cilt I |
+| Yonca yaprak biti (*Acyrthosiphon pisum*) | **sette yok** |
+| Baklagil tohum hortumluları (*Apion* spp.) | **sette yok** |
+
+Son ikisi için eşik eksikliği **arama yetersizliği değil**: indekste ne
+*Acyrthosiphon* ne de "bezelye yaprakbiti" kaydı var, *Apion* ise yalnızca
+mercimekte ve farklı bir türle (*A. arrogans*, Cilt III) geçiyor. Yem
+bitkisi zararlılarından sette sadece yonca hortumlu böceği ve korungada
+çadır tırtılı bulunuyor. Bu artık kaynağıyla birlikte söylenebilen bir
+boşluk.
+
 Bir de tarama sırasında kendi hatamı yakaladım: patates yaprak biti eşiği
 önce yanlışlıkla **hububat yaprak bitleri** kaydına yazıldı — iki kaydın
 doğal düşman listeleri birebir aynıydı ve yama ilk eşleşmeye tutundu.
