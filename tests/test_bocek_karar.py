@@ -123,3 +123,57 @@ def test_ozet_cumlesi_her_zararli_icin_uretiliyor():
     for z in tz.ZARARLILAR:
         o = kr.karar(z["ad"])["ozet"]
         assert o and z["ad"] in o, f"{z['ad']}: özet cümlesi eksik"
+
+
+# ---------------------------------------------- ZMTT eşikleri
+URUN_IZI = {"patates": "Patates", "mısır": "Silajlık mısır",
+            "pancar": "Şeker pancarı", "buğday": "Buğday", "arpa": "Arpa",
+            "yonca": "Yonca", "korunga": "Korunga", "fiğ": "Fiğ",
+            "fasulye": "Kuru fasulye"}
+
+
+@pytest.mark.parametrize("ad", [z["ad"] for z in tz.ZARARLILAR])
+def test_esik_metni_baska_urunun_esigi_degil(ad: str):
+    """EŞİK YANLIŞ KAYDA YAZILMIŞ OLMASIN.
+
+    ZMTT eşikleri elle işlenirken bir eşik metni yanlış zararlıya
+    gitti: patates yaprak biti eşiği hububat yaprak bitlerine yazıldı.
+    Kayıtların doğal düşman listeleri birebir aynıydı ve yama ilk
+    eşleşmeye tutundu.
+
+    Bir eşik metni, zararlının ürünleri arasında OLMAYAN bir ürünü
+    anıyorsa o eşik başka bir kaydın eşiğidir.
+    """
+    z = next(x for x in tz.ZARARLILAR if x["ad"] == ad)
+    esik = z.get("esik")
+    if not esik:
+        return
+    dusuk = esik.lower()
+    for iz, urun in URUN_IZI.items():
+        if iz in dusuk:
+            assert urun in z["urunler"], (
+                f"{ad}: eşik metni '{iz}' diyor ama bu zararlının ürünleri "
+                f"{z['urunler']} — eşik yanlış kayda yazılmış olabilir")
+
+
+@pytest.mark.parametrize("ad", [z["ad"] for z in tz.ZARARLILAR])
+def test_esik_ve_kaynagi_birlikte(ad: str):
+    """Eşik varsa kaynağı da olmalı; kaynak varsa eşik de."""
+    z = next(x for x in tz.ZARARLILAR if x["ad"] == ad)
+    assert bool(z.get("esik")) == bool(z.get("esik_kaynak")), (
+        f"{ad}: eşik ve esik_kaynak birlikte dolu olmalı")
+    if z.get("esik"):
+        # Eşik bir SAYIDIR: içinde rakam yoksa eşik değil, tavsiyedir.
+        assert any(c.isdigit() for c in z["esik"]), (
+            f"{ad}: eşik metninde sayı yok")
+        assert z["esik_kaynak"] in ("ZMTT", "literatür"), ad
+
+
+def test_zmtt_taramasi_esiksizleri_azaltti():
+    """Bulgu kilidi: ZMTT taraması sonrası eşiksiz zararlı sayısı.
+
+    Sayı değişirse BULGULAR.md'deki 13. bulgu da güncellenmeli.
+    """
+    b = kr.bosluklar()
+    assert len(b["esigi_bilinmeyen"]) == 8, (
+        "eşiksiz zararlı sayısı değişti — BULGULAR.md güncellenmeli")

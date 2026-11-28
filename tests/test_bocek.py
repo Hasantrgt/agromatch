@@ -171,10 +171,24 @@ def test_kaynak_disiplini_korunuyor():
     eşik YANLIŞ çıktı (süne, patates böceği, yonca hortumlu böceği),
     birinde eşik hiç yazılmamıştı ve belgede vardı (ekin kambur böceği).
     Listeye yeni bir ZMTT eklenecekse gerçekten belgeden gelmiş olmalı.
+
+    GÜNCELLEME (28 Kasım 2026): dört kayıt daha eklendi. Kaynakları
+    Bakanlık TAGEM Entegre Mücadele Teknik Talimatlarıdır ve belgeler
+    okunarak işlendi:
+      Mısır Entegre Mücadele Teknik Talimatı, EK-1 çizelgesi
+        - Mısır kurdu   (1. üründe %5 bulaşma / 2. üründe 1 yumurta paketi)
+        - Bozkurt       (mısırda m² veya 3 m sırada >=2 yenik/kesik bitki)
+      Patates Entegre Mücadele Teknik Talimatı, EK-1 çizelgesi ve 7.1.4
+        - Bozkurt       (patateste dikimde m²'de 2-3 larva)
+        - Patates güvesi (eşeysel çekici tuzakta 1 ergin)
+        - Yeşil şeftali yaprak biti (yemeklikte önerilmiyor; tohumlukta
+          50 yaprakta varlık)
+    Belgede bulunmayan eşik UYDURULMADI; sekiz zararlı hâlâ eşiksiz.
     """
     dogrulanmis = {z["ad"] for z in tz.ZARARLILAR if z["kaynak"] == "ZMTT"}
     assert dogrulanmis == {"Süne", "Patates böceği", "Yonca hortumlu böceği",
-                           "Ekin kambur böceği"}
+                           "Ekin kambur böceği", "Mısır kurdu", "Bozkurt",
+                           "Patates güvesi", "Yeşil şeftali yaprak biti"}
     for kayit in (*fy.FAYDALILAR, *ps.ETKI_GRUPLARI):
         assert kayit["kaynak"] == "literatür", kayit.get("ad", kayit.get("grup"))
 

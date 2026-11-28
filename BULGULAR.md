@@ -300,12 +300,35 @@ eder, ürün yine kaybedilir — üstelik "kalıntısız yol işe yaramıyor" ka
 
 | | |
 |---|---|
-| Eşiği bilinmeyen zararlı | 12 / 17 |
+| Eşiği bilinmeyen zararlı | 8 / 17 |
 | Kalıntısız yolu olmayan | 7 / 17 |
 | Hiçbir seçeneği olmayan | 0 |
 
 Eşiği bilinmeyen zararlıya **ilaçlama önerilmiyor** — "eşik yok" diye yazılıyor
 ve karar tarlayı gören ziraat mühendisine bırakılıyor.
+
+**ZMTT taraması (28 Kasım 2026).** Bakanlık TAGEM Entegre Mücadele Teknik
+Talimatları okunarak dört eşik daha işlendi ve eşiksiz zararlı **12'den 8'e**
+indi: mısır kurdu, bozkurt, patates güvesi ve yeşil şeftali yaprak biti.
+Belgede bulunmayan eşik uydurulmadı.
+
+Bunlardan ikisi karar sisteminin cevabını değiştiriyor:
+
+- **Yeşil şeftali yaprak biti** — talimat yemeklik patateste *"mücadele
+  eşiğine ulaşılmadığı için kimyasal mücadele önerilmemektedir"* diyor.
+  Tohumluk patateste ise virüs yayılımı için gerekebilir ve orada eşik
+  bir yoğunluk değil **varlık**: 50 yaprakta tek bir yaprak biti bulunması
+  yeter. Yani kararı zararlının yoğunluğu değil, ürünün ne için
+  yetiştirildiği belirliyor.
+- **Patates güvesi** — depo sıcaklığı **10 °C'nin altındayken zararlı
+  gelişemiyor**. Tarlada başlayıp depoda süren tek zararlının kararı, böylece
+  3. kısmın depo tarafına bağlanıyor.
+
+Bir de tarama sırasında kendi hatamı yakaladım: patates yaprak biti eşiği
+önce yanlışlıkla **hububat yaprak bitleri** kaydına yazıldı — iki kaydın
+doğal düşman listeleri birebir aynıydı ve yama ilk eşleşmeye tutundu.
+`bosluklar()` bunu hemen gösterdi. Artık bir test, eşik metninin zararlının
+ürünleri arasında olmayan bir ürünü anmasını yakalıyor.
 
 Karar sistemi bilerek **etki grubuna** kadar götürür; ticari ürün adı, doz ve
 bekleme süresi vermez. Bunlar reçetedir. (Proje bir zamanlar bekleme süresi

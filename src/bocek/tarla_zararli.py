@@ -160,13 +160,23 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
                    "Patates yaprak kıvrılma virüsü (PLRV)"),
         "kritik_aylar": (5, 6, 7, 8),
         "dogal_dusman": ("gelin böceği", "altın gözlü böcek", "Aphidius spp."),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": False, "kaynak": "literatür",
+        "esik": ("Patateste iki ayrı durum: YEMEKLİK patateste talimat "
+                 "\"mücadele eşiğine ulaşılmadığı için kimyasal mücadele "
+                 "önerilmemektedir\" diyor. TOHUMLUK patateste virüs "
+                 "yayılımını önlemek için gerekebilir; bitki çıkışından "
+                 "itibaren tarlaya köşegen girilerek rasgele 50 yaprakta "
+                 "sayım yapılır ve yaprak biti VARLIĞI belirlendiğinde "
+                 "mücadele yapılır. Şeker pancarı için ayrı eşik "
+                 "bulunamadı."),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": ("Emgi zararı küçüktür; asıl zarar TAŞIDIĞI VİRÜSTÜR. "
                     "Tohumluk patateste belirleyici zararlıdır."),
         "not_": ("Hastalık kataloğundaki iki virüsün vektörü budur — "
-                 "ikinci kısımla üçüncü kısmın birleştiği yer."),
+                 "ikinci kısımla üçüncü kısmın birleştiği yer. Eşik de bu "
+                 "ayrımı yapıyor: VERİM için ilaçlama önerilmiyor, VİRÜS "
+                 "için tohumlukta öneriliyor. Yani kararı belirleyen "
+                 "zararlının yoğunluğu değil, ürünün ne için yetiştirildiği."),
     },
     {
         "ad": "Patates güvesi", "latince": "Phthorimaea operculella",
@@ -174,13 +184,18 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "zarar_sekli": "sap_ici", "hedef_organ": "yaprak ve yumru",
         "vektor": (), "kritik_aylar": (7, 8, 9, 10),
         "dogal_dusman": ("parazitoit arılar",),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": True, "kaynak": "literatür",
+        "esik": ("Yeşil aksamda eşeysel çekici tuzakta 1 ergin "
+                 "yakalandığında mücadele kararı verilir. Depoda yumru "
+                 "gözle incelenir; depo sıcaklığı 10 °C'nin altındayken "
+                 "zararlı gelişemediği için zarar yapamaz."),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": True, "kaynak": "ZMTT",
         "belirti": ("Larva yaprakta galeri açar, yumruda ise içeri girer. "
                     "Depoda zarar sürer."),
         "not_": ("Tarlada başlayıp DEPODA devam eden tek zararlı — tarla "
-                 "ile ambar kısmını birbirine bağlar."),
+                 "ile ambar kısmını birbirine bağlar. Talimatın 10 °C "
+                 "sınırı bu bağın sayısal karşılığıdır: depo sıcaklığı "
+                 "kararı tarladaki kadar belirliyor."),
     },
     # -------------------------------------------------- Şeker pancarı
     {
@@ -214,12 +229,20 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "zarar_sekli": "kok_yeme", "hedef_organ": "kök boğazı",
         "vektor": (), "kritik_aylar": (4, 5, 6),
         "dogal_dusman": ("yer böcekleri (Carabidae)",),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": False, "kaynak": "literatür",
+        "esik": ("Ürüne göre ayrı: MISIRDA m²'de ya da 3 m'lik sıra "
+                 "üzerinde en az 2 yenik veya kesik bitki görüldüğünde "
+                 "yüzey ilaçlaması. PATATESTE dikim anında m²'de 2-3 larva, "
+                 "dikimden sonra %1-3 larva veya kesik bitki. Örnekleme "
+                 "fide döneminde, serpme ekimde 1/4 m²'lik çerçeveyle, "
+                 "sıraya ekimde 3 m sıra üzerinde, en az 10 ayrı noktada."),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": ("Larva geceleri fideyi kök boğazından keser; sabah "
                     "devrilmiş bitkiler görülür. Zarar ocak ocaktır."),
-        "not_": "Toprak işleme ve yabancı ot temizliği popülasyonu düşürür.",
+        "not_": ("Toprak işleme ve yabancı ot temizliği popülasyonu "
+                 "düşürür. Şeker pancarı için talimatta ayrı bir eşik "
+                 "bulunamadı; yukarıdaki iki değer mısır ve patates "
+                 "içindir."),
     },
     # -------------------------------------------------- Silajlık mısır
     {
@@ -228,14 +251,23 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "zarar_sekli": "sap_ici", "hedef_organ": "sap ve koçan",
         "vektor": (), "kritik_aylar": (6, 7, 8),
         "dogal_dusman": ("Trichogramma yumurta parazitoitleri",),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": False, "kaynak": "literatür",
+        "esik": ("1. üründe %5 bulaşma, 2. üründe 1 yumurta paketi. Bitki "
+                 "boyu 40-50 cm'e ulaştığında başlanır; 100 bitkide yumurta "
+                 "paketi aranır (yaprağın alt yüzü). Işık tuzağında 10-15 "
+                 "ergin/hafta yakalanması ve ilk yumurta paketinin görülmesi "
+                 "birlikte değerlendirilir."),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": ("Larva sapın içinde galeri açar; sap kırılır, koçan "
                     "beslenemez. Açtığı yara Fusarium'a kapı olur."),
         "not_": ("Sap içine girdikten sonra ilaç ulaşmaz; zamanlama "
                  "yumurta açılımına göre yapılır. Anız parçalama kışlayan "
-                 "larvayı düşürür."),
+                 "larvayı düşürür. EŞİĞİN İKİ KOLU VAR ve hangisinin "
+                 "geçerli olduğu ekimin birinci mi ikinci ürün mü olduğuna "
+                 "bağlıdır: talimat 1. üründe (Karadeniz Bölgesi hariç) "
+                 "genellikle ilaçlamaya gerek olmadığını söylüyor. Muş'ta "
+                 "silajlık mısırın hangi kola girdiği ekim zamanıyla "
+                 "belirlenir; proje bunu kaydetmiyor."),
     },
     # ---------------------------------------------------- Kuru fasulye
     {
