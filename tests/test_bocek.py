@@ -188,7 +188,13 @@ def test_kaynak_disiplini_korunuyor():
       ZMTT Cilt III (Sebze Zararlıları)
         - Bakla yaprak biti (yaprak başına 10-20 birey, 25-50 yaprakta)
         - Fasulye tohum böceği (talimat EŞİK VERMİYOR; fenolojik zamanlama)
-    Belgede bulunmayan eşik UYDURULMADI; beş zararlı hâlâ eşiksiz.
+      ZMTT Cilt I (Tahıl Zararlıları)
+        - Kımıl (m²'de 2 kışlamış ergin / 10 nimf-yeni nesil ergin)
+        - Ekin sap arısı (KİMYASAL MÜCADELE ÖNERİLMİYOR)
+        - Hububat yaprak bitleri (sayısal eşik yok; sürvey + kurum kararı)
+    Belgede bulunmayan eşik UYDURULMADI. Geriye kalan iki zararlı
+    (yonca yaprak biti, baklagil tohum hortumluları) ZMTT'nin altı
+    ciltlik setinde HİÇ YOK; Cilt VI'nın genel indeksiyle doğrulandı.
 
     Hububat Zararlıları ZMTT de okundu ama kımıl, ekin sap arısı ve
     hububat yaprak bitlerini İÇERMİYOR: o cilt mısır ve çim zararlıları
@@ -199,7 +205,8 @@ def test_kaynak_disiplini_korunuyor():
                            "Ekin kambur böceği", "Mısır kurdu", "Bozkurt",
                            "Patates güvesi", "Yeşil şeftali yaprak biti",
                            "Pancar piresi", "Bakla yaprak biti",
-                           "Fasulye tohum böceği"}
+                           "Fasulye tohum böceği", "Kımıl",
+                           "Ekin sap arısı", "Hububat yaprak bitleri"}
     for kayit in (*fy.FAYDALILAR, *ps.ETKI_GRUPLARI):
         assert kayit["kaynak"] == "literatür", kayit.get("ad", kayit.get("grup"))
 
@@ -285,8 +292,17 @@ def test_ekin_kambur_esigi_iki_kademeli():
 
 def test_dogrulanan_esikler_sayi_iceriyor():
     """ZMTT etiketli her eşik ya somut bir sayı verir ya da eşik
-    olmadığını açıkça söyler — ikisinin arası yok."""
+    olmadığını açıkça söyler — ikisinin arası yok.
+
+    İkinci kol esik_turu="yok" ile işaretlenir: orada sayı aramak
+    yanlıştır, çünkü sayının olmaması bulgunun kendisidir (talimat
+    eşik vermiyor). Sayı da yoksa işaret de yoksa, kayıt yarım demektir.
+    """
     import re
     for z in tz.ZARARLILAR:
-        if z["esik_kaynak"] == "ZMTT":
-            assert re.search(r"\d", z["esik"]), z["ad"]
+        if z["esik_kaynak"] != "ZMTT":
+            continue
+        if z.get("esik_turu") == "yok":
+            assert z["esik"], z["ad"]
+            continue
+        assert re.search(r"\d", z["esik"]), z["ad"]

@@ -36,6 +36,11 @@ function adimKutusu(a) {
         + (a.esik_kaynak ? "  [" + a.esik_kaynak + "]" : "") }));
   }
 
+  if (a.uyari) {
+    govde.append(el("p", { class: "uyari",
+      style: "margin-top:6px;white-space:normal", text: a.uyari }));
+  }
+
   if (a.secenekler && a.secenekler.length) {
     govde.append(el("div", { style: "margin-top:8px;display:flex;"
       + "flex-wrap:wrap;gap:6px" },

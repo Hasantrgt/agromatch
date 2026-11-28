@@ -123,7 +123,7 @@ def _ilacsiz_adimi(ad: str) -> dict[str, Any]:
                         "not_": g.get("not_", "")} for g in yollar]}
 
 
-def _ilac_adimi(ad: str) -> dict[str, Any]:
+def _ilac_adimi(ad: str, z: dict[str, Any] | None = None) -> dict[str, Any]:
     """3. adım: ilaç gerekiyorsa hangi ETKİ GRUBU.
 
     Gruplar faydalıya verdikleri yüke göre sıralanır — en az vuran önce.
@@ -145,6 +145,7 @@ def _ilac_adimi(ad: str) -> dict[str, Any]:
                      "ziraat mühendisinin işidir."
                      if yukler else
                      "Bu zararlı için kayıtlı bir kimyasal grup yok."),
+        "uyari": (z or {}).get("ilac_uyarisi", ""),
         "secenekler": yukler}
 
 
@@ -178,7 +179,7 @@ def karar(zararli: str, *, ergin_m2: float | None = None,
         return {"var": False, "sebep": f"'{zararli}' kayıtlı zararlı değil"}
 
     ilacsiz = _ilacsiz_adimi(zararli)
-    ilac = _ilac_adimi(zararli)
+    ilac = _ilac_adimi(zararli, z)
     return {
         "var": True,
         "zararli": z["ad"], "latince": z["latince"],

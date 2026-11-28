@@ -300,7 +300,9 @@ eder, ürün yine kaybedilir — üstelik "kalıntısız yol işe yaramıyor" ka
 
 | | |
 |---|---|
-| Eşiği bilinmeyen zararlı | 5 / 17 |
+| Sayısal eşiği olan | 11 / 17 |
+| Talimatın eşik vermediği | 4 / 17 |
+| Eşiği bilinmeyen | 2 / 17 |
 | Kalıntısız yolu olmayan | 7 / 17 |
 | Hiçbir seçeneği olmayan | 0 |
 
@@ -308,9 +310,14 @@ Eşiği bilinmeyen zararlıya **ilaçlama önerilmiyor** — "eşik yok" diye ya
 ve karar tarlayı gören ziraat mühendisine bırakılıyor.
 
 **ZMTT taraması (28 Kasım 2026).** Bakanlık TAGEM Entegre Mücadele Teknik
-Talimatları okunarak altı eşik işlendi ve eşiksiz zararlı **12'den 5'e**
-indi: mısır kurdu, bozkurt, patates güvesi, yeşil şeftali yaprak biti,
-pancar piresi ve bakla yaprak biti. Belgede bulunmayan eşik uydurulmadı.
+Altı resmî belge okundu ve **eşiği bilinmeyen zararlı 12'den 2'ye indi.**
+Dokuz kayda eşik işlendi, dördünde talimatın eşik VERMEDİĞİ tespit
+edildi. Belgede bulunmayan eşik uydurulmadı.
+
+Kalan iki zararlı — yonca yaprak biti ve baklagil tohum hortumluları —
+ZMTT'nin altı ciltlik setinde **hiç yok**; bu, Cilt VI'nın I–VI genel
+indeksi taranarak doğrulandı. Yani oradaki eksik, arama yetersizliği
+değil, kaynakta bulunmama.
 
 Beş belge okundu, üçü işe yaradı. Okunup **hiçbir şey vermeyen** ikisi de
 kayda değer: "Hububat Zararlıları ZMTT" kımıl, ekin sap arısı ve hububat
@@ -318,7 +325,7 @@ yaprak bitlerini içermiyor (mısır ve çim zararlıları için bir ek cilt),
 "ZMTT Cilt 6" ise nematod ve yabancı ot cildi. Belgenin adı içeriğini
 garanti etmiyor.
 
-Bunlardan ikisi karar sisteminin cevabını değiştiriyor:
+Bunlardan dördü karar sisteminin cevabını değiştiriyor:
 
 - **Yeşil şeftali yaprak biti** — talimat yemeklik patateste *"mücadele
   eşiğine ulaşılmadığı için kimyasal mücadele önerilmemektedir"* diyor.
@@ -329,6 +336,19 @@ Bunlardan ikisi karar sisteminin cevabını değiştiriyor:
 - **Patates güvesi** — depo sıcaklığı **10 °C'nin altındayken zararlı
   gelişemiyor**. Tarlada başlayıp depoda süren tek zararlının kararı, böylece
   3. kısmın depo tarafına bağlanıyor.
+- **Ekin sap arısı** — talimat **kimyasal mücadeleyi hiç önermiyor**;
+  yalnızca kültürel önlem sayıyor. Üstelik bir uyarısı doğrudan bu projeye
+  bakıyor: parazitoitlerin ergin çıkışı zararlınınkiyle aynı güne denk
+  geldiği için, o günlerde **başka** hububat zararlısına yapılacak
+  ilaçlamada yan etkisi az ürün seçilmeli. Bu zararlıya hiç ilaç atılmasa
+  bile komşu kararı onu etkiliyor.
+- **Hububat yaprak bitleri** — sayısal eşik yok; sürveyde zararlıyla
+  **birlikte yararlı da sayılıyor** ve karar araştırma enstitüleri ile İl
+  Müdürlüğü işbirliğiyle veriliyor. Talimat ayrıca resmen önerilen bir
+  kimyasal preparat **bulunmadığını** yazıyor — bizim katalog ise bu
+  zararlı için bir etki grubu gösteriyordu. Grup kaldırılmadı (etki grubu
+  ruhsat tavsiyesi değildir) ama karar akışının 3. adımı artık bu uyarıyı
+  taşıyor.
 - **Bakla yaprak biti** — eşik yaprak başına 10–20 birey; ama talimat
   yanına şunu koyuyor: *ilaçlamaya karar vermeden önce parazitoit ve
   predatörlerin etkinliği dikkate alınmalı.* Sünede olduğu gibi faydalı,

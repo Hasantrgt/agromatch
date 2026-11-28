@@ -74,12 +74,19 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "urunler": ("Buğday", "Arpa"), "onem": 2,
         "zarar_sekli": "emgi", "hedef_organ": "başak ve dane",
         "vektor": (), "kritik_aylar": (4, 5, 6),
-        "dogal_dusman": ("yumurta parazitoitleri",),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": False, "kaynak": "literatür",
+        "dogal_dusman": ("yumurta parazitoitleri", "ergin parazitoitleri"),
+        "esik": ("Kışlamış erginde m²'de ortalama 2 ergin; kışlamış ergine "
+                 "mücadele yapılamadıysa m²'de ortalama 10 adet 2.-5. dönem "
+                 "nimf veya yeni nesil ergin. Sayım 5 dekarlık tarlada "
+                 "1/4 m²'lik çerçevelerle en az 10 noktada yapılır."),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": "Süneye benzer emgi; genellikle süneyle birlikte bulunur.",
-        "not_": "Süne ile birlikte sayılır; ayrı eşik verisi Muş için yok.",
+        "not_": ("Süne ile birlikte sayılır. Eskiden 'ayrı eşik verisi Muş "
+                 "için yok' yazıyordu; ZMTT Cilt I'de kendi eşiği var ve "
+                 "süneninkinden farklı: sünede karar parazitlenme oranıyla "
+                 "birlikte verilirken kımılda doğrudan yoğunluk eşiği "
+                 "kullanılıyor."),
     },
     {
         "ad": "Ekin kambur böceği", "latince": "Zabrus tenebrioides",
@@ -106,14 +113,24 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "urunler": ("Buğday",), "onem": 2,
         "zarar_sekli": "sap_ici", "hedef_organ": "sap",
         "vektor": (), "kritik_aylar": (5, 6),
-        "dogal_dusman": ("parazitoit arılar",),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": False, "kaynak": "literatür",
+        "dogal_dusman": ("parazitoit arılar (C. calcitrator, B. terebella)",),
+        "esik": ("Eşik yok çünkü KİMYASAL MÜCADELE ÖNERİLMİYOR. Talimat "
+                 "yalnızca kültürel önlem sayıyor: derin sürüm, dayanıklı "
+                 "durum buğdayı, riskli tarlayı sulamamak, erken ekim ve "
+                 "erken hasat, anızın otlatılması."),
+        "esik_turu": "yok",
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": ("Larva sapın içinde aşağı iner, hasada yakın sapı "
                     "keser; başak devrilir ve hasatta toplanamaz."),
         "not_": ("Larva sapın içinde olduğu için temas etkili ilaç "
-                 "ulaşmaz — anız yönetimi ana araçtır."),
+                 "ulaşmaz — anız yönetimi ana araçtır. Talimatın bir "
+                 "uyarısı doğrudan bu projeye bakıyor: parazitoitlerin "
+                 "ergin çıkışı zararlınınkiyle AYNI güne denk geliyor, bu "
+                 "yüzden o günlerde DİĞER hububat zararlılarına yapılacak "
+                 "ilaçlamada yan etkisi az ürün seçilmeli. Yani bu "
+                 "zararlıya hiç ilaç atılmasa bile, komşu kararı onu "
+                 "etkiliyor."),
     },
     {
         "ad": "Hububat yaprak bitleri",
@@ -123,14 +140,31 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "vektor": ("Arpa sarı cücelik virüsü (BYDV)",),
         "kritik_aylar": (4, 5, 6),
         "dogal_dusman": ("gelin böceği", "altın gözlü böcek", "Aphidius spp."),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": False, "kaynak": "literatür",
+        "esik": ("Sayısal eşik verilmemiş. Sürvey yöntemi var: her 40-50 "
+                 "dekar bir ünite, köşegende zikzak yürünerek her 10-15 "
+                 "m'de bir toplam 50 bitkide ERGİN, NİMF VE YARARLI "
+                 "sayılır, haftada 1-2 kez. Karar bu sürveye bakılarak "
+                 "araştırma enstitüleri ve İl Müdürlüğü işbirliğiyle "
+                 "veriliyor. Talimat ayrıca resmen önerilen bir kimyasal "
+                 "preparat BULUNMADIĞINI yazıyor."),
+        "esik_turu": "yok",
+        "esik_kaynak": "ZMTT",
+        "ilac_uyarisi": ("Talimat (2008) bu zararlı için resmen önerilen "
+                         "bir kimyasal preparat BULUNMADIĞINI yazıyor ve "
+                         "zorunlu durumda Bakanlık teknik teşkilatına "
+                         "başvurulmasını istiyor. Aşağıdaki etki grubu bir "
+                         "ruhsat tavsiyesi değildir; ruhsat listesi "
+                         "Bakanlık'ındır ve zamanla değişir."),
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": "Emgi ile zayıflama; ayrıca virüs taşır.",
         "not_": ("Taşıdığı BYDV artık hastalık kataloğunda (buğday ve arpa "
                  "kayıtları). Sonbahar bulaşması ilkbahardan çok daha "
                  "zararlı; bu yüzden erken ekimden kaçınmak ilaçtan önce "
-                 "gelir."),
+                 "gelir. Sürveyde zararlıyla BİRLİKTE yararlı da sayılıyor "
+                 "ve talimat yararlıların yoğun olduğu yerlerin "
+                 "ilaçlanmasından kaçınılmasını istiyor — faydalının "
+                 "kararın parçası olduğu üçüncü resmî örnek (süne ve bakla "
+                 "yaprak bitinden sonra)."),
     },
     # -------------------------------------------------------- Patates
     {

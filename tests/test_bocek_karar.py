@@ -184,8 +184,11 @@ def test_esik_ve_kaynagi_birlikte(ad: str):
         f"{ad}: eşik ve esik_kaynak birlikte dolu olmalı")
     if z.get("esik"):
         # Eşik bir SAYIDIR: içinde rakam yoksa eşik değil, tavsiyedir.
-        assert any(c.isdigit() for c in z["esik"]), (
-            f"{ad}: eşik metninde sayı yok")
+        # Tek istisna, talimatın eşik VERMEDİĞİ kayıtlar: orada sayının
+        # olmaması bulgunun kendisi.
+        if z.get("esik_turu") != "yok":
+            assert any(c.isdigit() for c in z["esik"]), (
+                f"{ad}: eşik metninde sayı yok")
         assert z["esik_kaynak"] in ("ZMTT", "literatür"), ad
 
 
@@ -195,5 +198,26 @@ def test_zmtt_taramasi_esiksizleri_azaltti():
     Sayı değişirse BULGULAR.md'deki 13. bulgu da güncellenmeli.
     """
     b = kr.bosluklar()
-    assert len(b["esigi_bilinmeyen"]) == 5, (
+    assert len(b["esigi_bilinmeyen"]) == 2, (
         "eşiksiz zararlı sayısı değişti — BULGULAR.md güncellenmeli")
+
+
+def test_ruhsatli_urun_yok_uyarisi_tasiniyor():
+    """Talimat ruhsatlı ürün olmadığını yazıyorsa 3. adım bunu söylemeli.
+
+    Proje etki grubuna kadar götürür; ama talimatın "resmen önerilen
+    preparat yok" dediği bir zararlıda grubu uyarısız göstermek, o grubu
+    bir ruhsat tavsiyesi gibi okutur.
+    """
+    uyarili = [z for z in tz.ZARARLILAR if z.get("ilac_uyarisi")]
+    assert uyarili, "ilaç uyarısı taşıyan kayıt kalmamış"
+    for z in uyarili:
+        a = kr.karar(z["ad"])["adimlar"][2]
+        assert a["uyari"] == z["ilac_uyarisi"], z["ad"]
+        assert "ruhsat" in a["uyari"].lower(), z["ad"]
+
+
+def test_uyarisiz_kayitlarda_alan_bos():
+    for z in tz.ZARARLILAR:
+        if not z.get("ilac_uyarisi"):
+            assert kr.karar(z["ad"])["adimlar"][2]["uyari"] == "", z["ad"]
