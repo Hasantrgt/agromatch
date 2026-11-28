@@ -64,7 +64,10 @@ jobs:
         run: |
           test -f mus_panel.html
           test "$(stat -c%s mus_panel.html)" -gt 100000
-          if grep -q "__MUS_JSON__\|__TOPRAK_JSON__\|__IZ_JSON__" mus_panel.html; then
+          # Yer tutucular isim isim aranıyordu; yeni bir tanesi eklenince
+          # (örn. __CATI_JSON__) listeye yazılmayı unutursa doldurulmamış
+          # hâlde yayına çıkabiliyordu. Artık desen aranıyor.
+          if grep -qE "__[A-Z_]+_JSON__" mus_panel.html; then
             echo "Doldurulmamış yer tutucu var — yayınlanmıyor."
             exit 1
           fi
