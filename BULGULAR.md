@@ -542,6 +542,65 @@ edilen yalnızca bu ikisi ve Tribolium adlandırması.
 
 **Nerede.** `depo/literatur.py` (`OLCULEN_TUR`), `depo/karar.py` (`_kosul_adimi`) · `tests/test_depo_karar.py`
 
+## 18 · "Yüzde kaç doğruluk" yerine: model ayırt edebiliyor mu
+
+**Soru.** Bu bir karar destek sistemi. Peki ne kadar doğru?
+
+**Önce cevaplanamayacak olanı söylemek gerekiyor.** Bu projede bir
+**doğruluk oranı yoktur ve uydurulmayacaktır.** Doğruluk oranı
+sınıflandırıcıların ölçüsüdür: etiketli doğru cevaplar gerekir. "Muş'ta
+doğru ekim kararı" diye gözlemlenebilir bir gerçek yok — bilmek için aynı
+tarlada hem öneriyi uygulayıp hem uygulamamak gerekirdi. Üstelik ilçe
+katmanı künyede zaten *dağıtım, güven düşük* diye işaretli; ilçe
+düzeyinde "doğruluk" ölçmek kendi varsayımımızı ölçmek olurdu.
+
+**Ama ölçülebilen bir şey var:** model, cevabını **önceden bildiğimiz**
+vakaları ayırabiliyor mu?
+
+Proje bunu sorabilir hâle geldi çünkü iklim tarafı tablo değil
+**mekanik**: etkili sıcaklık toplamı, donsuz gün, kış minimumu. Yeni bir
+tür için gereken, Muş'a dair veri değil, o türe dair istek.
+
+**Modelde bulunan açık.** Soru sorulunca ortaya çıktı: iklim uygunluğu
+kış minimumuna **hiç bakmıyordu**. Dokuz ürünün dokuzu da yıllık olduğu
+için bu bugüne kadar sorun değildi; ama çok yıllık bir tür sorulunca
+model zeytini, yazın sıcaklık toplamını tutturduğu için kabul ederdi.
+Kış kapısı eklendi.
+
+**Deney.** Kış dayanımları tek bir akademik kaynaktan (Ankara
+Üniversitesi açık ders materyali), Muş'ta varlık bilgisi İl
+Müdürlüğü'nün kendi 2025 faaliyet raporundan (Tablo 9). Kiraz, kaynak
+tabloda yer almadığı için deneye alınmadı.
+
+| grup | türler | beklenen | sonuç |
+| --- | --- | --- | --- |
+| Muş'ta **yok** | zeytin (−7), incir (−9), nar (−10), portakal (−5), limon (−3,5), muz (0) | elenmeli | **6/6 elendi** |
+| Muş'ta **var** | elma (−35), ceviz (−25), armut (−25), üzüm (−16) | elenmemeli | **0/4 elendi** |
+
+Merkez'de en soğuk ayın gece ortalaması **−12 °C**. Kış kapısı iki grubu
+tam olarak ayırıyor.
+
+**Abartılmayacak yer.** Yetişen dört meyve için model "yetişir" de
+**demiyor** — sıcaklık toplamı istekleri kayıtlı olmadığı için
+"söylenemez" diyor. Ölçülen tek şey kış kapısıdır.
+
+**Testin bulduğu gerçek eksik.** Kayısı (−20) ve badem (−18) kışı
+atlatıyor, model onları reddedemiyor; oysa Muş'ta yetişmiyorlar. Sebep
+modelde bulunmayan bir mekanizma: ikisi de çok erken çiçeklenir ve asıl
+engel **ilkbahar geç donudur**. Bir doğrulama testinin en değerli çıktısı
+budur — modelin nerede kör olduğunu söylemesi.
+
+**Sınır.** Kullanılan kış minimumu en soğuk ayın **gece ortalamasıdır**;
+Muş'un kaydedilmiş mutlak minimumu daha düşüktür. Test bu yüzden gevşek
+taraftadır: reddedilen tür marjla reddedilmiştir, sınıra yakın kabul
+edilen tür güvende demek değildir.
+
+**Ne söylemez.** Model "yetişir" dese bile verim, kârlılık ve pazar
+hakkında hiçbir şey söylemez. Bir ürünün yetişebilir olması, ekilmesi
+gerektiği anlamına gelmez.
+
+**Nerede.** `src/yeni_urun.py` · `tests/test_yeni_urun.py` · panelde "Yeni ürün" sekmesi
+
 ---
 
 # Projenin cevap veremediği yerler
@@ -556,7 +615,8 @@ Bir karar sisteminin en dürüst kısmı, nerede karar veremediğidir.
 | P / K birimi | İki sütun modele hiç giremiyor | **Evet** — laboratuvara sorulacak ilk soru |
 | Cins düzeyinde kalan etkenler | 18 ürün çiftinde münavebe kararı belirsiz | **Evet** — tür düzeyi kayıt aranabilir |
 | Bulaş kaynağı atamaları | Topraktan/havadan ayrımı literatüre dayanıyor, Bakanlık belgesinden doğrulanmadı | Evet — danışman gözden geçirmesi |
-| Eşiksiz 12 zararlı | O zararlılarda ilaçlama kararı verilemiyor | Evet — ZMTT taraması |
+| İlkbahar geç donu modelde yok | Erken çiçeklenen türler (kayısı, badem) elenemiyor | Evet — çiçeklenme dönemi don riski eklenebilir |
+| Meyve türlerinin sıcaklık toplamı isteği kayıtlı değil | Kışı atlatan türler için "yetişir" denemiyor | Evet — literatürden kayıt |
 | Malazgirt kireç ölçümü n=4 | Fosfor önerisi varsayıma dayanıyor | Evet — o ilçeden daha çok örnek |
 | Ürünün toprak örtüsü / çok yıllıklık alanı yok | Erozyon önerisi ile pancar büyütme önerisi karşılaştırılamıyor | Evet — literatürden kayıt eklenebilir |
 

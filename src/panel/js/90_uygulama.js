@@ -2,6 +2,7 @@
 
 const SEKMELER = [
   ["cati", "Çatı", sekmeCati],
+  ["yeni", "Yeni ürün", sekmeYeniUrun],
   ["olcum", "Toprak ölçümü", sekmeOlcum],
   ["kalite", "Veri kalitesi", sekmeKalite],
   ["dogrulama", "Doğrulama", sekmeDogrulama],

@@ -135,15 +135,21 @@ def uygunluk(ilce: str, urun: str) -> dict[str, Any]:
     return topraktan_uygunluk(ilce_toprak(ilce), urun)
 
 
-def topraktan_uygunluk(t: dict[str, Any], urun: str) -> dict[str, Any]:
+def topraktan_uygunluk(t: dict[str, Any], urun: str,
+                       istek: dict[str, Any] | None = None) -> dict[str, Any]:
     """Uygunluk puanı, ilçe adı yerine doğrudan toprak değerlerinden.
 
     uygunluk() bunun ilçe sözlüğünden okuyan sarmalayıcısıdır. Ayrım, kuralın
     TEK TANIMLI kalması için: laboratuvardan gelen bir numune, sentetik bir
     profil ya da bir ilçe ortalaması — hepsi aynı puanlayıcıdan geçer. İkinci
     bir kopya çıkarsa tests/test_altin.py kırılır, bilerek.
+
+    `istek` verilirse Muş'ta EKİLMEYEN bir ürün de puanlanabilir
+    (yeni_urun.py bunu kullanır). Verilmezse davranış eskisiyle birebir
+    aynı: URUN_ISTEK'teki dokuz ürün.
     """
-    istek = URUN_ISTEK[urun]
+    if istek is None:
+        istek = URUN_ISTEK[urun]
     sinif = bunye_sinifi(t["kil"], t["kum"], t["silt"])
 
     bilesen = dict(
