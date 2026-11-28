@@ -502,6 +502,46 @@ belirleniyor; otomatik bir kural yok. Şimdilik iki kayıtta var.
 
 **Nerede.** `bocek/karar.py` (`_esik_adimi`, `bosluklar`) · `tests/test_bocek_karar.py`
 
+## 17 · Ölçüm kendi türünün dışına taşmıştı
+
+**Soru.** Cilt I'in içinde depolanmış ürün zararlıları da varmış. Depo
+kataloğunun sekiz kaydı da "literatür" etiketliydi; belgeye sorulunca ne
+çıkar?
+
+**İki şey çıktı, ikisi de kendi hatamız.**
+
+**1. Ölçüm kapsamının dışında gösteriliyordu.** Bulgu 11'deki 37,7 kat
+fark *Sitophilus granarius* üzerinde ölçüldü. Ama karar sistemi o sayıyı
+diyatomlu toprak önerilen **her** zararlının kartında, tür adı vermeden
+gösteriyordu — kırma bitinde de, un akarında da. Diyatomitin etkisi türe
+göre belirgin değişir; sayıyı tür adı olmadan sunmak onu o tür için
+ölçülmüş gibi okutur. Bu, projenin başka yerlerde özenle kaçındığı
+hatanın ta kendisi: ölçümü kapsamının dışına taşımak.
+
+Sayı kaldırılmadı — koşulun ne kadar belirleyici olduğunu göstermesi
+hâlâ doğru. Ama kart artık türü söylüyor ve farklı türse şunu ekliyor:
+*"buradaki sayı koşulun NE KADAR belirleyici olduğunu gösterir, bu tür
+için beklenen ölümü değil."*
+
+**2. Bir zararlının Türkçe adı yanlıştı.** Katalog *Tribolium castaneum*'a
+**"Kırma biti"** diyordu. ZMTT Cilt I'e göre Kırma biti *T. confusum*'dur;
+*T. castaneum*'un resmî adı **"Un biti"**. Kayıttaki sıcaklık verisi
+(optimum 32–35 °C) *castaneum*'a uyduğu için tür korundu ve **ad
+düzeltildi**. Yanlış Türkçe ad, okuyucuyu başka bir türe götürür.
+
+**Doğrulanan.** Depo karar sisteminin bel kemiği olan "tane içinde
+besleniyor mu" bayrağı iki kritik kayıtta belgeyle teyit edildi:
+*Sitophilus granarius* için *"yumurta, larva ve pupa dönemi tane içinde
+geçer"*, *Rhizopertha dominica* için *"delerek girdikleri hububat tanesi
+içinde gelişir... pupa dönemi tane içinde geçer"*. Bu bayrak yanlış
+olsaydı modülün kendi deyimiyle "projenin verebileceği en pahalı yanlış
+tavsiye" üretilirdi.
+
+**Sınır.** Kalan altı depo kaydı hâlâ "literatür": belgede okunup teyit
+edilen yalnızca bu ikisi ve Tribolium adlandırması.
+
+**Nerede.** `depo/literatur.py` (`OLCULEN_TUR`), `depo/karar.py` (`_kosul_adimi`) · `tests/test_depo_karar.py`
+
 ---
 
 # Projenin cevap veremediği yerler

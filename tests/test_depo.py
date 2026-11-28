@@ -113,7 +113,7 @@ def test_yuksek_esikli_tur_daha_az_ay_bulur():
 
 
 def test_sicak_seven_turler_isitilmamis_ambarda_gelisemiyor():
-    """Kırma biti ve khapra böceği Muş'un ısıtılmamış ambarında eşiği aşamaz.
+    """Un biti ve khapra böceği Muş'un ısıtılmamış ambarında eşiği aşamaz.
 
     Bu bir model çıktısı, kesin bir iddia değil; sönümleme varsayımına
     bağlı. Ama varsayım değişmediği sürece sonuç sabit kalmalı.

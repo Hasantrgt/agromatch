@@ -126,7 +126,8 @@ def _yollar_adimi(z: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _kosul_adimi(yollar: dict[str, Any]) -> dict[str, Any]:
+def _kosul_adimi(yollar: dict[str, Any],
+                 z: dict[str, Any] | None = None) -> dict[str, Any]:
     """3. adım: kalıntısız yol koşula bağlıysa, hangi koşula.
 
     Diyatomlu toprak için bu adım kritik: projenin literatür katmanı
@@ -135,6 +136,20 @@ def _kosul_adimi(yollar: dict[str, Any]) -> dict[str, Any]:
     k = lt.sicaklik_karsitligi()
     de_var = any("Diyatom" in y["ad"] for y in yollar["ulasan"]) \
         or any("Diyatom" in y["ad"] for y in yollar["ulasmayan"])
+
+    # ÖLÇÜMÜN KAPSAMI: 37,7 kat farkı Sitophilus granarius üzerinde
+    # ölçüldü. Diyatomitin etkisi türe göre belirgin değişir, bu yüzden
+    # sayıyı başka bir türün kartında tür adı vermeden göstermek onu
+    # o tür için ölçülmüş gibi okutur.
+    bu_tur = (z or {}).get("tur", "?")
+    ayni_tur = bu_tur == k["tur"]
+    kapsam = (f"Bu sayılar {k['tur']} üzerinde ölçüldü"
+              + (" — yani tam da bu zararlı."
+                 if ayni_tur else
+                 f", bu zararlı ({bu_tur}) üzerinde değil. Diyatomitin "
+                 "etkisi türe göre değişir; buradaki sayı koşulun NE KADAR "
+                 "belirleyici olduğunu gösterir, bu tür için beklenen "
+                 "ölümü değil."))
     return {
         "adim": 3, "ad": ADIM_ADI[2],
         "durum": "koşula bağlı" if de_var else "koşul kritik değil",
@@ -149,11 +164,12 @@ def _kosul_adimi(yollar: dict[str, Any]) -> dict[str, Any]:
             f"nemde %{_sayi(k['yuksek']['olum'])}. "
             f"{_sayi(k['kat'])} kat fark. "
             "Koşulu söylemeden 'diyatomlu toprak kullan' demek tavsiye "
-            "değil, kura çekmektir."
+            "değil, kura çekmektir. " + kapsam
             if de_var else
             "Bu zararlı için önerilen yollar koşula diyatomlu toprak "
             "kadar duyarlı değil."),
         "olcum": k if de_var else None,
+        "olcum_ayni_tur": ayni_tur if de_var else None,
     }
 
 
@@ -192,7 +208,7 @@ def karar(zararli: str) -> dict[str, Any]:
         "var": True,
         "zararli": z["ad"], "tur": z["tur"], "sinif": z["sinif"],
         "onem": z["onem"], "karantina": bool(z.get("karantina")),
-        "adimlar": [nerede, yollar, _kosul_adimi(yollar),
+        "adimlar": [nerede, yollar, _kosul_adimi(yollar, z),
                     _son_care_adimi(z, yollar)],
         "ozet": _ozet(z, yollar),
     }

@@ -86,7 +86,7 @@ def test_kosul_adimi_olculmus_sayilari_tasiyor():
     Koşulu söylemeden diyatom önermek tavsiye değil kura çekmektir;
     bu test o sayıların kaybolmamasını garanti ediyor.
     """
-    a = dk.karar("Kırma biti")["adimlar"][2]
+    a = dk.karar("Un biti")["adimlar"][2]
     assert a["durum"] == "koşula bağlı"
     o = a["olcum"]
     assert o and o["dusuk"]["olum"] < 10 and o["yuksek"]["olum"] > 50
@@ -124,3 +124,48 @@ def test_her_zararlinin_ozet_cumlesi_var():
     for z in dp.ZARARLILAR:
         o = dk.karar(z["ad"])["ozet"]
         assert o and z["ad"] in o
+
+
+# ------------------------------------------- ölçümün kapsamı
+def test_diyatom_olcumu_hangi_turde_yapildigini_soyluyor():
+    """37,7 kat Sitophilus granarius üzerinde ölçüldü.
+
+    Diyatomitin etkisi türe göre belirgin değişir. Sayıyı tür adı
+    vermeden her zararlının kartında göstermek, onu o tür için
+    ölçülmüş gibi okutur — projenin başka yerlerde özenle kaçındığı
+    hata (ölçümü kapsamının dışına taşımak).
+    """
+    from depo import literatur as lt
+    for z in dp.ZARARLILAR:
+        a = dk.karar(z["ad"])["adimlar"][2]
+        if a["durum"] != "koşula bağlı":
+            continue
+        assert lt.OLCULEN_TUR in a["aciklama"], z["ad"]
+        assert a["olcum_ayni_tur"] == (z["tur"] == lt.OLCULEN_TUR), z["ad"]
+
+
+def test_kapsam_disinda_uyari_var():
+    """Ölçülen türden farklıysa açıklama bunu söylemeli."""
+    from depo import literatur as lt
+    farkli = [z for z in dp.ZARARLILAR if z["tur"] != lt.OLCULEN_TUR]
+    bulundu = 0
+    for z in farkli:
+        a = dk.karar(z["ad"])["adimlar"][2]
+        if a["durum"] != "koşula bağlı":
+            continue
+        bulundu += 1
+        assert "üzerinde değil" in a["aciklama"], z["ad"]
+        assert "türe göre değişir" in a["aciklama"], z["ad"]
+    assert bulundu, "kapsam dışı zararlı kalmamış"
+
+
+def test_un_biti_adi_bakanlik_belgesine_uyuyor():
+    """ZMTT Cilt I: Kırma biti = T. confusum, Un biti = T. castaneum.
+
+    Kayıt önce T. castaneum'a 'Kırma biti' diyordu. Türkçe ad için
+    yetkili kaynak Bakanlık belgesidir; yanlış ad okuyucuyu başka bir
+    türe götürür.
+    """
+    z = next(x for x in dp.ZARARLILAR if x["tur"] == "Tribolium castaneum")
+    assert z["ad"] == "Un biti"
+    assert "confusum" in z["not_"].lower(), "düzeltmenin gerekçesi yazılmamış"

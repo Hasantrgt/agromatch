@@ -73,14 +73,18 @@ ZARARLILAR: list[dict[str, Any]] = [
          not_="Uçabildiği için yeni depoya dışarıdan girer. Buğday bitinden "
               "daha sıcak sever, Muş koşullarında daha sınırlı kalması beklenir",
          kaynak="literatür"),
-    dict(ad="Kırma biti", tur="Tribolium castaneum", sinif="kın kanatlı",
+    dict(ad="Un biti", tur="Tribolium castaneum", sinif="kın kanatlı",
          ic_besleyen=False, ucabilir=True, karantina=False, onem=2,
          taban_sicaklik=20.0, optimum_sicaklik=(32, 35), optimum_nem=(60, 75),
          en_dusuk_tane_nemi=10.0,
          belirti="Kırık tane ve unda yoğunlaşır; ürüne küf ve keskin koku verir",
          zarar="İkincil zararlı: sağlam taneyi delemez, önce başkası delmelidir",
          not_="Varlığı tek başına değil, birincil zararlıyla birlikte okunmalı — "
-              "kırma biti görülüyorsa yığında zaten delinmiş tane var demektir",
+              "bu böcek görülüyorsa yığında zaten delinmiş tane var demektir. "
+              "AD DÜZELTİLDİ: kayıt önce 'Kırma biti' diyordu, oysa ZMTT "
+              "Cilt I'de Kırma biti Tribolium CONFUSUM'dur; T. castaneum'un "
+              "resmî Türkçe adı Un biti. Tür verisi (optimum 32-35 °C) "
+              "castaneum'a uyuyordu, bu yüzden tür korundu ve ad düzeltildi",
          kaynak="literatür"),
     dict(ad="Testereli böcek", tur="Oryzaephilus surinamensis", sinif="kın kanatlı",
          ic_besleyen=False, ucabilir=False, karantina=False, onem=2,

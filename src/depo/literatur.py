@@ -188,6 +188,10 @@ def seriler() -> list[tuple[str, str, float, int]]:
     return [(k, f, s, n) for (k, f, s), n in sorted(sayac.items())]
 
 
+# Bu modüldeki bütün doz-cevap ölçümleri TEK bir tür üzerinde yapıldı.
+OLCULEN_TUR = "Sitophilus granarius"
+
+
 def sicaklik_karsitligi() -> dict[str, Any]:
     """İki yayının ÇAKIŞTIĞI tek noktayı bulur ve farkı döndürür.
 
@@ -206,6 +210,10 @@ def sicaklik_karsitligi() -> dict[str, Any]:
     a, o = CALISMALAR["agrafioti2023"], CALISMALAR["ogreten2025"]
     return {
         "urun": "SilicoSec", "doz": 1000, "sure": 7,
+        # Ölçümün yapıldığı TÜR. Diyatomitin etkisi türe göre belirgin
+        # değişir; bu sayıyı tür adı olmadan sunmak, başka bir zararlı
+        # için ölçülmüş gibi okutur.
+        "tur": OLCULEN_TUR,
         "dusuk": {"olum": soguk, "sicaklik": a.sicaklik, "nem": a.nem,
                   "kaynak": a.kod},
         "yuksek": {"olum": sicak, "sicaklik": o.sicaklik, "nem": o.nem,
