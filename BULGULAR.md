@@ -300,7 +300,7 @@ eder, ürün yine kaybedilir — üstelik "kalıntısız yol işe yaramıyor" ka
 
 | | |
 |---|---|
-| Eşiği bilinmeyen zararlı | 8 / 17 |
+| Eşiği bilinmeyen zararlı | 7 / 17 |
 | Kalıntısız yolu olmayan | 7 / 17 |
 | Hiçbir seçeneği olmayan | 0 |
 
@@ -308,9 +308,9 @@ Eşiği bilinmeyen zararlıya **ilaçlama önerilmiyor** — "eşik yok" diye ya
 ve karar tarlayı gören ziraat mühendisine bırakılıyor.
 
 **ZMTT taraması (28 Kasım 2026).** Bakanlık TAGEM Entegre Mücadele Teknik
-Talimatları okunarak dört eşik daha işlendi ve eşiksiz zararlı **12'den 8'e**
-indi: mısır kurdu, bozkurt, patates güvesi ve yeşil şeftali yaprak biti.
-Belgede bulunmayan eşik uydurulmadı.
+Talimatları okunarak beş eşik daha işlendi ve eşiksiz zararlı **12'den 7'ye**
+indi: mısır kurdu, bozkurt, patates güvesi, yeşil şeftali yaprak biti ve
+pancar piresi. Belgede bulunmayan eşik uydurulmadı.
 
 Bunlardan ikisi karar sisteminin cevabını değiştiriyor:
 
@@ -323,6 +323,11 @@ Bunlardan ikisi karar sisteminin cevabını değiştiriyor:
 - **Patates güvesi** — depo sıcaklığı **10 °C'nin altındayken zararlı
   gelişemiyor**. Tarlada başlayıp depoda süren tek zararlının kararı, böylece
   3. kısmın depo tarafına bağlanıyor.
+- **Pancar piresi** — eşik bir böcek sayısı değil, **yaprak alanı kaybı**:
+  asimilasyon alanının %20'si. Üstelik talimat üç ayrı gerekçeyle ilaçlamaya
+  karşı duruyor: tohum ilacı çıkıştan sonra 35–40 gün koruyor, sonraki
+  döllerin zararını bitki telafi ediyor, larvaların köke zararı önemsiz.
+  Yani eşik aşılsa bile sıra önce tohum ilacında.
 
 Bir de tarama sırasında kendi hatamı yakaladım: patates yaprak biti eşiği
 önce yanlışlıkla **hububat yaprak bitleri** kaydına yazıldı — iki kaydın

@@ -216,12 +216,21 @@ ZARARLILAR: tuple[dict[str, Any], ...] = (
         "urunler": ("Şeker pancarı",), "onem": 2,
         "zarar_sekli": "yaprak_yeme", "hedef_organ": "fide yaprağı",
         "vektor": (), "kritik_aylar": (4, 5),
-        "dogal_dusman": (),
-        "esik": None,
-        "esik_kaynak": None,
-        "depoda_da": False, "kaynak": "literatür",
+        "dogal_dusman": ("Nosema chaetocnemae (mikrosporidium)",),
+        "esik": ("Yapraklarda asimilasyon alanının %20'si zarar görmüşse "
+                 "yeşil aksam ilaçlamasına zaman kaybetmeden başlanır. "
+                 "Eşik bir böcek sayısı değil, YAPRAK ALANI KAYBIDIR."),
+        "esik_kaynak": "ZMTT",
+        "depoda_da": False, "kaynak": "ZMTT",
         "belirti": "Yaprakta kalbur gibi küçük delikler; fide dönemi kritik.",
-        "not_": "Çıkıştan sonraki ilk iki hafta belirleyicidir.",
+        "not_": ("Çıkıştan sonraki ilk iki hafta belirleyicidir. Talimat "
+                 "üç şey daha söylüyor ve üçü de ilaçlamaya karşı: "
+                 "ruhsatlı TOHUM ilacı çıkıştan sonra 35-40 gün koruduğu "
+                 "için normal şartlarda ayrıca ilaçlama gerekmiyor; "
+                 "sonraki döllerin zararını bitki telafi ediyor; "
+                 "larvaların köke zararı önemsiz ve mücadelesi genellikle "
+                 "ekonomik değil. Yani eşik aşılsa bile sıra önce tohum "
+                 "ilacında."),
     },
     {
         "ad": "Bozkurt", "latince": "Agrotis spp.",

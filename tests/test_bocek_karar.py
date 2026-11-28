@@ -175,5 +175,5 @@ def test_zmtt_taramasi_esiksizleri_azaltti():
     Sayı değişirse BULGULAR.md'deki 13. bulgu da güncellenmeli.
     """
     b = kr.bosluklar()
-    assert len(b["esigi_bilinmeyen"]) == 8, (
+    assert len(b["esigi_bilinmeyen"]) == 7, (
         "eşiksiz zararlı sayısı değişti — BULGULAR.md güncellenmeli")

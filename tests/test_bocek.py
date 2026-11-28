@@ -183,12 +183,19 @@ def test_kaynak_disiplini_korunuyor():
         - Patates güvesi (eşeysel çekici tuzakta 1 ergin)
         - Yeşil şeftali yaprak biti (yemeklikte önerilmiyor; tohumlukta
           50 yaprakta varlık)
-    Belgede bulunmayan eşik UYDURULMADI; sekiz zararlı hâlâ eşiksiz.
+      Endüstri ve Süs Bitkileri Zararlıları ZMTT, Pancar pireleri bölümü
+        - Pancar piresi (asimilasyon alanının %20'si zarar görmüşse)
+    Belgede bulunmayan eşik UYDURULMADI; yedi zararlı hâlâ eşiksiz.
+
+    Hububat Zararlıları ZMTT de okundu ama kımıl, ekin sap arısı ve
+    hububat yaprak bitlerini İÇERMİYOR: o cilt mısır ve çim zararlıları
+    için bir ek cilt. Klasik hububat zararlıları başka ciltte.
     """
     dogrulanmis = {z["ad"] for z in tz.ZARARLILAR if z["kaynak"] == "ZMTT"}
     assert dogrulanmis == {"Süne", "Patates böceği", "Yonca hortumlu böceği",
                            "Ekin kambur böceği", "Mısır kurdu", "Bozkurt",
-                           "Patates güvesi", "Yeşil şeftali yaprak biti"}
+                           "Patates güvesi", "Yeşil şeftali yaprak biti",
+                           "Pancar piresi"}
     for kayit in (*fy.FAYDALILAR, *ps.ETKI_GRUPLARI):
         assert kayit["kaynak"] == "literatür", kayit.get("ad", kayit.get("grup"))
 
